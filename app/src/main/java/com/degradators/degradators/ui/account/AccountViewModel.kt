@@ -1,13 +1,13 @@
-package com.degradators.degradators.ui.notifications
+package com.degradators.degradators.ui.account
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class NotificationsViewModel : ViewModel() {
+class AccountViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is notifications Fragment"
+        value = "Account"
     }
     val text: LiveData<String> = _text
 }
