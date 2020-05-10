@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.User
 import com.degradators.degradators.usecase.AuthUserUseCase
@@ -17,6 +18,7 @@ import javax.inject.Inject
 
 class AccountViewModel @Inject constructor(
     private val authUserUseCase: AuthUserUseCase,
+    private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers
 ) : ViewModel(), LifecycleObserver {
 
@@ -31,6 +33,7 @@ class AccountViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
+                settingsPreferences.token = it
                 Log.d("Test111", "token: $it")
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")

@@ -2,11 +2,14 @@ package com.degradators.degradators.di
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 
 import com.degradators.data.degradators.database.user.api.UserAuthAPI
 import com.degradators.data.degradators.database.user.network.NetworkProvider
 import com.degradators.data.degradators.database.user.repo.UserAuthDataRepository
 import com.degradators.degradators.BuildConfig
+import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.repo.UserAuthRepository
 
 import com.degradators.degradators.di.common.rx.RxSchedulers
@@ -21,6 +24,15 @@ class AppModule {
     @Singleton
     @Provides
     fun provideContext(application: Application): Context = application.applicationContext
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+    @Singleton
+    @Provides
+    fun providePreferences(sharedPreferences: SharedPreferences): SettingsPreferences =
+        SettingsPreferences(sharedPreferences)
 
     @Singleton
     @Provides

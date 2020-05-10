@@ -12,6 +12,12 @@ import io.reactivex.Single
 class UserAuthDataRepository(
     private val api: UserAuthAPI
 ) : UserAuthRepository {
+    override fun getUser(token: String, clientId: String): Single<User> =
+        api.getUser(token, clientId)
+
+    override fun getSystemSettings(): Single<String> = api.getSystemSettings().map {
+        it.clientId
+    }
 
     override fun login(user: User): Single<String> {
         val userData = "${user.mail}:${user.password}"
@@ -20,16 +26,18 @@ class UserAuthDataRepository(
         }
     }
 
+
     override fun insertNewUser(user: User): Completable {
         val userNew = JsonObject()
         userNew.addProperty("login", user.mail)
         userNew.addProperty("password", user.password)
         return api.register(userNew)
-
     }
 
     private fun String.encode(): String {
         return Base64.encodeToString(this.toByteArray(charset("UTF-8")), Base64.NO_WRAP)
     }
+
+
 }
 
