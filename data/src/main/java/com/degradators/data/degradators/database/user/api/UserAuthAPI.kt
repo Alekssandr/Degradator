@@ -2,14 +2,17 @@ package com.degradators.data.degradators.database.user.api
 
 import com.google.gson.JsonObject
 import io.reactivex.Completable
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.PUT
+import io.reactivex.Single
+import okhttp3.ResponseBody
+import retrofit2.Response
+import retrofit2.http.*
 
 interface UserAuthAPI {
 
-
     @Headers("Content-Type: application/json")
     @PUT("/api/p/user")
-    fun registerAndLogin(@Body user: JsonObject): Completable
+    fun register(@Body user: JsonObject): Completable
+
+    @GET("/api/s/ka")
+    fun login(@Header("Authorization") user: String): Single<Response<ResponseBody>>
 }

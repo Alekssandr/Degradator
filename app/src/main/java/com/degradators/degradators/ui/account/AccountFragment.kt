@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Dialog
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -16,12 +17,16 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.degradators.degradators.R
+import com.degradators.degradators.databinding.FragmentAccountBinding
+import com.degradators.degradators.databinding.FragmentSignUpBinding
+import com.degradators.degradators.ui.account.signup.SignUpViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -29,6 +34,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_account.*
 import kotlinx.android.synthetic.main.fragment_account.view.*
 import kotlinx.coroutines.Dispatchers
@@ -40,13 +46,14 @@ import org.json.JSONTokener
 import java.io.OutputStreamWriter
 import java.net.URL
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import javax.net.ssl.HttpsURLConnection
 
 
 class AccountFragment : Fragment() {
 
-
-    private lateinit var notificationsViewModel: AccountViewModel
+    @Inject
+    lateinit var accountViewModel: AccountViewModel
 
     lateinit var mGoogleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN = 9001
@@ -61,26 +68,37 @@ class AccountFragment : Fragment() {
     var avatar = ""
     var accessToken = ""
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        notificationsViewModel =
-            ViewModelProviders.of(this).get(AccountViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_account, container, false)
-        val textView: TextView = root.findViewById(R.id.text_notifications)
-        notificationsViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+//        notificationsViewModel =
+//            ViewModelProviders.of(this).get(AccountViewModel::class.java)
+        val binding: FragmentAccountBinding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
+
+//        val root = inflater.inflate(R.layout.fragment_account, container, false)
+//        val textView: TextView = root.findViewById(R.id.text_notifications)
+
 //        val navController = Navigation.findNavController(root)
-           root.button.setOnClickListener{
-               Navigation.findNavController(it).navigate(R.id.navigation_signup)
+        binding.button.setOnClickListener {
+            Navigation.findNavController(it).navigate(R.id.navigation_signup)
 //               val navController: NavController = Navigation.findNavController(this.requireActivity(), R.id.nav_host_fragment)
 //               navController.navigate(R.id.action_navigation_signin_to_navigation_signup)
         }
-        root.sign_in_button.setOnClickListener {
+        binding.root.sign_in_button.setOnClickListener {
             signIn()
+        }
+
+        binding.run {
+            this.mainViewModel = accountViewModel
+            lifecycleOwner = this@AccountFragment
         }
 
 //        val state = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())
@@ -92,7 +110,7 @@ class AccountFragment : Fragment() {
 //            setupGithubWebviewDialog(githubAuthURLFull)
 //        }
 
-        return root
+        return binding.root
     }
 
 
@@ -164,7 +182,6 @@ class AccountFragment : Fragment() {
             )
         }
     }
-
 
 
     // Show Github login page in a dialog

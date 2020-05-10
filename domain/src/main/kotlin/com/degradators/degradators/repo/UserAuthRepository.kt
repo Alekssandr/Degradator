@@ -6,4 +6,5 @@ import io.reactivex.Single
 
 interface UserAuthRepository {
     fun insertNewUser(user: User): Completable
+    fun login(user: User): Single<String>
 }

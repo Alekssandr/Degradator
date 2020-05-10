@@ -24,7 +24,7 @@ class SignUpViewModel @Inject constructor(
 
     fun createUser() {
         disposables += insertNewUserUseCase
-            .execute(User(psw.value!!, email.value!!))
+            .execute(User(email.value!!, psw.value!!))
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onComplete = {
