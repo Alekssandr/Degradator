@@ -3,6 +3,7 @@ package com.degradators.data.degradators.database.user.repo
 import android.util.Base64
 import android.util.Log
 import com.degradators.data.degradators.database.user.api.UserAuthAPI
+import com.degradators.degradators.model.Articles
 import com.degradators.degradators.model.User
 import com.degradators.degradators.repo.UserAuthRepository
 import com.google.gson.JsonObject
@@ -12,6 +13,7 @@ import io.reactivex.Single
 class UserAuthDataRepository(
     private val api: UserAuthAPI
 ) : UserAuthRepository {
+
     override fun getUser(token: String, clientId: String): Single<User> =
         api.getUser(token, clientId)
 

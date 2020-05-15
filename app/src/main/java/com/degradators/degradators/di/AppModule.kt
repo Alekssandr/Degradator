@@ -4,18 +4,22 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import com.degradators.data.degradators.database.user.api.ArticlesAPI
 
 import com.degradators.data.degradators.database.user.api.UserAuthAPI
 import com.degradators.data.degradators.database.user.network.NetworkProvider
+import com.degradators.data.degradators.database.user.repo.ArticlesDataRepository
 import com.degradators.data.degradators.database.user.repo.UserAuthDataRepository
 import com.degradators.degradators.BuildConfig
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.repo.UserAuthRepository
 
 import com.degradators.degradators.di.common.rx.RxSchedulers
+import com.degradators.degradators.repo.ArticlesRepository
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -27,7 +31,8 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideSharedPreferences(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    fun provideSharedPreferences(context: Context): SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(context)
 
     @Singleton
     @Provides
@@ -48,6 +53,11 @@ class AppModule {
 
     @Singleton
     @Provides
+    fun provideArticlesAPI(retrofit: Retrofit): ArticlesAPI =
+        retrofit.create(ArticlesAPI::class.java)
+
+    @Singleton
+    @Provides
     fun provideNetworkProvider() = NetworkProvider()
 
 
@@ -59,4 +69,9 @@ class AppModule {
     @Provides
     fun provideUserAuthRepo(api: UserAuthAPI): UserAuthRepository =
         UserAuthDataRepository(api)
+
+    @Singleton
+    @Provides
+    fun provideArticlesRepo(api: ArticlesAPI): ArticlesRepository =
+        ArticlesDataRepository(api)
 }
