@@ -68,6 +68,8 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.1.0'
     implementation 'com.shaishavgandhi:login-buttons:1.0.0'
 
+    implementation 'androidx.annotation:annotation:1.0.2'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     kapt appDependencies.daggerCompiler
     kapt appDependencies.daggerAndroidProcessor
     kapt appDependencies.glideCompiler

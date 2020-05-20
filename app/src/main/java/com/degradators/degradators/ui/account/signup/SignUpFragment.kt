@@ -48,6 +48,7 @@ class SignUpFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         this.findNavController().popBackStack()
         return item.onNavDestinationSelected(requireView().findNavController()) || super.onOptionsItemSelected(

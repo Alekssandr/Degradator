@@ -24,11 +24,18 @@ class HomeViewModel @Inject constructor(
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"
     }
-    val text: LiveData<String> = _text
+
+    private val _index = MutableLiveData<Int>()
+
+    val text: MutableLiveData<String> = _text
 
     val articleMessage: MutableLiveData<List<ArticleMessage>> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
+
+    fun setIndex(index: Int) {
+        _index.value = index
+    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
@@ -52,11 +59,12 @@ class HomeViewModel @Inject constructor(
 
     private fun getArticles() {
         disposables += articlesUseCase
-            .execute(settingsPreferences.clientId, "top", 0)
+            .execute(settingsPreferences.clientId, if(_index.value == 1) "top" else "new", 0)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-                articleMessage.value = it.messageList
+                text.value = it.messageList.toString()
+//                articleMessage.value = it.messageList
                 Log.d("Test111", "Articles: ${it.messageList.toString()}")
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")
