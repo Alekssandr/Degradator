@@ -18,8 +18,36 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.degradators.degradators.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_account" />
+        android:id="@+id/navigation_account"
+        android:name="com.degradators.degradators.ui.account.AccountFragment"
+        android:label="@string/title_account"
+        tools:layout="@layout/fragment_account">
+        <action
+            android:id="@+id/action_navigation_account_to_navigation_signup"
+            app:destination="@id/navigation_signup" />
+    </fragment>
+
+
+<!--    <fragment-->
+<!--        android:id="@+id/navigation_signin"-->
+<!--        android:name="com.degradators.degradators.ui.account.SignInFragment"-->
+<!--        android:label="signin">-->
+<!--        <action-->
+<!--            android:id="@+id/action_navigation_signin_to_navigation_signup"-->
+<!--            app:destination="@id/navigation_signup" />-->
+<!--    </fragment>-->
+
+    <fragment
+        android:id="@+id/navigation_signup"
+        android:name="com.degradators.degradators.ui.account.signup.SignUpFragment"
+        android:label="signup"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/action_navigation_signup_to_navigation_account"
+            app:destination="@+id/navigation_account"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:launchSingleTop="false"
+            app:popUpTo="@+id/navigation_account"
+            app:popUpToInclusive="true"/>
+    </fragment>
 </navigation>

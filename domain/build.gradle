@@ -1,0 +1,13 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation domainDependencies.kotlin
+    implementation domainDependencies.rxKotlin
+    implementation domainDependencies.rxAndroid
+    implementation appDependencies.dagger
+    implementation appDependencies.daggerAndroid
+    implementation domainDependencies.retrofitConverter
+
+    testImplementation testDependencies.jUnit
+    testImplementation testDependencies.mockitoKotlin
+}
