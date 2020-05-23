@@ -14,7 +14,6 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -28,9 +27,9 @@
             android:hint="email"
             android:text="@={vieWModel.email}"
             android:inputType="textEmailAddress"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            binding:layout_constraintEnd_toEndOf="parent"
+            binding:layout_constraintStart_toStartOf="parent"
+            binding:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/password"
@@ -41,9 +40,9 @@
             android:hint="password"
             android:text="@={vieWModel.psw}"
             android:inputType="textPassword"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/email" />
+            binding:layout_constraintEnd_toEndOf="parent"
+            binding:layout_constraintStart_toStartOf="parent"
+            binding:layout_constraintTop_toBottomOf="@+id/email" />
 
         <Button
             android:id="@+id/create"
@@ -54,8 +53,35 @@
             android:layout_marginBottom="32dp"
             android:onClick="@{()->vieWModel.createUser()}"
             android:text="create"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            binding:layout_constraintBottom_toBottomOf="parent"
+            binding:layout_constraintEnd_toEndOf="parent"
+            binding:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="65dp"
+            android:layout_marginEnd="258dp"
+            android:layout_marginBottom="279dp"
+            android:onClick="@{()->vieWModel.test()}"
+            android:text="Button"
+            binding:layout_constraintBottom_toBottomOf="parent"
+            binding:layout_constraintEnd_toEndOf="parent"
+            binding:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="123dp"
+            android:layout_marginTop="145dp"
+            android:layout_marginEnd="229dp"
+            android:layout_marginBottom="87dp"
+            binding:text="@{vieWModel.text}"
+            binding:layout_constraintBottom_toTopOf="@+id/button3"
+            binding:layout_constraintEnd_toEndOf="parent"
+            binding:layout_constraintStart_toStartOf="parent"
+            binding:layout_constraintTop_toBottomOf="@+id/password" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(
 
     private val _index = MutableLiveData<Int>()
 
-    val text: MutableLiveData<String> = _text
+    val text: MutableLiveData<String> = MutableLiveData<String>()
 
     val articleMessage: MutableLiveData<List<ArticleMessage>> = MutableLiveData()
 
@@ -63,7 +63,9 @@ class HomeViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-                text.value = it.messageList.toString()
+//                text.value = "ddddd"
+//                text.postValue("aaaaa")
+                articleMessage.value = it.messageList
 //                articleMessage.value = it.messageList
                 Log.d("Test111", "Articles: ${it.messageList.toString()}")
             }, onError = {

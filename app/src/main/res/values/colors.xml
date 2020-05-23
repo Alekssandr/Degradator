@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#A8ACAB</color>
     <color name="colorAccent">#74B4BE</color>
     <color name="githubGrey">#333333</color>
+    <color name="up_divider">#d8d8d8</color>
 </resources>

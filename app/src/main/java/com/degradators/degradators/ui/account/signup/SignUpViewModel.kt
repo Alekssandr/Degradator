@@ -18,9 +18,14 @@ class SignUpViewModel @Inject constructor(
 ) : ViewModel(), LifecycleObserver {
 
     private val disposables = CompositeDisposable()
+    val text: MutableLiveData<String> = MutableLiveData<String>()
 
     val psw = MutableLiveData<String>()
     val email = MutableLiveData<String>()
+
+    fun test(){
+        text.value = "aaaa"
+    }
 
     fun createUser() {
         disposables += insertNewUserUseCase
