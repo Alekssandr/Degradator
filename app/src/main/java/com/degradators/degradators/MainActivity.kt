@@ -11,6 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager.widget.ViewPager
+import com.degradators.degradators.ui.AddArticleActivity
 import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -36,6 +37,12 @@ class MainActivity : DaggerAppCompatActivity() {
         tabs.setupWithViewPager(viewPager)
 
         setSupportActionBar(toolbar)
+
+
+        fab.setOnClickListener { view ->
+            val intent = Intent(this, AddArticleActivity::class.java)
+            startActivity(intent)
+        }
 //        val navView: BottomNavigationView = findViewById(R.id.nav_view)
 //
 //        navController = findNavController(R.id.nav_host_fragment)

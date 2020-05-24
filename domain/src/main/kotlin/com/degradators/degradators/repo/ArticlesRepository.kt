@@ -8,4 +8,5 @@ import io.reactivex.Single
 interface ArticlesRepository {
     fun getListOfPost(clientId: String, type: String, skip: Long): Single<Articles>
     fun getLike(clientId: String, articleId: String, like: Int): Completable
+//    fun uploadImage(clientId: String, articleId: String, like: Int): Completable
 }
