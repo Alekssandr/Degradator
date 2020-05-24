@@ -93,6 +93,8 @@ class PlaceholderFragment : Fragment() {
             layoutManager =  LinearLayoutManager(context)
             bindArticleMessagesAdapter = ArticleMessagesAdapter()
             adapter  = bindArticleMessagesAdapter
+            homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
+
         }
 //        val layoutManager = LinearLayoutManager(context)
 //        val recyclerArticles = binding.recyclerArticles

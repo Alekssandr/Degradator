@@ -4,9 +4,12 @@ import com.degradators.data.degradators.database.user.api.ArticlesAPI
 import com.degradators.data.degradators.database.user.mapper.toArticle
 import com.degradators.degradators.model.Articles
 import com.degradators.degradators.repo.ArticlesRepository
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 class ArticlesDataRepository(
     private val api: ArticlesAPI
@@ -28,6 +31,8 @@ class ArticlesDataRepository(
 //                 api.getLike(it.id)
 //                }
 
+    override fun getLike(clientId: String, articleId: String, like: Int): Completable =
+        api.getLike(clientId, articleId, like)
 
 
 }
