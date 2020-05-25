@@ -3,8 +3,8 @@ package com.degradators.degradators.common.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -14,10 +14,6 @@ import com.degradators.degradators.model.ArticleMessage
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
-import kotlinx.android.synthetic.main.article_item_text_image.view.*
-
-const val TYPE_IMAGE = 0
-const val TYPE_TEXT = 1
 
 class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -25,19 +21,9 @@ class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        when (viewType) {
-            TYPE_IMAGE -> return ImageViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.article_item_image_text, parent, false)
-            )
-            TYPE_TEXT -> return TextViewHolder(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.article_item_text_image, parent, false)
-            )
-        }
-        return TextViewHolder(
+        return ImageViewHolder(
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.article_item_text_image, parent, false)
+                .inflate(R.layout.article_item_image_text, parent, false)
         )
     }
 
@@ -45,53 +31,33 @@ class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return articleMessageList.size
     }
 
-    override fun getItemViewType(position: Int): Int {
-        if (articleMessageList[position].content[0].url.isNullOrEmpty()) {
-            return TYPE_TEXT
-        }
-        return TYPE_IMAGE
-    }
-
     fun getClickItemObserver(): Observable<Pair<String, Int>> {
         return publishSubjectItem
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (articleMessageList[position].content[0].url.isNullOrEmpty()) { // put your condition, according to your requirements
-            val a = (holder as TextViewHolder)
-            a.bind(articleMessageList[position])
-            val isImage = false
+        val a = (holder as ImageViewHolder)
+        a.bind(articleMessageList[position])
+        val isImage = false
+        setLikeDislike(articleMessageList[position], holder.itemView)
 
-            setLikeDislike(articleMessageList[position], holder.itemView, isImage)
-        } else {
-            val a = (holder as ImageViewHolder)
-            a.bind(articleMessageList[position])
-
-            val isImage = true
-            setLikeDislike(articleMessageList[position], holder.itemView, isImage)
-        }
     }
 
     private fun setLikeDislike(
         articleMessage: ArticleMessage,
-        item: View,
-        isImage: Boolean
+        item: View
     ) {
-        var listViewText =
-            listOf(item.averageTextLike, item.textImageViewLike, item.textImageViewDislike)
-        if (isImage) listViewText =
-            listOf(item.averageImageLike, item.imageViewLike, item.imageViewDislike)
 
         val summary = articleMessage.summary
-        val averageScore = (listViewText[0] as TextView)
+        val averageScore = item.averagelikeText
         averageScore.text = (summary.like - summary.dislike).toString()
-        val like = (listViewText[1] as ImageButton)
-        val disLike = (listViewText.last() as ImageButton)
+        val like = item.like
+        val disLike = item.dislike
 
         if (averageScore.text.toString().toInt() <= summary.like - summary.dislike) {
             like.setOnClickListener {
                 summary.like = summary.like + 1
-                if(!disLike.isEnabled){
+                if (!disLike.isEnabled) {
                     summary.dislike = summary.dislike - 1
                 }
                 disLike.isEnabled = true
@@ -105,7 +71,7 @@ class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             disLike.setOnClickListener {
 
                 summary.dislike = summary.dislike + 1
-                if(!like.isEnabled){
+                if (!like.isEnabled) {
                     summary.like = summary.like - 1
                 }
                 disLike.isEnabled = false
@@ -127,10 +93,27 @@ class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun bind(articleMessage: ArticleMessage) {
             itemView.imageTextTitle.text = articleMessage.header
-            setImage(itemView.imageViewText, articleMessage.content.first().url)
-            if (articleMessage.content.size > 1) {
-                itemView.imageTextView.text = articleMessage.content[1].text
+            articleMessage.content.forEach {
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(0, 10, 0, 0)
+
+                if (it.url.isNullOrEmpty()) {
+                    val text = TextView(itemView.context)
+                    text.text = it.text
+                    text.layoutParams = params
+                    itemView.container.addView(text)
+                } else {
+                    val image = ImageView(itemView.context)
+                    setImage(image, it.url)
+                    image.layoutParams = params
+                    image.adjustViewBounds = true
+                    itemView.container.addView(image)
+                }
             }
+            itemView.container.setHasTransientState(true)
         }
 
         private fun setImage(image: ImageView, url: String) {
@@ -138,33 +121,9 @@ class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 .load(url)
                 .apply(
                     RequestOptions()
-                        .placeholder(R.drawable.ic_launcher_background)
+                        .placeholder(R.drawable.ic_launcher_background).fitCenter()
                 )
                 .into(image)
         }
     }
-
-    class TextViewHolder(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
-
-        fun bind(articleMessage: ArticleMessage) {
-            itemView.textImageTitle.text = articleMessage.header
-            itemView.textImage.text = articleMessage.content.first().text
-            if (articleMessage.content.size > 1) {
-                setImage(itemView, articleMessage.content[1].url)
-            }
-        }
-
-        private fun setImage(itemView: View, url: String) {
-            Glide.with(itemView.context)
-                .load(url)
-                .apply(
-                    RequestOptions()
-                        .placeholder(R.drawable.ic_launcher_background)
-                )
-                .into(itemView.textImageView)
-        }
-    }
-
-
 }
