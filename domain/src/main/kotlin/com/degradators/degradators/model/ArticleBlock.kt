@@ -1,6 +1,6 @@
 package com.degradators.degradators.model
 
-data class Article(
+data class ArticleBlock(
     var url: String = "",
     var text: String = "",
     var type: String = "",

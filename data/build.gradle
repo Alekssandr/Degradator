@@ -48,6 +48,7 @@ dependencies {
     implementation dataDependencies.retrofitAdapter
     implementation appDependencies.dagger
     implementation appDependencies.daggerAndroid
+    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
 
     testImplementation testDependencies.jUnit
     testImplementation testDependencies.mockitoKotlin
