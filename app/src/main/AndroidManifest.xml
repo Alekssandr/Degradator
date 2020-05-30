@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.AddArticleActivity"
+            android:name=".ui.addArticles.AddArticleActivity"
             android:label="@string/title_activity_add_article"
             android:windowSoftInputMode="adjustPan"/>
         <activity

@@ -1,4 +1,4 @@
-package com.degradators.degradators.ui
+package com.degradators.degradators.ui.addArticles
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -12,14 +12,17 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.children
 import com.degradators.degradators.R
+import com.degradators.degradators.model.Block
+import com.degradators.degradators.model.BlockText
 import kotlinx.android.synthetic.main.activity_add_article.*
 import java.io.File
 
@@ -38,6 +41,7 @@ class AddArticleActivity : AppCompatActivity() {
     private val OPERATION_CAPTURE_PHOTO = 1
     private val OPERATION_CHOOSE_PHOTO = 2
     var index = 0
+    var content: MutableList<Block> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,12 +61,15 @@ class AddArticleActivity : AppCompatActivity() {
             val editText = EditText(this)
             params.weight = 0.3f
             editText.layoutParams = params
+            editText.minLines = 3
             scrollView.post {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
             parent.addView(editText)
             parent.addView(button)
             container.addView(parent)
+
+
 
             removeBtnClick(button)
         }
@@ -103,11 +110,23 @@ class AddArticleActivity : AppCompatActivity() {
                 scrollView.fullScroll(View.FOCUS_DOWN)
             }
         }
+
+        publicArticle.setOnClickListener {
+            container.children.forEach {
+               val child =  (it as ViewGroup).getChildAt(0)
+                if (child is EditText) {
+                    content.add(BlockText(child.text.toString(), "text"))
+                }
+
+            }
+//
+
+        }
     }
+
     val Int.dp: Int
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
-//    val Int.px: Int
-//        get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
 
     private fun createParentLayout(): Pair<ImageButton, LinearLayout> {
         val parent = LinearLayout(this)
@@ -119,18 +138,16 @@ class AddArticleActivity : AppCompatActivity() {
         parent.orientation = LinearLayout.HORIZONTAL
 
         val button = ImageButton(this)
-//        val btn = LinearLayout.LayoutParams(
-//            LinearLayout.LayoutParams.WRAP_CONTENT,
-//            LinearLayout.LayoutParams.WRAP_CONTENT
-//        )
-        val btn  = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val btn = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.WRAP_CONTENT,
+            RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
         btn.width = 120
         btn.height = 110
         button.background = ContextCompat.getDrawable(this, R.drawable.style_circular_button)
-//        button.sett
         button.setImageResource(R.drawable.ic_delete_white_18dp)
         btn.setMargins(50, 0, 0, 0)
-//        btn.weight = 0.7f
+
         button.layoutParams = btn
         return Pair(button, parent)
     }
