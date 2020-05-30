@@ -7,19 +7,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
 
 class ArticleContainer @JvmOverloads constructor(
-	context: Context,
-	attrs: AttributeSet? = null,
-	defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
-	private var _adapter: ArticleItemListAdapter = ArticleItemListAdapter()
+    private var _adapter: ArticleItemListAdapter = ArticleItemListAdapter()
 
-	init {
-		layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-		adapter = _adapter
-	}
-	
-	fun setArticleItems(items : List<ArticleItem>) = _adapter.submitList(items)
+    init {
+        layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        adapter = _adapter
+    }
+
+    fun setArticleItem(item: ArticleItem) = _adapter.update(item)
+    fun removeArticleItem(index: Int) = _adapter.removeItemBy(index)
+    fun getArticleList() = _adapter.getArticleList()
 }
 
 

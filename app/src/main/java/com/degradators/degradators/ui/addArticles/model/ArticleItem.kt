@@ -1,3 +1,5 @@
 package com.degradators.degradators.ui.addArticles.model
 
-data class ArticleItem(val type: Int, val title: String = "", val url: String = "", val action: () -> Unit)
+import android.graphics.Bitmap
+
+data class ArticleItem(val type: Int, var title: String = "", val bitmap: Bitmap? = null, val action: (Int) -> Unit)

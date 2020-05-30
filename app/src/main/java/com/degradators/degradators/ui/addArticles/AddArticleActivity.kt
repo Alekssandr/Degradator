@@ -6,6 +6,7 @@ import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
@@ -13,16 +14,16 @@ import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.View
-import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.children
 import com.degradators.degradators.R
 import com.degradators.degradators.model.Block
-import com.degradators.degradators.model.BlockText
+import com.degradators.degradators.ui.addArticles.components.TYPE_IMAGE
+import com.degradators.degradators.ui.addArticles.components.TYPE_TEXT
+import com.degradators.degradators.ui.addArticles.model.ArticleItem
 import kotlinx.android.synthetic.main.activity_add_article.*
 import java.io.File
 
@@ -55,101 +56,39 @@ class AddArticleActivity : AppCompatActivity() {
         params.setMargins(0, 10, 0, 0)
 
         fabText.setOnClickListener {
-            val pair = createParentLayout()
-            val button = pair.first
-            val parent = pair.second
-            val editText = EditText(this)
-            params.weight = 0.3f
-            editText.layoutParams = params
-            editText.minLines = 3
-            scrollView.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
-            parent.addView(editText)
-            parent.addView(button)
-            container.addView(parent)
-
-
-
-            removeBtnClick(button)
+            container.setArticleItem(
+                ArticleItem(
+                    TYPE_TEXT,
+                    "",
+                    action = { removeArticleItem(it) }
+                ))
         }
 
         fabImage.setOnClickListener {
             checkPermission()
-            val pair = createParentLayout()
-            val button = pair.first
-            val parent = pair.second
-            mImageView = ImageView(this)
-            params.weight = 0.3f
-            mImageView!!.layoutParams = params
-            mImageView!!.adjustViewBounds = true
-            scrollView.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
-            parent.addView(mImageView)
-            parent.addView(button)
-            container.addView(parent)
-            removeBtnClick(button)
         }
 
         fabPhoto.setOnClickListener {
             makePhoto()
-
-            val pair = createParentLayout()
-            val button = pair.first
-            val parent = pair.second
-
-            mImageView = ImageView(this)
-            mImageView!!.layoutParams = params
-            mImageView!!.adjustViewBounds = true
-            parent.addView(mImageView)
-            parent.addView(button)
-            container.addView(parent)
-            removeBtnClick(button)
-            scrollView.post {
-                scrollView.fullScroll(View.FOCUS_DOWN)
-            }
         }
 
         publicArticle.setOnClickListener {
-            container.children.forEach {
-               val child =  (it as ViewGroup).getChildAt(0)
-                if (child is EditText) {
-                    content.add(BlockText(child.text.toString(), "text"))
-                }
-
-            }
-//
-
+            val a = container.getArticleList()
         }
     }
 
-    val Int.dp: Int
-        get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+    private fun removeArticleItem(articleItem: Int) {
+        container.removeArticleItem(articleItem)
+    }
 
-
-    private fun createParentLayout(): Pair<ImageButton, LinearLayout> {
-        val parent = LinearLayout(this)
-        parent.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        parent.orientation = LinearLayout.HORIZONTAL
-
-        val button = ImageButton(this)
-        val btn = RelativeLayout.LayoutParams(
-            RelativeLayout.LayoutParams.WRAP_CONTENT,
-            RelativeLayout.LayoutParams.WRAP_CONTENT
-        )
-        btn.width = 120
-        btn.height = 110
-        button.background = ContextCompat.getDrawable(this, R.drawable.style_circular_button)
-        button.setImageResource(R.drawable.ic_delete_white_18dp)
-        btn.setMargins(50, 0, 0, 0)
-
-        button.layoutParams = btn
-        return Pair(button, parent)
+    private fun addImage(bitmap: Bitmap) {
+        container.setArticleItem(
+            ArticleItem(
+                TYPE_IMAGE,
+                "",
+                bitmap,
+                action = { removeArticleItem(it) }
+            ))
     }
 
     private fun checkPermission() {
@@ -188,16 +127,6 @@ class AddArticleActivity : AppCompatActivity() {
         startActivityForResult(intent, OPERATION_CAPTURE_PHOTO)
     }
 
-    private fun removeBtnClick(button: ImageButton) {
-        button.setOnClickListener {
-            if (container.childCount == 1) {
-                container.removeAllViews()
-            } else {
-                container.removeView((it.parent as View))
-            }
-        }
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return super.onSupportNavigateUp()
@@ -212,7 +141,7 @@ class AddArticleActivity : AppCompatActivity() {
     private fun renderImage(imagePath: String?) {
         if (imagePath != null) {
             val bitmap = BitmapFactory.decodeFile(imagePath)
-            mImageView?.setImageBitmap(bitmap)
+            addImage(bitmap)
         }
     }
 
@@ -281,7 +210,7 @@ class AddArticleActivity : AppCompatActivity() {
                     val bitmap = BitmapFactory.decodeStream(
                         contentResolver.openInputStream(mUri!!)
                     )
-                    mImageView!!.setImageBitmap(bitmap)
+                    addImage(bitmap)
                 }
             OPERATION_CHOOSE_PHOTO ->
                 if (resultCode == Activity.RESULT_OK) {
