@@ -1,6 +1,7 @@
 package com.degradators.degradators.di
 
 import com.degradators.degradators.MainActivity
+import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.szczecin.englishtamagotchi.app.di.scopes.PerActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -12,9 +13,12 @@ abstract class MainActivitiesBinder {
             MainFragmentsBinder::class
         ]
     )
-
     @PerActivity
     abstract fun bindMainActivity(): MainActivity
+
+    @ContributesAndroidInjector(modules = [MainActivitiesModule::class])
+    @PerActivity
+    abstract fun bindAddArticleActivity(): AddArticleActivity
 
 
 }

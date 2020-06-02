@@ -1,22 +1,21 @@
 package com.degradators.degradators.di
 
-import android.app.Activity
 import android.app.Application
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import dagger.android.HasAndroidInjector
 import javax.inject.Inject
 
-class DegradatorApplication : Application(), HasActivityInjector {
+class DegradatorApplication : Application(), HasAndroidInjector {
     @Inject
-    lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+    lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     override fun onCreate() {
         super.onCreate()
         daggerInit()
     }
 
-    override fun activityInjector(): AndroidInjector<Activity> = activityInjector
+    override fun androidInjector(): AndroidInjector<Any>  = androidInjector
 
     private fun daggerInit() {
         DaggerAppComponent.builder()

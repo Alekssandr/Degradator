@@ -33,7 +33,7 @@ ext {
     googlePlayServicesVersion = '17.0.0'
     glideVersion = '4.8.0'
     androidKtxVersion = '1.0.0'
-    daggerVersion = '2.16'
+    daggerVersion = '2.25.2'
     googleMapsUtilsVersion = '0.5'
     livedataextVersion ='1.2.1'
     //JSON API

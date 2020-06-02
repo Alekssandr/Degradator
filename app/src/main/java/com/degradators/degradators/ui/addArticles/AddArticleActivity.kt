@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -13,47 +12,44 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.view.View
-import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.degradators.degradators.R
+import com.degradators.degradators.di.common.ViewModelFactory
 import com.degradators.degradators.model.Block
 import com.degradators.degradators.ui.addArticles.components.TYPE_IMAGE
 import com.degradators.degradators.ui.addArticles.components.TYPE_TEXT
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
+import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
+import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_article.*
 import java.io.File
+import javax.inject.Inject
 
 
 class AddArticleActivity : AppCompatActivity() {
 
-    //Our variables
-    private var mImageView: ImageView? = null
-    private var mUri: Uri? = null
+    @Inject
+    lateinit var factory: ViewModelFactory<AddArticleViewModel>
 
-    //Our widgets
-    private lateinit var btnCapture: Button
-    private lateinit var btnChoose: Button
+    val viewmodel: AddArticleViewModel by viewModels { factory }
+
+    private var mUri: Uri? = null
 
     //Our constants
     private val OPERATION_CAPTURE_PHOTO = 1
     private val OPERATION_CHOOSE_PHOTO = 2
-    var index = 0
     var content: MutableList<Block> = mutableListOf()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_article)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-
-        val params = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        params.setMargins(0, 10, 0, 0)
 
         fabText.setOnClickListener {
             container.setArticleItem(
@@ -73,7 +69,7 @@ class AddArticleActivity : AppCompatActivity() {
         }
 
         publicArticle.setOnClickListener {
-            val a = container.getArticleList()
+            viewmodel.addArticle(editText.text.toString(), container.getArticleList())
         }
     }
 
@@ -81,12 +77,13 @@ class AddArticleActivity : AppCompatActivity() {
         container.removeArticleItem(articleItem)
     }
 
-    private fun addImage(bitmap: Bitmap) {
+    private fun addImage(bitmap: Bitmap, path: String = "") {
         container.setArticleItem(
             ArticleItem(
                 TYPE_IMAGE,
                 "",
                 bitmap,
+                path,
                 action = { removeArticleItem(it) }
             ))
     }
@@ -141,7 +138,7 @@ class AddArticleActivity : AppCompatActivity() {
     private fun renderImage(imagePath: String?) {
         if (imagePath != null) {
             val bitmap = BitmapFactory.decodeFile(imagePath)
-            addImage(bitmap)
+            addImage(bitmap, imagePath)
         }
     }
 
@@ -210,7 +207,7 @@ class AddArticleActivity : AppCompatActivity() {
                     val bitmap = BitmapFactory.decodeStream(
                         contentResolver.openInputStream(mUri!!)
                     )
-                    addImage(bitmap)
+                    mUri!!.path?.let { addImage(bitmap, it) }
                 }
             OPERATION_CHOOSE_PHOTO ->
                 if (resultCode == Activity.RESULT_OK) {
@@ -218,4 +215,5 @@ class AddArticleActivity : AppCompatActivity() {
                 }
         }
     }
+
 }

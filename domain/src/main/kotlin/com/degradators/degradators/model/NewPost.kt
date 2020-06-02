@@ -5,14 +5,9 @@ data class NewPost(
     var content: List<Block> = emptyList()
 )
 
-data class BlockText (
+data class Block (
     var text: String = "",
-    var type: String
-) : Block
-
-data class BlockImage(
     var url: String = "",
     var type: String
-) : Block
+)
 
-interface Block

@@ -9,6 +9,7 @@ import com.degradators.data.degradators.database.user.api.ArticlesAPI
 import com.degradators.data.degradators.database.user.api.UserAuthAPI
 import com.degradators.data.degradators.database.user.network.NetworkProvider
 import com.degradators.data.degradators.database.user.repo.ArticlesDataRepository
+import com.degradators.data.degradators.database.user.repo.ImageDataRepository
 import com.degradators.data.degradators.database.user.repo.UserAuthDataRepository
 import com.degradators.degradators.BuildConfig
 import com.degradators.degradators.common.preferencies.SettingsPreferences
@@ -16,6 +17,7 @@ import com.degradators.degradators.repo.UserAuthRepository
 
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.repo.ArticlesRepository
+import com.degradators.degradators.repo.ImageRepository
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -74,4 +76,9 @@ class AppModule {
     @Provides
     fun provideArticlesRepo(api: ArticlesAPI): ArticlesRepository =
         ArticlesDataRepository(api)
+
+    @Singleton
+    @Provides
+    fun provideImageRepo(api: ArticlesAPI): ImageRepository =
+        ImageDataRepository(api)
 }
