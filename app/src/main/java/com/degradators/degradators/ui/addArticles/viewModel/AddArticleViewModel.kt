@@ -1,6 +1,8 @@
 package com.degradators.degradators.ui.addArticles.viewModel
 
 import android.util.Log
+import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.model.Block
@@ -10,6 +12,7 @@ import com.degradators.degradators.ui.addArticles.model.ArticleItem
 import com.degradators.degradators.usecase.articles.AddImageUseCase
 import com.degradators.degradators.usecase.articles.AddNewArticleUseCase
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 
 import io.reactivex.disposables.CompositeDisposable
@@ -24,14 +27,17 @@ class AddArticleViewModel @Inject constructor(
     private val settingsPreferences: SettingsPreferences
 ) : ViewModel() {
 
-    val articleContents: MutableList<Block> = mutableListOf()
     private val disposables = CompositeDisposable()
-
+    val closeScreen = MutableLiveData<Unit>()
+    val progressBarVisibility = MutableLiveData<Int>().apply {
+        value = View.GONE
+    }
 
     fun addArticle(
         articleHeader: String,
         articleList: MutableList<ArticleItem>
     ) {
+        progressBarVisibility.value = View.VISIBLE
         val obs: Observable<List<ArticleItem>> = Observable.fromArray(articleList)
         disposables += obs
             .flatMapIterable {
@@ -45,42 +51,55 @@ class AddArticleViewModel @Inject constructor(
                 )
             }
             .toList()
+            .flatMap {
+                getBlockContent(articleList, it)
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onSuccess = {
-                putArticle(it.toList(), articleList, articleHeader)
+                putArticle(it.toList(), articleHeader)
             }, onError = {
                 Log.e("Error", it.message ?: "")
             })
     }
 
     private fun putArticle(
-        urls: List<String>,
-        articleList: MutableList<ArticleItem>,
+        articleList: List<Block>,
         articleHeader: String
     ) {
-        articleList.filter { it.type == TYPE_IMAGE  }.forEachIndexed { index, articleItem ->
-            articleItem.imagePath = urls.get(index)
-        }
+        disposables += addNewArticleUseCase
+            .execute(settingsPreferences.clientId, NewPost(articleHeader, articleList))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(onComplete = {
+                progressBarVisibility.value = View.GONE
+                closeScreen.value = Unit
+                Log.d("test111", "yup!")
+            }, onError = {
+                progressBarVisibility.value = View.GONE
+                closeScreen.value = Unit
+                Log.e("Test111", "error: ${it.message} ?: ")
 
+            })
+    }
+
+    private fun getBlockContent(
+        articleList: MutableList<ArticleItem>,
+        it: List<String>
+    ): Single<MutableList<Block>> {
+        val articleContents: MutableList<Block> = mutableListOf()
+
+        articleList.filter { it.type == TYPE_IMAGE }.forEachIndexed { index, articleItem ->
+            articleItem.imagePath = it.get(index)
+        }
         articleList.forEach {
-            if(it.type == TYPE_IMAGE){
+            if (it.type == TYPE_IMAGE) {
                 articleContents.add(Block(url = it.imagePath, type = "img"))
             } else {
                 articleContents.add(Block(text = it.title, type = "text"))
             }
         }
-
-        disposables += addNewArticleUseCase
-            .execute(settingsPreferences.clientId, NewPost(articleHeader, articleContents.toList()))
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(onComplete = {
-               Log.d("test111", "yup!")
-            }, onError = {
-                Log.e("Test111", "error: ${it.message} ?: ")
-
-            })
+        return Single.just(articleContents)
     }
 
     override fun onCleared() {

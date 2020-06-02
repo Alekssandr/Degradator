@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.databinding.DataBindingUtil
 import com.degradators.degradators.R
 import com.degradators.degradators.di.common.ViewModelFactory
 import com.degradators.degradators.model.Block
@@ -27,6 +28,9 @@ import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_article.*
 import java.io.File
+import androidx.lifecycle.Observer
+import com.degradators.degradators.databinding.ActivityAddArticleBinding
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 
@@ -48,7 +52,11 @@ class AddArticleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_article)
+        val binding: ActivityAddArticleBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_article)
+        binding.run {
+            this.addArticleViewModel = viewmodel
+            lifecycleOwner = this@AddArticleActivity
+        }
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         fabText.setOnClickListener {
@@ -71,6 +79,10 @@ class AddArticleActivity : AppCompatActivity() {
         publicArticle.setOnClickListener {
             viewmodel.addArticle(editText.text.toString(), container.getArticleList())
         }
+
+        viewmodel.closeScreen.observe(this, Observer {
+            finish()
+        })
     }
 
     private fun removeArticleItem(articleItem: Int) {
@@ -78,14 +90,25 @@ class AddArticleActivity : AppCompatActivity() {
     }
 
     private fun addImage(bitmap: Bitmap, path: String = "") {
+       val newBitmap = compressBitmap(bitmap, 2)
         container.setArticleItem(
             ArticleItem(
                 TYPE_IMAGE,
                 "",
-                bitmap,
+                newBitmap,
                 path,
                 action = { removeArticleItem(it) }
             ))
+    }
+
+    private fun compressBitmap(bitmap:Bitmap, quality:Int):Bitmap{
+        val stream = ByteArrayOutputStream()
+
+        bitmap.compress(Bitmap.CompressFormat.PNG, quality, stream)
+
+        val byteArray = stream.toByteArray()
+
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
 
     private fun checkPermission() {
