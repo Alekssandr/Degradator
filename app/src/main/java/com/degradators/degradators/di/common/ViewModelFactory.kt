@@ -1,9 +1,11 @@
+package com.degradators.degradators.di.common
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import javax.inject.Inject
 import javax.inject.Provider
 
-class ViewModelFactory<VM : ViewModel> @Inject constructor(val provider: Provider<VM>) :
+class ViewModelFactory<VM : ViewModel> @Inject constructor(private val provider: Provider<VM>) :
     ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")

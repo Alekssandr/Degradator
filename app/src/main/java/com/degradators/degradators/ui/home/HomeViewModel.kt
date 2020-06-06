@@ -62,9 +62,19 @@ class HomeViewModel @Inject constructor(
             })
     }
 
+    private fun getTabName(): String =
+        when (_index.value) {
+            1 -> "top"
+            2 -> "new"
+            else -> {
+                "monthly"
+            }
+        }
+
+
     private fun getArticles() {
         disposables += articlesUseCase
-            .execute(settingsPreferences.clientId, if (_index.value == 1) "top" else "new", 0)
+            .execute(settingsPreferences.clientId, getTabName(), 0)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {

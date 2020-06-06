@@ -1,16 +1,16 @@
 package com.degradators.data.degradators.database.user.api
 
-import com.degradators.data.degradators.database.user.model.ArticlesEntity
+import com.degradators.data.degradators.database.user.model.ImageEntity
 import com.degradators.degradators.model.Articles
+import com.degradators.degradators.model.NewPost
+import com.google.gson.JsonObject
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
-import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
+
 
 interface ArticlesAPI {
 
@@ -21,14 +21,24 @@ interface ArticlesAPI {
         @Query("skip") skip: Long
     ): Single<Articles>
 
-//    /api/p/message?type="new"&skip=0
-    ///api/p/likeOrDislike?messageId="someId"&value=1
-    //"/api/p/likeOrDislike"
     @GET("/api/p/likeOrDislike?")
     fun getLike(
         @Header("Client-Id") clientId: String,
         @Query("messageId") messageId : String,
         @Query("value") like: Int
     ):  Completable
+
+
+    @Multipart
+    @POST("/api/p/upload")
+    fun addImage(
+        @Part file: MultipartBody.Part
+    ): Single<ImageEntity>
+
+    @PUT("/api/p/message")
+    fun addArticle(
+        @Header("Client-Id") clientId: String,
+        @Body newPost: NewPost
+    ): Completable
 
 }

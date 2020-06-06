@@ -15,7 +15,11 @@ import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
 
-class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+const val DETAILS_EXTRA = "details"
+const val DETAILS_POSITION = "details_position"
+const val DETAILS_LIKE = "details_like"
+
+class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>()  {
 
     private var articleMessageList: List<ArticleMessage> = emptyList()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
@@ -38,16 +42,33 @@ class ArticleMessagesAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val a = (holder as ImageViewHolder)
         a.bind(articleMessageList[position])
-        val isImage = false
         setLikeDislike(articleMessageList[position], holder.itemView)
-
+        setComment(articleMessageList[position], holder.itemView)
+        a.itemView.setOnClickListener {
+            val article = articleMessageList[position]
+            val articleDetails = ArticleMessage(id = article.id, type = article.type, summary = article.summary,header =  article.header, content = article.content)
+            listener(Pair(articleDetails, position))
+        }
     }
+
+    private fun setComment(articleMessage: ArticleMessage, itemView: View) {
+        itemView.messageText.text = articleMessage.summary.comment.toString()
+    }
+
+    fun updateItem(pair: Pair<Int, Int>){
+        if(pair.second == 1){
+            articleMessageList[pair.first].summary.like += 1
+        } else if(pair.second == -1) {
+            articleMessageList[pair.first].summary.dislike -= 1
+        }
+        notifyItemChanged(pair.first)
+    }
+
 
     private fun setLikeDislike(
         articleMessage: ArticleMessage,
         item: View
     ) {
-
         val summary = articleMessage.summary
         val averageScore = item.averagelikeText
         averageScore.text = (summary.like - summary.dislike).toString()

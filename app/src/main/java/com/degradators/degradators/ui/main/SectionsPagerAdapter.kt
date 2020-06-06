@@ -8,9 +8,9 @@ import androidx.fragment.app.FragmentPagerAdapter
 import com.degradators.degradators.R
 
 private val TAB_TITLES = arrayOf(
-    R.string.title_home,
-    R.string.title_dashboard,
-    R.string.title_dashboard
+    R.string.tab_top,
+    R.string.tab_new,
+    R.string.tab_monthly
 )
 
 /**
