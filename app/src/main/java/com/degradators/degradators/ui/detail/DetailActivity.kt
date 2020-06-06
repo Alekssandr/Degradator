@@ -1,0 +1,142 @@
+package com.degradators.degradators.ui.detail
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
+import com.degradators.degradators.R
+import com.degradators.degradators.common.adapter.DETAILS_EXTRA
+import com.degradators.degradators.common.adapter.DETAILS_LIKE
+import com.degradators.degradators.common.adapter.DETAILS_POSITION
+import com.degradators.degradators.databinding.ActivityDetailBinding
+import com.degradators.degradators.di.common.ViewModelFactory
+import com.degradators.degradators.model.ArticleMessage
+import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
+import dagger.android.AndroidInjection
+import kotlinx.android.synthetic.main.activity_detail.*
+import javax.inject.Inject
+
+
+class DetailActivity : AppCompatActivity() {
+
+    @Inject
+    lateinit var factory: ViewModelFactory<ArticleDetailsViewModel>
+
+    val viewmodel: ArticleDetailsViewModel by viewModels { factory }
+
+    private val intentBindWords = Intent()
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
+        super.onCreate(savedInstanceState)
+        val binding: ActivityDetailBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_detail)
+        binding.run {
+            this.articleDetailsViewModel = viewmodel
+            lifecycleOwner = this@DetailActivity
+        }
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        showArticle()
+
+    }
+
+    private fun setLikeDislike(
+        articleMessage: ArticleMessage
+    ) {
+        val summary = articleMessage.summary
+        val averageScore = detailsAverageLike
+        averageScore.text = (summary.like - summary.dislike).toString()
+        val like = detailsLike
+        val disLike = detailsDislike
+
+        if (averageScore.text.toString().toInt() <= summary.like - summary.dislike) {
+            like.setOnClickListener {
+                summary.like = summary.like + 1
+                if (!disLike.isEnabled) {
+                    summary.dislike = summary.dislike - 1
+                }
+                disLike.isEnabled = true
+                like.isEnabled = false
+                averageScore.text = (summary.like - summary.dislike).toString()
+                viewmodel.getLikes(Pair(articleMessage.id, 1))
+                intentBindWords.putExtra(DETAILS_LIKE, 1)
+            }
+        }
+
+        if (averageScore.text.toString().toInt() >= summary.like - summary.dislike) {
+            disLike.setOnClickListener {
+
+                summary.dislike = summary.dislike + 1
+                if (!like.isEnabled) {
+                    summary.like = summary.like - 1
+                }
+                disLike.isEnabled = false
+                like.isEnabled = true
+                averageScore.text = (summary.like - summary.dislike).toString()
+                viewmodel.getLikes(Pair(articleMessage.id, -1))
+                intentBindWords.putExtra(DETAILS_LIKE, -1)
+            }
+        }
+    }
+
+    private fun setComment(commentCount: Int) {
+        messageText.text = commentCount.toString()
+    }
+
+    private fun showArticle() {
+        val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
+        setLikeDislike(articleDetails)
+        setComment(articleDetails.summary.comment)
+
+        detailsImageTextTitle.text = articleDetails.header
+        articleDetails.content.forEach {
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, 10, 0, 0)
+
+            if (it.url.isNullOrEmpty()) {
+                val text = TextView(this)
+                text.text = it.text
+                text.layoutParams = params
+                mainContainer.addView(text)
+            } else {
+                val image = ImageView(this)
+                setImage(image, it.url)
+                image.layoutParams = params
+                image.adjustViewBounds = true
+                mainContainer.addView(image)
+            }
+        }
+        mainContainer.setHasTransientState(true)
+    }
+
+    private fun setImage(image: ImageView, url: String) {
+        Glide.with(this)
+            .load(url)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.drawable.ic_launcher_background).fitCenter()
+            )
+            .into(image)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val position = intent.getIntExtra(DETAILS_POSITION, 0)
+        intentBindWords.putExtra(DETAILS_POSITION, position)
+        setResult(Activity.RESULT_OK, intentBindWords)
+        onBackPressed()
+        return super.onSupportNavigateUp()
+    }
+
+}

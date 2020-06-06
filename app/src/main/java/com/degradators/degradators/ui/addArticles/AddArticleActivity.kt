@@ -24,12 +24,13 @@ import com.degradators.degradators.model.Block
 import com.degradators.degradators.ui.addArticles.components.TYPE_IMAGE
 import com.degradators.degradators.ui.addArticles.components.TYPE_TEXT
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
-import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
+import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_article.*
 import java.io.File
 import androidx.lifecycle.Observer
 import com.degradators.degradators.databinding.ActivityAddArticleBinding
+import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
