@@ -1,53 +1,27 @@
 package com.degradators.degradators.ui.account
 
-import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.Dialog
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import com.degradators.degradators.R
 import com.degradators.degradators.databinding.FragmentAccountBinding
-import com.degradators.degradators.databinding.FragmentSignUpBinding
-import com.degradators.degradators.ui.account.signup.SignUpViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_account.*
 import kotlinx.android.synthetic.main.fragment_account.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import org.json.JSONTokener
-import java.io.OutputStreamWriter
-import java.net.URL
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.net.ssl.HttpsURLConnection
 
 
 class AccountFragment : Fragment() {

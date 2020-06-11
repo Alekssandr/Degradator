@@ -1,4 +1,4 @@
-package com.szczecin.englishtamagotchi.app.di.scopes
+package com.degradators.degradators.di.scopes
 
 import javax.inject.Scope
 

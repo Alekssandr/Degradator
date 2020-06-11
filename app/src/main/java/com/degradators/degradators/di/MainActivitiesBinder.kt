@@ -3,7 +3,8 @@ package com.degradators.degradators.di
 import com.degradators.degradators.MainActivity
 import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.detail.DetailActivity
-import com.szczecin.englishtamagotchi.app.di.scopes.PerActivity
+import com.degradators.degradators.ui.login.LoginActivity
+import com.degradators.degradators.di.scopes.PerActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -24,5 +25,9 @@ abstract class MainActivitiesBinder {
     @ContributesAndroidInjector(modules = [MainActivitiesModule::class])
     @PerActivity
     abstract fun bindDetailActivity(): DetailActivity
+
+    @ContributesAndroidInjector(modules = [MainActivitiesModule::class])
+    @PerActivity
+    abstract fun bindLoginActivity(): LoginActivity
 
 }

@@ -1,4 +1,4 @@
-package com.degradators.degradators.model
+package com.degradators.degradators.model.article
 
 import java.io.Serializable
 
