@@ -1,5 +1,6 @@
 package com.degradators.degradators.ui.login
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,8 +9,26 @@ import com.degradators.degradators.data.LoginRepository
 import com.degradators.degradators.data.Result
 
 import com.degradators.degradators.R
+import com.degradators.degradators.common.preferencies.SettingsPreferences
+import com.degradators.degradators.di.common.rx.RxSchedulers
+import com.degradators.degradators.model.User
+import com.degradators.degradators.usecase.AuthUserUseCase
+import com.degradators.degradators.usecase.InsertNewUserUseCase
+import com.degradators.degradators.usecase.SocialSignInUseCase
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
+import javax.inject.Inject
 
-class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val authUserUseCase: AuthUserUseCase,
+    private val insertNewUserUseCase: InsertNewUserUseCase,
+    private val socialSignInUseCase: SocialSignInUseCase,
+    private val settingsPreferences: SettingsPreferences,
+    private val schedulers: RxSchedulers
+) : ViewModel() {
+
+    private val disposables = CompositeDisposable()
 
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
@@ -18,15 +37,48 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     val loginResult: LiveData<LoginResult> = _loginResult
 
     fun login(username: String, password: String) {
-        // can be launched in a separate asynchronous job
-        val result = loginRepository.login(username, password)
+        disposables += authUserUseCase
+            .execute(User(username, password))
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.mainThread())
+            .subscribeBy(onSuccess = {
+                settingsPreferences.token = it
+                Log.d("Test1112", "token: $it")
+                _loginResult.value =
+                    LoginResult(success = LoggedInUserView(displayName = "sign in success"))
+            }, onError = {
+                Log.e("Test1112", "error: ${it.message} ?: ")
+                _loginResult.value = LoginResult(error = R.string.login_failed)
+            })
+    }
 
-        if (result is Result.Success) {
-            _loginResult.value =
-                LoginResult(success = LoggedInUserView(displayName = result.data.displayName))
-        } else {
-            _loginResult.value = LoginResult(error = R.string.login_failed)
-        }
+    fun signUp(username: String, password: String){
+        disposables += insertNewUserUseCase
+            .execute(User(username, password))
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.mainThread())
+            .subscribeBy(onComplete = {
+                Log.d("Test1112", "yep!!!")
+                login(username, password)
+            }, onError = {
+                Log.e("Test1112", "error: ${it.message} ?: ")
+                _loginResult.value = LoginResult(error = R.string.signup_failed)
+            })
+    }
+
+    fun socialSignIn(token: String){
+        disposables += socialSignInUseCase
+            .execute(token)
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.mainThread())
+            .subscribeBy(onSuccess = {
+                Log.d("Test11123", "token: $it")
+                _loginResult.value =
+                    LoginResult(success = LoggedInUserView(displayName = "sign in success"))
+            }, onError = {
+                Log.e("Test11123", "error: ${it.message} ?: ")
+                _loginResult.value = LoginResult(error = R.string.login_failed)
+            })
     }
 
     fun loginDataChanged(username: String, password: String) {

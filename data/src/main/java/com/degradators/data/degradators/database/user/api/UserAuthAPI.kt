@@ -20,9 +20,8 @@ interface UserAuthAPI {
 
     @GET("/api/s/user")
     fun getUser(
-        @Header("Authorization") token: String,
-        @Header("Client-Id") clientId: String
-    ): Single<User>//check
+        @Header("M-Token") token: String
+    ): Single<User>
 
     @GET("/api/p/systemSettings")
     fun getSystemSettings(): Single<ClientId>

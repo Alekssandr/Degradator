@@ -12,8 +12,8 @@ class UserAuthDataRepository(
     private val api: UserAuthAPI
 ) : UserAuthRepository {
 
-    override fun getUser(token: String, clientId: String): Single<User> =
-        api.getUser(token, clientId)
+    override fun getUser(token: String): Single<User> =
+        api.getUser(token)
 
     override fun getSystemSettings(): Single<String> = api.getSystemSettings().map {
         it.clientId

@@ -8,5 +8,5 @@ interface UserAuthRepository {
     fun insertNewUser(user: User): Completable
     fun login(user: User): Single<String>
     fun getSystemSettings(): Single<String>
-    fun getUser(token: String, clientId: String): Single<User>
+    fun getUser(token: String): Single<User>
 }
