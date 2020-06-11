@@ -47,7 +47,7 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         setLikeDislike(articleMessageList[position], holder.itemView)
         setComment(articleMessageList[position], holder.itemView)
         setUser(articleMessageList[position], holder.itemView)
-        a.itemView.setOnClickListener {
+        a.itemView.message.setOnClickListener {
             val article = articleMessageList[position]
             val articleDetails =
                 ArticleMessage(

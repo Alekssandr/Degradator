@@ -26,7 +26,6 @@ class UserAuthDataRepository(
         }
     }
 
-
     override fun insertNewUser(user: User): Completable {
         val userNew = JsonObject()
         userNew.addProperty("login", user.mail)

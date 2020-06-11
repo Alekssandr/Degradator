@@ -98,7 +98,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/ic_thumb_up_24px"
+                android:background="@drawable/ic_upvote_4dp"
                 android:padding="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -116,7 +116,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="5"
-                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -129,7 +128,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/ic_thumb_down_24px"
+                android:background="@drawable/ic_downvote_dp"
                 app:layout_constraintStart_toEndOf="@+id/averagelikeText"
                 app:layout_constraintTop_toBottomOf="@+id/viewBottom" />
 
@@ -141,7 +140,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:text="5"
-                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -154,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/ic_speaker_notes_24px"
+                android:background="@drawable/ic_chat_bubble_outline_black_24dp"
                 app:layout_constraintStart_toEndOf="@+id/messageText"
                 app:layout_constraintTop_toBottomOf="@+id/viewBottom" />
 
@@ -174,7 +172,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:text="Dima"
                 app:layout_constraintBottom_toBottomOf="parent"
