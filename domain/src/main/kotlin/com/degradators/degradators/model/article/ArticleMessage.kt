@@ -1,4 +1,4 @@
-package com.degradators.degradators.model
+package com.degradators.degradators.model.article
 
 import java.io.Serializable
 
@@ -10,5 +10,7 @@ data class ArticleMessage(
     var summary: Summary,
     var userId: String = "",
     var header: String = "",
+    var userName: String = "",
+    var userPhoto: String = "",
     var content: List<ArticleBlock> = emptyList()
 ) : Serializable

@@ -1,4 +1,4 @@
-package com.degradators.data.degradators.database.user.model
+package com.degradators.data.degradators.database.user.model.article
 
 data class ArticleBlockEntity(
     var url: String = "",

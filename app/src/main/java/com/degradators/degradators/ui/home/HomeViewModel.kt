@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
-import com.degradators.degradators.model.ArticleMessage
-import com.degradators.degradators.model.User
-import com.degradators.degradators.usecase.AuthUserUseCase
+import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.usecase.SystemSettingsUseCase
 import com.degradators.degradators.usecase.articles.ArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
@@ -14,8 +12,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import java.util.*
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(

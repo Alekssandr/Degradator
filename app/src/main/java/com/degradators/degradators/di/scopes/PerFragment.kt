@@ -1,4 +1,4 @@
-package com.intive.kobold.app.di.scopes
+package com.degradators.degradators.di.scopes
 
 import javax.inject.Scope
 

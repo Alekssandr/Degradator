@@ -17,10 +17,13 @@ import com.degradators.degradators.common.adapter.DETAILS_LIKE
 import com.degradators.degradators.common.adapter.DETAILS_POSITION
 import com.degradators.degradators.databinding.ActivityDetailBinding
 import com.degradators.degradators.di.common.ViewModelFactory
-import com.degradators.degradators.model.ArticleMessage
+import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
+import com.google.android.material.shape.CornerFamily
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_detail.*
+import kotlinx.android.synthetic.main.activity_detail.messageText
+import kotlinx.android.synthetic.main.article_item_image_text.*
 import javax.inject.Inject
 
 
@@ -67,7 +70,7 @@ class DetailActivity : AppCompatActivity() {
                 disLike.isEnabled = true
                 like.isEnabled = false
                 averageScore.text = (summary.like - summary.dislike).toString()
-                viewmodel.getLikes(Pair(articleMessage.id, 1))
+                viewmodel.putLikes(Pair(articleMessage.id, 1))
                 intentBindWords.putExtra(DETAILS_LIKE, 1)
             }
         }
@@ -82,7 +85,7 @@ class DetailActivity : AppCompatActivity() {
                 disLike.isEnabled = false
                 like.isEnabled = true
                 averageScore.text = (summary.like - summary.dislike).toString()
-                viewmodel.getLikes(Pair(articleMessage.id, -1))
+                viewmodel.putLikes(Pair(articleMessage.id, -1))
                 intentBindWords.putExtra(DETAILS_LIKE, -1)
             }
         }
@@ -95,8 +98,9 @@ class DetailActivity : AppCompatActivity() {
     private fun showArticle() {
         val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
         setLikeDislike(articleDetails)
+        viewmodel.getComment(articleDetails.id)
         setComment(articleDetails.summary.comment)
-
+        setUser(articleDetails)
         detailsImageTextTitle.text = articleDetails.header
         articleDetails.content.forEach {
             val params = LinearLayout.LayoutParams(
@@ -119,6 +123,25 @@ class DetailActivity : AppCompatActivity() {
             }
         }
         mainContainer.setHasTransientState(true)
+    }
+
+    private fun setUser(articleMessage: ArticleMessage) {
+        Glide.with(this)
+            .load(articleMessage.userPhoto)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.mipmap.ic_launcher_round).fitCenter()
+            )
+            .into(detailsUserPhoto)
+        detailsUserPhoto.shapeAppearanceModel =
+            detailsUserPhoto.shapeAppearanceModel
+                .toBuilder()
+                .setAllCorners(
+                    CornerFamily.ROUNDED,
+                    detailsUserPhoto.resources.getDimension(R.dimen.image_corner_radius)
+                )
+                .build()
+        detailsUserName.text = articleMessage.userName
     }
 
     private fun setImage(image: ImageView, url: String) {

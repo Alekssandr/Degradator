@@ -1,14 +1,14 @@
 package com.degradators.data.degradators.database.user.api
 
-import com.degradators.data.degradators.database.user.model.ImageEntity
-import com.degradators.degradators.model.Articles
+import com.degradators.data.degradators.database.user.model.article.ImageEntity
+import com.degradators.degradators.model.article.Articles
 import com.degradators.degradators.model.NewPost
-import com.google.gson.JsonObject
+import com.degradators.degradators.model.comment.Comments
 import io.reactivex.Completable
 import io.reactivex.Single
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.*
 
 
@@ -40,5 +40,11 @@ interface ArticlesAPI {
         @Header("Client-Id") clientId: String,
         @Body newPost: NewPost
     ): Completable
+
+    @GET("api/p/comment/{id}")
+    fun getComment(
+        @Header("Client-Id") clientId: String,
+        @Path("id") productId: String
+    ): Single<Comments>
 
 }
