@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.degradators.degradators.R
@@ -18,12 +19,12 @@ import com.degradators.degradators.common.adapter.DETAILS_POSITION
 import com.degradators.degradators.databinding.ActivityDetailBinding
 import com.degradators.degradators.di.common.ViewModelFactory
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.detail.adapter.CommentsAdapter
 import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
 import com.google.android.material.shape.CornerFamily
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.activity_detail.messageText
-import kotlinx.android.synthetic.main.article_item_image_text.*
 import javax.inject.Inject
 
 
@@ -35,6 +36,8 @@ class DetailActivity : AppCompatActivity() {
     val viewmodel: ArticleDetailsViewModel by viewModels { factory }
 
     private val intentBindWords = Intent()
+
+    private lateinit var commentsAdapter: CommentsAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +53,14 @@ class DetailActivity : AppCompatActivity() {
 
         showArticle()
 
+        initRecycler(binding)
+    }
+
+    private fun initRecycler(binding: ActivityDetailBinding) {
+        binding.commentsBlock.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            this.adapter = CommentsAdapter()
+        }
     }
 
     private fun setLikeDislike(

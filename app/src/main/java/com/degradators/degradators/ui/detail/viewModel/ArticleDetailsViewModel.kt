@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
+import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.usecase.articles.LikeUseCase
 import com.degradators.degradators.usecase.comment.CommentUseCase
 import io.reactivex.disposables.CompositeDisposable
@@ -21,6 +22,8 @@ class ArticleDetailsViewModel @Inject constructor(
 
     private val disposables = CompositeDisposable()
     val closeScreen = MutableLiveData<Unit>()
+    val commentList: MutableLiveData<List<CommentList>> = MutableLiveData()
+
 
     fun putLikes(it: Pair<String, Int>) {
         disposables +=
@@ -40,7 +43,7 @@ class ArticleDetailsViewModel @Inject constructor(
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onSuccess = {
-                    val a = it
+                    commentList.value = it.messageList
                     Log.d("Test111", "onComplete")
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")
