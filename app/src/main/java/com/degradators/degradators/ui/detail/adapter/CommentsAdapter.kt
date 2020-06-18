@@ -1,13 +1,22 @@
 package com.degradators.degradators.ui.detail.adapter
 
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.degradators.degradators.R
+import com.degradators.degradators.model.article.Summary
+import com.degradators.degradators.model.comment.CommentBlock
 import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.model.comment.Expanded
+import com.degradators.degradators.ui.utils.dp
+import com.degradators.degradators.ui.utils.getScreenWidth
+import com.google.android.material.shape.CornerFamily
+import com.shaishavgandhi.loginbuttons.Utils
 import kotlinx.android.synthetic.main.comment.view.*
 
 class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHolder>() {
@@ -41,6 +50,8 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHold
                 )
         }
 
+        setUser(holder, commentList[position])
+
         holder.itemView.toggle_btn.setOnClickListener {
             if (!actionLock) {
                 actionLock = true
@@ -62,6 +73,27 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHold
                 openWriteBlock = true
                 holder.itemView.addComment.visibility = View.VISIBLE
             }
+        }
+
+        holder.itemView.btnAddComment.setOnClickListener {
+            val shortContent = listOf(CommentBlock(holder.itemView.answerText.text.toString(), "text"))
+            val comment = CommentList(
+                id = holder.itemView.btnAddComment.id.hashCode().toString(),
+                ancestorId = commentList[position].id,
+                parentPostId = commentList[position].parentPostId,
+                content = shortContent,
+                shortContent = shortContent,
+                summary = Summary(),
+                depth = commentList[position].depth+1,
+                isExpandedItem = Expanded.Default
+            )
+            commentList.add(position+1, comment)
+            commentList[position].isExpandedItem = Expanded.Open
+            commentList[position].isEmptyComments = false
+
+            val index = oldCommentList.indexOf(commentList[position])
+            oldCommentList.add(index+1, commentList[position+1])
+            notifyDataSetChanged()
         }
     }
 
@@ -102,8 +134,29 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHold
 
         notifyDataSetChanged()
 
-
         actionLock = false
+    }
+
+    private fun setUser(
+        holder: CommentItemViewHolder,
+        commentList: CommentList
+    ) {
+        Glide.with(holder.itemView.context)
+            .load(commentList.userPhoto)
+            .apply(
+                RequestOptions()
+                    .placeholder(R.mipmap.ic_launcher_round).fitCenter()
+            )
+            .into(holder.itemView.userPhoto)
+        holder.itemView.userPhoto.shapeAppearanceModel =
+            holder.itemView.userPhoto.shapeAppearanceModel
+                .toBuilder()
+                .setAllCorners(
+                    CornerFamily.ROUNDED,
+                    holder.itemView.userPhoto.resources.getDimension(R.dimen.image_corner_radius)
+                )
+                .build()
+        holder.itemView.userName.text = commentList.userName
     }
 
     override fun getItemCount(): Int {
@@ -122,9 +175,11 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHold
         fun bind(
             commentList: CommentList
         ) {
+
+           //480 / 20 = 22
             if (commentList.depth > 0) {
                 val param = itemView.itemComment.layoutParams as ViewGroup.MarginLayoutParams
-                param.setMargins(commentList.depth * 20, 0, 0, 0)
+                param.marginStart = ((getScreenWidth() / 20) * commentList.depth)//500 / 8 = 50/ 55/ 62.5
                 itemView.itemComment.layoutParams = param
             }
             if (commentList.isEmptyComments) {

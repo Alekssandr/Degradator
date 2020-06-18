@@ -211,8 +211,7 @@
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toBottomOf="parent"
                                 binding:commentsList="@{articleDetailsViewModel.commentList}"
-                                tools:listitem="@layout/comment"
-                                android:background="@color/colorPrimaryDark"/>
+                                tools:listitem="@layout/comment"/>
 
                         </androidx.cardview.widget.CardView>
                     </androidx.constraintlayout.widget.ConstraintLayout>
