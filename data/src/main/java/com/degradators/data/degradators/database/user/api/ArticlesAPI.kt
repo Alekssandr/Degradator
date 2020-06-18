@@ -1,8 +1,10 @@
 package com.degradators.data.degradators.database.user.api
 
 import com.degradators.data.degradators.database.user.model.article.ImageEntity
+import com.degradators.degradators.model.NewComment
 import com.degradators.degradators.model.article.Articles
 import com.degradators.degradators.model.NewPost
+import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.model.comment.Comments
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -39,6 +41,12 @@ interface ArticlesAPI {
     fun addArticle(
         @Header("Client-Id") clientId: String,
         @Body newPost: NewPost
+    ): Completable
+
+    @PUT("/api/p/message")
+    fun addComment(
+        @Header("Client-Id") clientId: String,
+        @Body newComment: NewComment
     ): Completable
 
     @GET("api/p/comment/{id}")

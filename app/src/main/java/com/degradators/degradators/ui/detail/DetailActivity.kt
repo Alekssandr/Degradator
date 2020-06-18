@@ -59,7 +59,14 @@ class DetailActivity : AppCompatActivity() {
     private fun initRecycler(binding: ActivityDetailBinding) {
         binding.commentsBlock.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            this.adapter = CommentsAdapter()
+            this.adapter = CommentsAdapter{
+                if(it.second == 0){
+                    viewmodel.putComment(it.first)
+                    setComment(Integer.valueOf(messageText.text.toString())+1)
+                } else {
+                    //TODO set like, dislike
+                }
+            }
         }
     }
 

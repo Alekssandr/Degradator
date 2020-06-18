@@ -1,6 +1,5 @@
 package com.degradators.degradators.ui.detail.adapter
 
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +12,12 @@ import com.degradators.degradators.model.article.Summary
 import com.degradators.degradators.model.comment.CommentBlock
 import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.model.comment.Expanded
-import com.degradators.degradators.ui.utils.dp
 import com.degradators.degradators.ui.utils.getScreenWidth
 import com.google.android.material.shape.CornerFamily
-import com.shaishavgandhi.loginbuttons.Utils
 import kotlinx.android.synthetic.main.comment.view.*
 
-class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHolder>() {
+class CommentsAdapter(val listener: (Pair<CommentList, Int>) -> Unit) :
+    RecyclerView.Adapter<CommentsAdapter.CommentItemViewHolder>() {
 
     private var actionLock: Boolean = false
     private var openWriteBlock: Boolean = false
@@ -94,7 +92,18 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHold
             val index = oldCommentList.indexOf(commentList[position])
             oldCommentList.add(index+1, commentList[position+1])
             notifyDataSetChanged()
+            listener(Pair(comment, 0))
         }
+
+        setLikeOrDislike(holder)
+    }
+
+    private fun setLikeOrDislike(holder: CommentItemViewHolder) {
+        holder.itemView.like.setOnClickListener{
+            //TODO add like dislike maybe from detail or main screen logic
+//            holder.itemView.averagelikeText
+        }
+
     }
 
     private fun collapse(position: Int) {
@@ -175,11 +184,9 @@ class CommentsAdapter : RecyclerView.Adapter<CommentsAdapter.CommentItemViewHold
         fun bind(
             commentList: CommentList
         ) {
-
-           //480 / 20 = 22
             if (commentList.depth > 0) {
                 val param = itemView.itemComment.layoutParams as ViewGroup.MarginLayoutParams
-                param.marginStart = ((getScreenWidth() / 20) * commentList.depth)//500 / 8 = 50/ 55/ 62.5
+                param.marginStart = ((getScreenWidth() / 20) * commentList.depth)
                 itemView.itemComment.layoutParams = param
             }
             if (commentList.isEmptyComments) {

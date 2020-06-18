@@ -12,6 +12,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/main"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/rounded_corners"
@@ -48,22 +50,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:text="insssss"
             android:textSize="12sp"
-            app:layout_constraintEnd_toStartOf="@+id/toggle_btn"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/userPhoto" />
 
-        <ImageButton
-            android:id="@+id/toggle_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="8dp"
-            android:background="@drawable/ic_remove_circle_outline_black_24dp"
-            app:layout_constraintBottom_toBottomOf="@+id/comment"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -77,17 +72,26 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/comment" />-->
 
+    <ImageButton
+        android:id="@+id/toggle_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/ic_remove_circle_outline_black_24dp"
+        app:layout_constraintStart_toStartOf="@+id/main"
+        app:layout_constraintTop_toBottomOf="@+id/main" />
+
     <TextView
         android:id="@+id/answer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="24dp"
         android:text="Reply"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/main"
+        app:layout_constraintEnd_toStartOf="@+id/like"
         app:layout_constraintTop_toBottomOf="@+id/main" />
 
     <ImageButton
@@ -117,7 +121,6 @@
         android:id="@+id/dislike"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/ic_downvote_dp"
         app:layout_constraintBottom_toBottomOf="@+id/answer"

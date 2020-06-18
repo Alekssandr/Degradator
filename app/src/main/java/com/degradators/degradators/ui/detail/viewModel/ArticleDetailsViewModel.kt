@@ -5,8 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
+import com.degradators.degradators.model.Block
+import com.degradators.degradators.model.NewComment
 import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.usecase.articles.LikeUseCase
+import com.degradators.degradators.usecase.comment.AddCommentUseCase
 import com.degradators.degradators.usecase.comment.CommentUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -17,6 +20,7 @@ class ArticleDetailsViewModel @Inject constructor(
     private val settingsPreferences: SettingsPreferences,
     private val likeUseCase: LikeUseCase,
     private val commentUseCase: CommentUseCase,
+    private val addCommentUseCase: AddCommentUseCase,
     private val schedulers: RxSchedulers
 ) : ViewModel() {
 
@@ -44,6 +48,20 @@ class ArticleDetailsViewModel @Inject constructor(
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onSuccess = {
                     commentList.value = it.messageList
+                    Log.d("Test111", "onComplete")
+                }, onError = {
+                    Log.e("Test111", "error: ${it.message} ?: ")
+                })
+    }
+
+    fun putComment(commentList: CommentList) {
+        val block = Block(text = commentList.content[0].text, type = "text")
+        disposables +=
+            addCommentUseCase.execute(settingsPreferences.clientId,
+                NewComment(commentList.ancestorId, commentList.parentPostId, listOf(block)))
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.mainThread())
+                .subscribeBy(onComplete = {
                     Log.d("Test111", "onComplete")
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")

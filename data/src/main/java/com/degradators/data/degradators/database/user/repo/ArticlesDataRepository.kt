@@ -1,8 +1,10 @@
 package com.degradators.data.degradators.database.user.repo
 
 import com.degradators.data.degradators.database.user.api.ArticlesAPI
+import com.degradators.degradators.model.NewComment
 import com.degradators.degradators.model.article.Articles
 import com.degradators.degradators.model.NewPost
+import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.model.comment.Comments
 import com.degradators.degradators.repo.ArticlesRepository
 import io.reactivex.Completable
@@ -32,6 +34,8 @@ class ArticlesDataRepository(
         api.getLike(clientId, articleId, like)
 
     override fun addArticle(clientId: String, newPost: NewPost): Completable =  api.addArticle(clientId, newPost)
+
+    override fun addComment(clientId: String, newComment: NewComment): Completable =  api.addComment(clientId, newComment)
 
     override fun getComment(clientId: String, id: String): Single<Comments> =
         api.getComment(clientId, id)
