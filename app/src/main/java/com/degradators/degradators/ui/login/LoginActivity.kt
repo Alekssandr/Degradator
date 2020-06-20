@@ -21,6 +21,7 @@ import androidx.activity.viewModels
 
 import com.degradators.degradators.R
 import com.degradators.degradators.di.common.ViewModelFactory
+import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -120,8 +121,8 @@ class LoginActivity : AppCompatActivity() {
             }
 
             signUp.setOnClickListener {
-                loading.visibility = View.VISIBLE
-                loginViewModel.signUp(username.text.toString(), password.text.toString())
+                val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
+                startActivity(intent)
             }
         }
 

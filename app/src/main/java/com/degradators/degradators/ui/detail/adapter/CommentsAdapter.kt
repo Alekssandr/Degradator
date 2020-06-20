@@ -38,13 +38,13 @@ class CommentsAdapter(val listener: (Pair<CommentList, Int>) -> Unit) :
             holder.itemView.toggle_btn.background =
                 ContextCompat.getDrawable(
                     holder.itemView.toggle_btn.context,
-                    R.drawable.ic_remove_circle_outline_black_24dp
+                    R.drawable.ic_remove_circle_outline_white_18dp
                 )
         } else if (commentList[position].isExpandedItem == Expanded.Close) {
             holder.itemView.toggle_btn.background =
                 ContextCompat.getDrawable(
                     holder.itemView.toggle_btn.context,
-                    R.drawable.ic_control_point_black_24dp
+                    R.drawable.ic_add_circle_outline_white_18dp
                 )
         }
 
@@ -91,6 +91,7 @@ class CommentsAdapter(val listener: (Pair<CommentList, Int>) -> Unit) :
 
             val index = oldCommentList.indexOf(commentList[position])
             oldCommentList.add(index+1, commentList[position+1])
+            openWriteBlock = false
             notifyDataSetChanged()
             listener(Pair(comment, 0))
         }

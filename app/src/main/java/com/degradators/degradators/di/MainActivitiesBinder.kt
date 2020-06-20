@@ -5,6 +5,7 @@ import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.detail.DetailActivity
 import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.di.scopes.PerActivity
+import com.degradators.degradators.ui.login.RegisterActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -29,5 +30,10 @@ abstract class MainActivitiesBinder {
     @ContributesAndroidInjector(modules = [MainActivitiesModule::class])
     @PerActivity
     abstract fun bindLoginActivity(): LoginActivity
+
+    @ContributesAndroidInjector(modules = [MainActivitiesModule::class])
+    @PerActivity
+    abstract fun bindRegisterActivity(): RegisterActivity
+
 
 }

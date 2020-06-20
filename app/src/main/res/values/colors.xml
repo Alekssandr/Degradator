@@ -6,4 +6,5 @@
     <color name="githubGrey">#333333</color>
     <color name="up_divider">#d8d8d8</color>
     <color name="comment">#EDEDED</color>
+    <color name="transparent">#00000000</color>
 </resources>
