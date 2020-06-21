@@ -1,6 +1,7 @@
 package com.degradators.degradators.ui.detail.viewModel
 
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.degradators.degradators.common.preferencies.SettingsPreferences
@@ -27,7 +28,9 @@ class ArticleDetailsViewModel @Inject constructor(
     private val disposables = CompositeDisposable()
     val closeScreen = MutableLiveData<Unit>()
     val commentList: MutableLiveData<List<CommentList>> = MutableLiveData()
-
+    val addCommentVisibility = MutableLiveData<Int>().apply {
+        value = View.GONE
+    }
 
     fun putLikes(it: Pair<String, Int>) {
         disposables +=
@@ -47,6 +50,11 @@ class ArticleDetailsViewModel @Inject constructor(
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onSuccess = {
+                    if(it.messageList.isEmpty()){
+                        addCommentVisibility.value = View.VISIBLE
+                    } else{
+                        addCommentVisibility.value = View.GONE
+                    }
                     commentList.value = it.messageList
                     Log.d("Test111", "onComplete")
                 }, onError = {

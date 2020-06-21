@@ -19,12 +19,21 @@ import com.degradators.degradators.common.adapter.DETAILS_POSITION
 import com.degradators.degradators.databinding.ActivityDetailBinding
 import com.degradators.degradators.di.common.ViewModelFactory
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.model.article.Summary
+import com.degradators.degradators.model.comment.CommentBlock
+import com.degradators.degradators.model.comment.CommentList
+import com.degradators.degradators.model.comment.Expanded
 import com.degradators.degradators.ui.detail.adapter.CommentsAdapter
 import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
 import com.google.android.material.shape.CornerFamily
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.activity_detail.messageText
+import kotlinx.android.synthetic.main.comment.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -54,6 +63,28 @@ class DetailActivity : AppCompatActivity() {
         showArticle()
 
         initRecycler(binding)
+
+        btnAddComment.setOnClickListener {
+            val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
+            val shortContent = listOf(CommentBlock(answerText.text.toString(), "text"))
+
+            val comment = CommentList(
+                id = btnAddComment.id.hashCode().toString(),
+                ancestorId = articleDetails.id,
+                parentPostId = articleDetails.id,
+                content = shortContent,
+                shortContent = shortContent,
+                summary = Summary(),
+                isExpandedItem = Expanded.Default
+            )
+
+            viewmodel.putComment(comment) // add closure, add request update comments
+            setComment(Integer.valueOf(messageText.text.toString())+1)
+            GlobalScope.launch(Dispatchers.Main) {
+                delay(1000)
+                viewmodel.getComment(articleDetails.id)
+            }
+        }
     }
 
     private fun initRecycler(binding: ActivityDetailBinding) {

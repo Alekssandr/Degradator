@@ -132,7 +132,7 @@ class CommentsAdapter(val listener: (Pair<CommentList, Int>) -> Unit) :
          * add element just below of clicked row
          */
         val indexStart = oldCommentList.indexOf(row)
-        val indexFinish = oldCommentList.indexOf(commentList[position + 1])
+        val indexFinish =  if(commentList.size <= position + 1) oldCommentList.size else oldCommentList.indexOf(commentList[position + 1])
         oldCommentList.forEachIndexed { index, commentListItem ->
             if (index in (indexStart + 1) until indexFinish) {
                 if (commentListItem.isExpandedItem == Expanded.Close) {
