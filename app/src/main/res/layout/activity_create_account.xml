@@ -25,23 +25,8 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingBottom="@dimen/activity_vertical_margin">
 
-        <TextView
-            android:id="@+id/signUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:clickable="true"
-            android:padding="16dp"
-            android:textSize="16sp"
-            android:text="No account yet? Create one"
-            android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:focusable="true" />
-
         <EditText
-            android:id="@+id/username"
+            android:id="@+id/username_create_account"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -61,7 +46,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/password"
+            android:id="@+id/password_create_account"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -80,10 +65,10 @@
             android:textColorHint="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/username" />
+            app:layout_constraintTop_toBottomOf="@+id/username_create_account" />
 
         <Button
-            android:id="@+id/login"
+            android:id="@+id/create_account"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
@@ -94,31 +79,11 @@
             android:paddingTop="18dp"
             android:paddingEnd="35dp"
             android:paddingBottom="18dp"
-            android:text="@string/action_sign_in"
+            android:text="@string/title_activity_create_account"
             android:textColor="@android:color/white"
-            app:layout_constraintEnd_toEndOf="@+id/password"
-            app:layout_constraintStart_toStartOf="@+id/password"
-            app:layout_constraintTop_toBottomOf="@+id/password" />
-
-        <Button
-            android:id="@+id/sign_in_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_marginTop="8dp"
-            android:paddingStart="35dp"
-            android:paddingTop="18dp"
-            android:paddingEnd="35dp"
-            android:paddingBottom="18dp"
-            android:background="@drawable/rounded_corners"
-            android:drawableStart="@drawable/google_icon"
-            android:drawablePadding="8dp"
-            android:text="Sign in with Google"
-            android:textColor="@android:color/black"
-            android:layout_gravity="start"
-            app:layout_constraintEnd_toEndOf="@+id/login"
-            app:layout_constraintStart_toStartOf="@+id/login"
-            app:layout_constraintTop_toBottomOf="@+id/login" />
+            app:layout_constraintEnd_toEndOf="@+id/password_create_account"
+            app:layout_constraintStart_toStartOf="@+id/password_create_account"
+            app:layout_constraintTop_toBottomOf="@+id/password_create_account" />
 
         <ProgressBar
             android:id="@+id/loading"
@@ -131,8 +96,8 @@
             android:layout_marginBottom="64dp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/password"
-            app:layout_constraintStart_toStartOf="@+id/password"
+            app:layout_constraintEnd_toEndOf="@+id/password_create_account"
+            app:layout_constraintStart_toStartOf="@+id/password_create_account"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.3" />
     </androidx.constraintlayout.widget.ConstraintLayout>

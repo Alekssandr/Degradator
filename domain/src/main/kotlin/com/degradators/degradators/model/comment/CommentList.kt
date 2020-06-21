@@ -17,5 +17,15 @@ data class CommentList(
     var header: String = "",
     var content: List<CommentBlock> = emptyList(),
     var shortContent: List<CommentBlock> = emptyList(),
-    var comments: List<CommentList> = emptyList()
+    var comments: List<CommentList> = emptyList(),
+    var depth: Int = 0,
+    var isExpandedItem: Expanded,
+    var isEmptyComments: Boolean = true
 ) : Serializable
+
+
+sealed class Expanded {
+    object Default : Expanded()
+    object Open : Expanded()
+    object Close : Expanded()
+}
