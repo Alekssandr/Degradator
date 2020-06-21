@@ -89,7 +89,7 @@
                             android:id="@+id/detailsAverageLike"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="8dp"
                             android:text="5"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -101,7 +101,7 @@
                             android:id="@+id/detailsDislike"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="8dp"
                             android:background="@drawable/ic_downvote_dp"
                             app:layout_constraintBottom_toBottomOf="@+id/detailsAverageLike"
                             app:layout_constraintStart_toEndOf="@+id/detailsAverageLike"
@@ -112,7 +112,7 @@
                             android:id="@+id/messageText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="30dp"
+                            android:layout_marginStart="24dp"
                             android:text="5"
                             android:textSize="18sp"
                             android:textStyle="bold"
@@ -124,7 +124,7 @@
                             android:id="@+id/message"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="8dp"
                             android:background="@drawable/ic_chat_bubble_outline_black_24dp"
                             app:layout_constraintBottom_toBottomOf="@+id/messageText"
                             app:layout_constraintStart_toEndOf="@+id/messageText"
@@ -248,8 +248,10 @@
             android:background="@drawable/blue_backgorund_opposite"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent">
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintVertical_bias="1.0">
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
