@@ -32,9 +32,6 @@ import com.google.android.gms.tasks.Task
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_login.sign_in_button
-import kotlinx.android.synthetic.main.fragment_account.*
-import kotlinx.android.synthetic.main.fragment_account.view.*
-import kotlinx.android.synthetic.main.fragment_account.view.signIn
 import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity() {

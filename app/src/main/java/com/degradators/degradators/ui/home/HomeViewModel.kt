@@ -22,10 +22,6 @@ class HomeViewModel @Inject constructor(
     private val schedulers: RxSchedulers
 ) : ViewModel(), LifecycleObserver {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-
     private val _index = MutableLiveData<Int>()
 
     val text: MutableLiveData<String> = MutableLiveData<String>()

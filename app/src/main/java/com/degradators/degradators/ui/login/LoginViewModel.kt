@@ -5,9 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import com.degradators.degradators.data.LoginRepository
-import com.degradators.degradators.data.Result
-
 import com.degradators.degradators.R
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers

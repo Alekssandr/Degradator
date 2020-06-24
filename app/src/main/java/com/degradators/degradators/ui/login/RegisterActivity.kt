@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
@@ -19,16 +17,8 @@ import androidx.lifecycle.Observer
 import com.degradators.degradators.MainActivity
 import com.degradators.degradators.R
 import com.degradators.degradators.di.common.ViewModelFactory
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_create_account.*
-import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.fragment_account.view.*
 import javax.inject.Inject
 
 class RegisterActivity : AppCompatActivity() {
