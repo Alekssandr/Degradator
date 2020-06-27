@@ -61,7 +61,7 @@ class ArticleDetailsViewModel @Inject constructor(
                 })
     }
 
-    fun putComment(commentList: CommentList) {
+    fun putComment(commentList: CommentList, getComment: () -> Unit) {
         val block = Block(text = commentList.content[0].text, type = "text")
         disposables +=
             addCommentUseCase.execute(settingsPreferences.clientId,
@@ -69,6 +69,7 @@ class ArticleDetailsViewModel @Inject constructor(
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onComplete = {
+                    getComment.invoke()
                     Log.d("Test111", "onComplete")
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")

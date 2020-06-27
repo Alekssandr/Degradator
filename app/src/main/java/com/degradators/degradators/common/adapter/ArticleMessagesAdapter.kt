@@ -7,6 +7,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -21,6 +23,7 @@ import kotlinx.android.synthetic.main.article_item_image_text.view.*
 const val DETAILS_EXTRA = "details"
 const val DETAILS_POSITION = "details_position"
 const val DETAILS_LIKE = "details_like"
+const val COMMENTS = "comments"
 
 @BindingAdapter("articleMessageList")
 fun RecyclerView.bindCommonWords(items: List<ArticleMessage>?) {
@@ -30,8 +33,9 @@ fun RecyclerView.bindCommonWords(items: List<ArticleMessage>?) {
     }
 }
 
+//TODO articleMessageList should + new one
 class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    ListAdapter<List<ArticleMessage>, RecyclerView.ViewHolder>(ArticleItemDiffCallback()) {
 
     private var articleMessageList: List<ArticleMessage> = emptyList()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
@@ -97,11 +101,14 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         itemView.messageText.text = articleMessage.summary.comment.toString()
     }
 
-    fun updateItem(pair: Pair<Int, Int>) {
+    fun updateItem(pair: Triple<Int, Int, Int>) {
         if (pair.second == 1) {
             articleMessageList[pair.first].summary.like += 1
         } else if (pair.second == -1) {
             articleMessageList[pair.first].summary.dislike -= 1
+        }
+        if(pair.third != -1){
+            articleMessageList[pair.first].summary.comment = pair.third
         }
         notifyItemChanged(pair.first)
     }
@@ -146,10 +153,15 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
     }
 
     fun update(items: List<ArticleMessage>) {
-        this.articleMessageList = items
-        notifyDataSetChanged()
+//        if(articleMessageList.isNotEmpty()) {
+//            items.forEachIndexed { index, _ ->
+//                notifyItemInserted(articleMessageList.size+index)
+//            }
+//        } else {
+            this.articleMessageList = items
+            notifyDataSetChanged()
+//        }
     }
-
 
     class ImageViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
@@ -183,4 +195,13 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
             image.loadImage(url, R.drawable.ic_launcher_background)
         }
     }
+
+    class ArticleItemDiffCallback : DiffUtil.ItemCallback<List<ArticleMessage>>() {
+        override fun areItemsTheSame(oldItem: List<ArticleMessage>, newItem: List<ArticleMessage>): Boolean =
+            oldItem == newItem
+
+        override fun areContentsTheSame(oldItem: List<ArticleMessage>, newItem: List<ArticleMessage>): Boolean =
+            oldItem == newItem
+    }
+
 }

@@ -64,9 +64,9 @@ class HomeViewModel @Inject constructor(
         }
 
 
-    private fun getArticles() {
+    fun getArticles(skip: Long = 0) {
         disposables += articlesUseCase
-            .execute(settingsPreferences.clientId, getTabName(), 0)
+            .execute(settingsPreferences.clientId, getTabName(), skip)//20
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {

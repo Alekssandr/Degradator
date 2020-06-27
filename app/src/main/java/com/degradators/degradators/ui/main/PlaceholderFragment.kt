@@ -1,16 +1,15 @@
 package com.degradators.degradators.ui.main
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.common.adapter.*
 import com.degradators.degradators.common.lifecircle.observeLifecycleIn
@@ -31,6 +30,9 @@ class PlaceholderFragment : DaggerFragment() {
     lateinit var homeViewModel: HomeViewModel
     private lateinit var bindArticleMessagesAdapter: ArticleMessagesAdapter
     private val SECOND_ACTIVITY_REQUEST_CODE = 0
+    private var isLoading: Boolean = false
+    lateinit var layoutManagerRW : LinearLayoutManager
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +60,8 @@ class PlaceholderFragment : DaggerFragment() {
                 data?.let {
                     val position = it.getIntExtra(DETAILS_POSITION, 0)
                     val like = it.getIntExtra(DETAILS_LIKE, 0)
-                    bindArticleMessagesAdapter.updateItem(Pair(position, like))
+                    val commentsCount = it.getIntExtra(COMMENTS, -1)
+                    bindArticleMessagesAdapter.updateItem(Triple(position, like, commentsCount))
                 }
             }
         }
@@ -72,7 +75,8 @@ class PlaceholderFragment : DaggerFragment() {
 
     private fun initRecycler() {
         recycler_articles.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManagerRW = LinearLayoutManager(context)
+            layoutManager = layoutManagerRW
             bindArticleMessagesAdapter = ArticleMessagesAdapter {
                 startActivityForResult(Intent(activity, DetailActivity::class.java).apply {
                     putExtra(DETAILS_EXTRA, it.first)
@@ -81,8 +85,29 @@ class PlaceholderFragment : DaggerFragment() {
             }
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
+            addScrollerListener()
         }
     }
+
+    private fun addScrollerListener()
+    {
+        recycler_articles.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
+            {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!isLoading)
+                {
+                    if (layoutManagerRW.findLastCompletelyVisibleItemPosition() == layoutManagerRW.itemCount - 1)
+                    {
+                        homeViewModel.getArticles(layoutManagerRW.itemCount.toLong())
+                        isLoading = true
+                    }
+                }
+            }
+        })
+    }
+
 
     companion object {
         /**

@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.degradators.degradators.R
+import com.degradators.degradators.common.adapter.COMMENTS
 import com.degradators.degradators.common.adapter.DETAILS_EXTRA
 import com.degradators.degradators.common.adapter.DETAILS_LIKE
 import com.degradators.degradators.common.adapter.DETAILS_POSITION
@@ -25,18 +26,13 @@ import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
 import kotlinx.android.synthetic.main.activity_detail.*
-import kotlinx.android.synthetic.main.activity_detail.messageText
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
 
     override val viewModel: ArticleDetailsViewModel by viewModels { factory }
 
-    private val intentBindWords = Intent()
+    private val intentBindDetails = Intent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +52,6 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
 
     private fun fillData() {
         val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
-
         showArticle(articleDetails)
 
         btnAddComment.setOnClickListener {
@@ -72,10 +67,10 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
                 isExpandedItem = Expanded.Default
             )
 
-            viewModel.putComment(comment) // add closure, add request update comments
-            setComment(Integer.valueOf(messageText.text.toString()) + 1)
-            GlobalScope.launch(Dispatchers.Main) {
-                delay(1000)
+            viewModel.putComment(comment) {
+                val countsComments = Integer.valueOf(messageText.text.toString()) + 1
+                setComment(countsComments)
+                intentBindDetails.putExtra(COMMENTS, countsComments)
                 viewModel.getComment(articleDetails.id)
             }
         }
@@ -84,10 +79,12 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     private fun initRecycler(binding: ActivityDetailBinding) {
         binding.commentsBlock.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            this.adapter = CommentsAdapter{
-                if(it.second == 0){
-                    viewModel.putComment(it.first)
-                    setComment(Integer.valueOf(messageText.text.toString())+1)
+            this.adapter = CommentsAdapter {
+                if (it.second == 0) {
+                    viewModel.putComment(it.first) {}
+                    val countsComments = Integer.valueOf(messageText.text.toString()) + 1
+                    intentBindDetails.putExtra(COMMENTS, countsComments)
+                    setComment(countsComments)
                 } else {
                     //TODO set like, dislike
                 }
@@ -114,7 +111,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
                 like.isEnabled = false
                 averageScore.text = (summary.like - summary.dislike).toString()
                 viewModel.putLikes(Pair(articleMessage.id, 1))
-                intentBindWords.putExtra(DETAILS_LIKE, 1)
+                intentBindDetails.putExtra(DETAILS_LIKE, 1)
             }
         }
 
@@ -128,7 +125,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
                 like.isEnabled = true
                 averageScore.text = (summary.like - summary.dislike).toString()
                 viewModel.putLikes(Pair(articleMessage.id, -1))
-                intentBindWords.putExtra(DETAILS_LIKE, -1)
+                intentBindDetails.putExtra(DETAILS_LIKE, -1)
             }
         }
     }
@@ -184,8 +181,8 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
 
     override fun onSupportNavigateUp(): Boolean {
         val position = intent.getIntExtra(DETAILS_POSITION, 0)
-        intentBindWords.putExtra(DETAILS_POSITION, position)
-        setResult(Activity.RESULT_OK, intentBindWords)
+        intentBindDetails.putExtra(DETAILS_POSITION, position)
+        setResult(Activity.RESULT_OK, intentBindDetails)
         onBackPressed()
         return super.onSupportNavigateUp()
     }
