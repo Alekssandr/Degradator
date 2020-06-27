@@ -18,20 +18,19 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.degradators.degradators.R
+import com.degradators.degradators.databinding.ActivityAddArticleBinding
 import com.degradators.degradators.di.common.ViewModelFactory
 import com.degradators.degradators.model.Block
 import com.degradators.degradators.ui.addArticles.components.TYPE_IMAGE
 import com.degradators.degradators.ui.addArticles.components.TYPE_TEXT
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
-import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
+import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_article.*
-import java.io.File
-import androidx.lifecycle.Observer
-import com.degradators.degradators.databinding.ActivityAddArticleBinding
-import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
 import java.io.ByteArrayOutputStream
+import java.io.File
 import javax.inject.Inject
 
 

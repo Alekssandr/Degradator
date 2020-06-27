@@ -2,11 +2,7 @@ package com.degradators.degradators.ui.login
 
 import android.app.Activity
 import android.content.Intent
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -18,28 +14,21 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.viewModels
-
+import androidx.annotation.StringRes
+import androidx.lifecycle.Observer
 import com.degradators.degradators.R
-import com.degradators.degradators.di.common.ViewModelFactory
-import com.degradators.degradators.ui.addArticles.AddArticleActivity
-import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
+import com.degradators.degradators.ui.main.BaseActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.android.synthetic.main.activity_login.sign_in_button
-import javax.inject.Inject
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity<LoginViewModel>(){
 
-   @Inject
-    lateinit var factory: ViewModelFactory<LoginViewModel>
-
-    val loginViewModel: LoginViewModel by viewModels { factory }
+   override val viewModel: LoginViewModel by viewModels { factory }
 
     lateinit var mGoogleSignInClient: GoogleSignInClient
 
@@ -47,7 +36,6 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AndroidInjection.inject(this)
 
         setContentView(R.layout.activity_login)
         getGoogle()
@@ -56,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
+        viewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
@@ -72,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
+        viewModel.loginResult.observe(this@LoginActivity, Observer {
             val loginResult = it ?: return@Observer
 
             loading.visibility = View.GONE
@@ -87,7 +75,7 @@ class LoginActivity : AppCompatActivity() {
         })
 
         username.afterTextChanged {
-            loginViewModel.loginDataChanged(
+            viewModel.loginDataChanged(
                 username.text.toString(),
                 password.text.toString()
             )
@@ -95,7 +83,7 @@ class LoginActivity : AppCompatActivity() {
 
         password.apply {
             afterTextChanged {
-                loginViewModel.loginDataChanged(
+                viewModel.loginDataChanged(
                     username.text.toString(),
                     password.text.toString()
                 )
@@ -104,7 +92,7 @@ class LoginActivity : AppCompatActivity() {
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
+                        viewModel.login(
                             username.text.toString(),
                             password.text.toString()
                         )
@@ -114,7 +102,7 @@ class LoginActivity : AppCompatActivity() {
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
+                viewModel.login(username.text.toString(), password.text.toString())
             }
 
             signUp.setOnClickListener {
@@ -206,7 +194,7 @@ class LoginActivity : AppCompatActivity() {
             val googleIdToken = account?.idToken ?: ""
             Log.i("Google ID Token", googleIdToken)
 
-            loginViewModel.socialSignIn(googleId)
+            viewModel.socialSignIn(googleId)
 
 //            val myIntent = Intent(this, DetailsActivity::class.java)
 //            myIntent.putExtra("google_id", googleId)

@@ -1,7 +1,5 @@
 package com.degradators.degradators.ui.addArticles.components
 
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +13,8 @@ import kotlinx.android.synthetic.main.add_article_item_image.view.*
 import kotlinx.android.synthetic.main.add_article_item_text.view.*
 
 
-//const val TYPE_0 = 0
 const val TYPE_IMAGE = 0
 const val TYPE_TEXT = 1
-
 
 class ArticleItemListAdapter : ListAdapter<ArticleItem, RecyclerView.ViewHolder>(ArticleItemDiffCallback()) {
     private var articleItemList: MutableList<ArticleItem> = mutableListOf()

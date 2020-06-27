@@ -12,32 +12,25 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.degradators.degradators.MainActivity
 import com.degradators.degradators.R
-import com.degradators.degradators.di.common.ViewModelFactory
-import dagger.android.AndroidInjection
+import com.degradators.degradators.ui.main.BaseActivity
 import kotlinx.android.synthetic.main.activity_create_account.*
-import javax.inject.Inject
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : BaseActivity<LoginViewModel>() {
 
-   @Inject
-    lateinit var factory: ViewModelFactory<LoginViewModel>
-
-    val loginViewModel: LoginViewModel by viewModels { factory }
+    override val viewModel: LoginViewModel by viewModels { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        AndroidInjection.inject(this)
 
         setContentView(R.layout.activity_create_account)
         val usernameCreateAccount = findViewById<EditText>(R.id.username_create_account)
         val passwordCreateAccount = findViewById<EditText>(R.id.password_create_account)
         val loading = findViewById<ProgressBar>(R.id.loading)
 
-        loginViewModel.loginFormState.observe(this@RegisterActivity, Observer {
+        viewModel.loginFormState.observe(this@RegisterActivity, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
@@ -51,7 +44,7 @@ class RegisterActivity : AppCompatActivity() {
             }
         })
 
-        loginViewModel.loginResult.observe(this@RegisterActivity, Observer {
+        viewModel.loginResult.observe(this@RegisterActivity, Observer {
             val loginResult = it ?: return@Observer
 
             loading.visibility = View.GONE
@@ -68,7 +61,7 @@ class RegisterActivity : AppCompatActivity() {
         })
 
         usernameCreateAccount.afterTextChangedAccountCreated {
-            loginViewModel.loginDataChanged(
+            viewModel.loginDataChanged(
                 usernameCreateAccount.text.toString(),
                 passwordCreateAccount.text.toString()
             )
@@ -76,7 +69,7 @@ class RegisterActivity : AppCompatActivity() {
 
         passwordCreateAccount.apply {
             afterTextChangedAccountCreated {
-                loginViewModel.loginDataChanged(
+                viewModel.loginDataChanged(
                     usernameCreateAccount.text.toString(),
                     passwordCreateAccount.text.toString()
                 )
@@ -85,7 +78,7 @@ class RegisterActivity : AppCompatActivity() {
             setOnEditorActionListener { _, actionId, _ ->
                 when (actionId) {
                     EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
+                        viewModel.login(
                             usernameCreateAccount.text.toString(),
                             passwordCreateAccount.text.toString()
                         )
@@ -95,7 +88,7 @@ class RegisterActivity : AppCompatActivity() {
 
             create_account.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.signUp(usernameCreateAccount.text.toString(), passwordCreateAccount.text.toString())
+                viewModel.signUp(usernameCreateAccount.text.toString(), passwordCreateAccount.text.toString())
             }
         }
 

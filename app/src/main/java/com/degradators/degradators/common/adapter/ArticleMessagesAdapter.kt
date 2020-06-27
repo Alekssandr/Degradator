@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.degradators.degradators.R
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.utils.loadImage
 import com.google.android.material.shape.CornerFamily
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -19,6 +21,14 @@ import kotlinx.android.synthetic.main.article_item_image_text.view.*
 const val DETAILS_EXTRA = "details"
 const val DETAILS_POSITION = "details_position"
 const val DETAILS_LIKE = "details_like"
+
+@BindingAdapter("articleMessageList")
+fun RecyclerView.bindCommonWords(items: List<ArticleMessage>?) {
+    items?.let {
+        val adapter = adapter as ArticleMessagesAdapter
+        adapter.update(items)
+    }
+}
 
 class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -170,13 +180,7 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         }
 
         private fun setImage(image: ImageView, url: String) {
-            Glide.with(itemView.context)
-                .load(url)
-                .apply(
-                    RequestOptions()
-                        .placeholder(R.drawable.ic_launcher_background).fitCenter()
-                )
-                .into(image)
+            image.loadImage(url, R.drawable.ic_launcher_background)
         }
     }
 }

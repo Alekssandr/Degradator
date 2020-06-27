@@ -18,25 +18,19 @@ import com.degradators.degradators.databinding.FragmentHomeBinding
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.DetailActivity
 import com.degradators.degradators.ui.home.HomeViewModel
-import dagger.android.support.AndroidSupportInjection
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class PlaceholderFragment : Fragment() {
+class PlaceholderFragment : DaggerFragment() {
 
     @Inject
     lateinit var homeViewModel: HomeViewModel
     private lateinit var bindArticleMessagesAdapter: ArticleMessagesAdapter
     private val SECOND_ACTIVITY_REQUEST_CODE = 0
-
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        AndroidSupportInjection.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

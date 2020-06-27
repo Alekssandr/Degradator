@@ -7,17 +7,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.degradators.degradators.R
 import com.degradators.degradators.common.adapter.DETAILS_EXTRA
 import com.degradators.degradators.common.adapter.DETAILS_LIKE
 import com.degradators.degradators.common.adapter.DETAILS_POSITION
 import com.degradators.degradators.databinding.ActivityDetailBinding
-import com.degradators.degradators.di.common.ViewModelFactory
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.model.article.Summary
 import com.degradators.degradators.model.comment.CommentBlock
@@ -25,47 +21,45 @@ import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.model.comment.Expanded
 import com.degradators.degradators.ui.detail.adapter.CommentsAdapter
 import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
-import com.google.android.material.shape.CornerFamily
-import dagger.android.AndroidInjection
+import com.degradators.degradators.ui.main.BaseActivity
+import com.degradators.degradators.ui.utils.loadImage
+import com.degradators.degradators.ui.utils.roundedCorner
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.activity_detail.messageText
-import kotlinx.android.synthetic.main.comment.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-class DetailActivity : AppCompatActivity() {
+class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
 
-    @Inject
-    lateinit var factory: ViewModelFactory<ArticleDetailsViewModel>
-
-    val viewmodel: ArticleDetailsViewModel by viewModels { factory }
+    override val viewModel: ArticleDetailsViewModel by viewModels { factory }
 
     private val intentBindWords = Intent()
 
-    private lateinit var commentsAdapter: CommentsAdapter
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         val binding: ActivityDetailBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_detail)
         binding.run {
-            this.articleDetailsViewModel = viewmodel
+            this.articleDetailsViewModel = viewModel
             lifecycleOwner = this@DetailActivity
         }
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        showArticle()
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         initRecycler(binding)
 
+        fillData()
+    }
+
+    private fun fillData() {
+        val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
+
+        showArticle(articleDetails)
+
         btnAddComment.setOnClickListener {
-            val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
             val shortContent = listOf(CommentBlock(answerText.text.toString(), "text"))
 
             val comment = CommentList(
@@ -78,11 +72,11 @@ class DetailActivity : AppCompatActivity() {
                 isExpandedItem = Expanded.Default
             )
 
-            viewmodel.putComment(comment) // add closure, add request update comments
-            setComment(Integer.valueOf(messageText.text.toString())+1)
+            viewModel.putComment(comment) // add closure, add request update comments
+            setComment(Integer.valueOf(messageText.text.toString()) + 1)
             GlobalScope.launch(Dispatchers.Main) {
                 delay(1000)
-                viewmodel.getComment(articleDetails.id)
+                viewModel.getComment(articleDetails.id)
             }
         }
     }
@@ -92,7 +86,7 @@ class DetailActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             this.adapter = CommentsAdapter{
                 if(it.second == 0){
-                    viewmodel.putComment(it.first)
+                    viewModel.putComment(it.first)
                     setComment(Integer.valueOf(messageText.text.toString())+1)
                 } else {
                     //TODO set like, dislike
@@ -119,14 +113,13 @@ class DetailActivity : AppCompatActivity() {
                 disLike.isEnabled = true
                 like.isEnabled = false
                 averageScore.text = (summary.like - summary.dislike).toString()
-                viewmodel.putLikes(Pair(articleMessage.id, 1))
+                viewModel.putLikes(Pair(articleMessage.id, 1))
                 intentBindWords.putExtra(DETAILS_LIKE, 1)
             }
         }
 
         if (averageScore.text.toString().toInt() >= summary.like - summary.dislike) {
             disLike.setOnClickListener {
-
                 summary.dislike = summary.dislike + 1
                 if (!like.isEnabled) {
                     summary.like = summary.like - 1
@@ -134,7 +127,7 @@ class DetailActivity : AppCompatActivity() {
                 disLike.isEnabled = false
                 like.isEnabled = true
                 averageScore.text = (summary.like - summary.dislike).toString()
-                viewmodel.putLikes(Pair(articleMessage.id, -1))
+                viewModel.putLikes(Pair(articleMessage.id, -1))
                 intentBindWords.putExtra(DETAILS_LIKE, -1)
             }
         }
@@ -144,13 +137,23 @@ class DetailActivity : AppCompatActivity() {
         messageText.text = commentCount.toString()
     }
 
-    private fun showArticle() {
-        val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
-        setLikeDislike(articleDetails)
-        viewmodel.getComment(articleDetails.id)
-        setComment(articleDetails.summary.comment)
-        setUser(articleDetails)
+    private fun showArticle(articleDetails: ArticleMessage) {
         detailsImageTextTitle.text = articleDetails.header
+
+        setLikeDislike(articleDetails)
+
+        viewModel.getComment(articleDetails.id)
+
+        setComment(articleDetails.summary.comment)
+
+        setUser(articleDetails)
+
+        createDetailsArticleView(articleDetails)
+
+        mainContainer.setHasTransientState(true)
+    }
+
+    private fun createDetailsArticleView(articleDetails: ArticleMessage) {
         articleDetails.content.forEach {
             val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -165,42 +168,18 @@ class DetailActivity : AppCompatActivity() {
                 mainContainer.addView(text)
             } else {
                 val image = ImageView(this)
-                setImage(image, it.url)
+                image.loadImage(it.url, R.drawable.ic_launcher_background)
                 image.layoutParams = params
                 image.adjustViewBounds = true
                 mainContainer.addView(image)
             }
         }
-        mainContainer.setHasTransientState(true)
     }
 
     private fun setUser(articleMessage: ArticleMessage) {
-        Glide.with(this)
-            .load(articleMessage.userPhoto)
-            .apply(
-                RequestOptions()
-                    .placeholder(R.mipmap.ic_launcher_round).fitCenter()
-            )
-            .into(detailsUserPhoto)
-        detailsUserPhoto.shapeAppearanceModel =
-            detailsUserPhoto.shapeAppearanceModel
-                .toBuilder()
-                .setAllCorners(
-                    CornerFamily.ROUNDED,
-                    detailsUserPhoto.resources.getDimension(R.dimen.image_corner_radius)
-                )
-                .build()
+        detailsUserPhoto.loadImage(articleMessage.userPhoto, R.mipmap.ic_launcher_round)
+        detailsUserPhoto.shapeAppearanceModel = detailsUserPhoto.roundedCorner()
         detailsUserName.text = articleMessage.userName
-    }
-
-    private fun setImage(image: ImageView, url: String) {
-        Glide.with(this)
-            .load(url)
-            .apply(
-                RequestOptions()
-                    .placeholder(R.drawable.ic_launcher_background).fitCenter()
-            )
-            .into(image)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -210,5 +189,4 @@ class DetailActivity : AppCompatActivity() {
         onBackPressed()
         return super.onSupportNavigateUp()
     }
-
 }

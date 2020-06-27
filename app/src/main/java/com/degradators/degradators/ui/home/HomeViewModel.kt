@@ -70,14 +70,9 @@ class HomeViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-//                text.value = "ddddd"
-//                text.postValue("aaaaa")
                 articleMessage.value = it.messageList
-//                articleMessage.value = it.messageList
-//                Log.d("Test111", "Articles: ${it.messageList.toString()}")
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")
-
             })
     }
 
