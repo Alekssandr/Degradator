@@ -3,12 +3,12 @@ package com.degradators.degradators.ui.detail.viewModel
 import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.Block
 import com.degradators.degradators.model.NewComment
 import com.degradators.degradators.model.comment.CommentList
+import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.articles.LikeUseCase
 import com.degradators.degradators.usecase.comment.AddCommentUseCase
 import com.degradators.degradators.usecase.comment.CommentUseCase
@@ -23,10 +23,9 @@ class ArticleDetailsViewModel @Inject constructor(
     private val commentUseCase: CommentUseCase,
     private val addCommentUseCase: AddCommentUseCase,
     private val schedulers: RxSchedulers
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val disposables = CompositeDisposable()
-    val closeScreen = MutableLiveData<Unit>()
     val commentList: MutableLiveData<List<CommentList>> = MutableLiveData()
     val addCommentVisibility = MutableLiveData<Int>().apply {
         value = View.GONE
@@ -62,7 +61,7 @@ class ArticleDetailsViewModel @Inject constructor(
                 })
     }
 
-    fun putComment(commentList: CommentList) {
+    fun putComment(commentList: CommentList, getComment: () -> Unit) {
         val block = Block(text = commentList.content[0].text, type = "text")
         disposables +=
             addCommentUseCase.execute(settingsPreferences.clientId,
@@ -70,6 +69,7 @@ class ArticleDetailsViewModel @Inject constructor(
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onComplete = {
+                    getComment.invoke()
                     Log.d("Test111", "onComplete")
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")

@@ -1,16 +1,15 @@
 package com.degradators.degradators.ui.main
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.common.adapter.*
 import com.degradators.degradators.common.lifecircle.observeLifecycleIn
@@ -18,25 +17,22 @@ import com.degradators.degradators.databinding.FragmentHomeBinding
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.DetailActivity
 import com.degradators.degradators.ui.home.HomeViewModel
-import dagger.android.support.AndroidSupportInjection
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
 
 /**
  * A placeholder fragment containing a simple view.
  */
-class PlaceholderFragment : Fragment() {
+class PlaceholderFragment : DaggerFragment() {
 
     @Inject
     lateinit var homeViewModel: HomeViewModel
     private lateinit var bindArticleMessagesAdapter: ArticleMessagesAdapter
     private val SECOND_ACTIVITY_REQUEST_CODE = 0
+    private var isLoading: Boolean = false
+    lateinit var layoutManagerRW : LinearLayoutManager
 
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        AndroidSupportInjection.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +45,7 @@ class PlaceholderFragment : Fragment() {
 
         homeViewModel.articleMessage.observe(viewLifecycleOwner, Observer<List<ArticleMessage>> {
             bindArticleMessagesAdapter.update(it)
+            isLoading = false
         })
 
         observeLifecycleIn(homeViewModel)
@@ -64,7 +61,8 @@ class PlaceholderFragment : Fragment() {
                 data?.let {
                     val position = it.getIntExtra(DETAILS_POSITION, 0)
                     val like = it.getIntExtra(DETAILS_LIKE, 0)
-                    bindArticleMessagesAdapter.updateItem(Pair(position, like))
+                    val commentsCount = it.getIntExtra(COMMENTS, -1)
+                    bindArticleMessagesAdapter.updateItem(Triple(position, like, commentsCount))
                 }
             }
         }
@@ -78,7 +76,8 @@ class PlaceholderFragment : Fragment() {
 
     private fun initRecycler() {
         recycler_articles.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManagerRW = LinearLayoutManager(context)
+            layoutManager = layoutManagerRW
             bindArticleMessagesAdapter = ArticleMessagesAdapter {
                 startActivityForResult(Intent(activity, DetailActivity::class.java).apply {
                     putExtra(DETAILS_EXTRA, it.first)
@@ -87,8 +86,29 @@ class PlaceholderFragment : Fragment() {
             }
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
+            addScrollerListener()
         }
     }
+
+    private fun addScrollerListener()
+    {
+        recycler_articles.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
+            {
+                super.onScrolled(recyclerView, dx, dy)
+                if (!isLoading)
+                {
+                    if (layoutManagerRW.findLastCompletelyVisibleItemPosition() == layoutManagerRW.itemCount - 1)
+                    {
+                        homeViewModel.getArticles(layoutManagerRW.itemCount.toLong())
+                        isLoading = true
+                    }
+                }
+            }
+        })
+    }
+
 
     companion object {
         /**

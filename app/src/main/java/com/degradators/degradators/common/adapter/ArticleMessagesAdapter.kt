@@ -1,16 +1,21 @@
 package com.degradators.degradators.common.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.degradators.degradators.R
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.utils.loadImage
 import com.google.android.material.shape.CornerFamily
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -19,11 +24,21 @@ import kotlinx.android.synthetic.main.article_item_image_text.view.*
 const val DETAILS_EXTRA = "details"
 const val DETAILS_POSITION = "details_position"
 const val DETAILS_LIKE = "details_like"
+const val COMMENTS = "comments"
 
+@BindingAdapter("articleMessageList")
+fun RecyclerView.bindCommonWords(items: List<ArticleMessage>?) {
+    items?.let {
+        val adapter = adapter as ArticleMessagesAdapter
+        adapter.update(items)
+    }
+}
+
+//TODO articleMessageList should + new one
 class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var articleMessageList: List<ArticleMessage> = emptyList()
+    private var articleMessageList = mutableListOf<ArticleMessage>()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -43,6 +58,7 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val a = (holder as ImageViewHolder)
+        Log.d("test1111", "size: " + articleMessageList.size.toString() + " pos: " + position)
         a.bind(articleMessageList[position])
         setLikeDislike(articleMessageList[position], holder.itemView)
         setComment(articleMessageList[position], holder.itemView)
@@ -79,7 +95,10 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         itemView.userPhoto.shapeAppearanceModel =
             itemView.userPhoto.shapeAppearanceModel
                 .toBuilder()
-                .setAllCorners(CornerFamily.ROUNDED, itemView.resources.getDimension(R.dimen.image_corner_radius))
+                .setAllCorners(
+                    CornerFamily.ROUNDED,
+                    itemView.resources.getDimension(R.dimen.image_corner_radius)
+                )
                 .build()
     }
 
@@ -87,11 +106,14 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         itemView.messageText.text = articleMessage.summary.comment.toString()
     }
 
-    fun updateItem(pair: Pair<Int, Int>) {
+    fun updateItem(pair: Triple<Int, Int, Int>) {
         if (pair.second == 1) {
             articleMessageList[pair.first].summary.like += 1
         } else if (pair.second == -1) {
             articleMessageList[pair.first].summary.dislike -= 1
+        }
+        if (pair.third != -1) {
+            articleMessageList[pair.first].summary.comment = pair.third
         }
         notifyItemChanged(pair.first)
     }
@@ -136,10 +158,9 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
     }
 
     fun update(items: List<ArticleMessage>) {
-        this.articleMessageList = items
+        this.articleMessageList.addAll(items.toMutableList())
         notifyDataSetChanged()
     }
-
 
     class ImageViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
@@ -170,13 +191,7 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         }
 
         private fun setImage(image: ImageView, url: String) {
-            Glide.with(itemView.context)
-                .load(url)
-                .apply(
-                    RequestOptions()
-                        .placeholder(R.drawable.ic_launcher_background).fitCenter()
-                )
-                .into(image)
+            image.loadImage(url, R.drawable.ic_launcher_background)
         }
     }
 }

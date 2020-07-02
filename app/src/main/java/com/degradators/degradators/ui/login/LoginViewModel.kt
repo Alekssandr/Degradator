@@ -3,15 +3,12 @@ package com.degradators.degradators.ui.login
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import com.degradators.degradators.data.LoginRepository
-import com.degradators.degradators.data.Result
-
 import com.degradators.degradators.R
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.User
+import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.AuthUserUseCase
 import com.degradators.degradators.usecase.InsertNewUserUseCase
 import com.degradators.degradators.usecase.SocialSignInUseCase
@@ -26,7 +23,7 @@ class LoginViewModel @Inject constructor(
     private val socialSignInUseCase: SocialSignInUseCase,
     private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val disposables = CompositeDisposable()
 

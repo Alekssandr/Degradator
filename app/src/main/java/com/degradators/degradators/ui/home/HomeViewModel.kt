@@ -22,10 +22,6 @@ class HomeViewModel @Inject constructor(
     private val schedulers: RxSchedulers
 ) : ViewModel(), LifecycleObserver {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-
     private val _index = MutableLiveData<Int>()
 
     val text: MutableLiveData<String> = MutableLiveData<String>()
@@ -68,20 +64,15 @@ class HomeViewModel @Inject constructor(
         }
 
 
-    private fun getArticles() {
+    fun getArticles(skip: Long = 0) {
         disposables += articlesUseCase
-            .execute(settingsPreferences.clientId, getTabName(), 0)
+            .execute(settingsPreferences.clientId, getTabName(), skip)//20
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-//                text.value = "ddddd"
-//                text.postValue("aaaaa")
                 articleMessage.value = it.messageList
-//                articleMessage.value = it.messageList
-//                Log.d("Test111", "Articles: ${it.messageList.toString()}")
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")
-
             })
     }
 
