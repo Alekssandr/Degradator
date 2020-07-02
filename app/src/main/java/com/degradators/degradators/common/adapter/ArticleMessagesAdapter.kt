@@ -1,5 +1,6 @@
 package com.degradators.degradators.common.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,9 +36,9 @@ fun RecyclerView.bindCommonWords(items: List<ArticleMessage>?) {
 
 //TODO articleMessageList should + new one
 class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) :
-    ListAdapter<List<ArticleMessage>, RecyclerView.ViewHolder>(ArticleItemDiffCallback()) {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var articleMessageList: List<ArticleMessage> = emptyList()
+    private var articleMessageList = mutableListOf<ArticleMessage>()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -57,6 +58,7 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val a = (holder as ImageViewHolder)
+        Log.d("test1111", "size: " + articleMessageList.size.toString() + " pos: " + position)
         a.bind(articleMessageList[position])
         setLikeDislike(articleMessageList[position], holder.itemView)
         setComment(articleMessageList[position], holder.itemView)
@@ -93,7 +95,10 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         itemView.userPhoto.shapeAppearanceModel =
             itemView.userPhoto.shapeAppearanceModel
                 .toBuilder()
-                .setAllCorners(CornerFamily.ROUNDED, itemView.resources.getDimension(R.dimen.image_corner_radius))
+                .setAllCorners(
+                    CornerFamily.ROUNDED,
+                    itemView.resources.getDimension(R.dimen.image_corner_radius)
+                )
                 .build()
     }
 
@@ -107,7 +112,7 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         } else if (pair.second == -1) {
             articleMessageList[pair.first].summary.dislike -= 1
         }
-        if(pair.third != -1){
+        if (pair.third != -1) {
             articleMessageList[pair.first].summary.comment = pair.third
         }
         notifyItemChanged(pair.first)
@@ -153,14 +158,8 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
     }
 
     fun update(items: List<ArticleMessage>) {
-//        if(articleMessageList.isNotEmpty()) {
-//            items.forEachIndexed { index, _ ->
-//                notifyItemInserted(articleMessageList.size+index)
-//            }
-//        } else {
-            this.articleMessageList = items
-            notifyDataSetChanged()
-//        }
+        this.articleMessageList.addAll(items.toMutableList())
+        notifyDataSetChanged()
     }
 
     class ImageViewHolder(itemView: View) :
@@ -195,13 +194,4 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
             image.loadImage(url, R.drawable.ic_launcher_background)
         }
     }
-
-    class ArticleItemDiffCallback : DiffUtil.ItemCallback<List<ArticleMessage>>() {
-        override fun areItemsTheSame(oldItem: List<ArticleMessage>, newItem: List<ArticleMessage>): Boolean =
-            oldItem == newItem
-
-        override fun areContentsTheSame(oldItem: List<ArticleMessage>, newItem: List<ArticleMessage>): Boolean =
-            oldItem == newItem
-    }
-
 }

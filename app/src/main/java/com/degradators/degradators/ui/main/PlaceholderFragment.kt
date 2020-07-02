@@ -45,6 +45,7 @@ class PlaceholderFragment : DaggerFragment() {
 
         homeViewModel.articleMessage.observe(viewLifecycleOwner, Observer<List<ArticleMessage>> {
             bindArticleMessagesAdapter.update(it)
+            isLoading = false
         })
 
         observeLifecycleIn(homeViewModel)

@@ -14,7 +14,7 @@ fun ImageView.loadImage(url: String, background: Int){
 		.load(url)
 		.apply(
 			RequestOptions()
-				.placeholder(background).fitCenter()
+				.placeholder(background).fitCenter().override(600, 1200)
 		)
 		.into(this)
 }
