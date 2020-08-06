@@ -4,16 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.viewpager.widget.ViewPager
 import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_bar_home.*
 
 
-class MainActivity : DaggerAppCompatActivity(){
+class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +30,18 @@ class MainActivity : DaggerAppCompatActivity(){
         tabs.setupWithViewPager(viewPager)
 
         setSupportActionBar(toolbar)
+
+        val toggle = ActionBarDrawerToggle(
+                this,
+                drawer_layout,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close
+            )
+        drawer_layout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        nav_view.setNavigationItemSelectedListener(this)
 
         fab.setOnClickListener {
             val intent = Intent(this, AddArticleActivity::class.java)
@@ -48,6 +63,11 @@ class MainActivity : DaggerAppCompatActivity(){
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        startActivity(Intent(this, LoginActivity::class.java))
+        return true
     }
 
 

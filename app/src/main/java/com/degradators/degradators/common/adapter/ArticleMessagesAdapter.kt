@@ -16,6 +16,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.degradators.degradators.R
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.utils.loadImage
+import com.degradators.degradators.ui.utils.roundedCorner
 import com.google.android.material.shape.CornerFamily
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -80,26 +81,9 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
     }
 
     private fun setUser(articleMessage: ArticleMessage, itemView: View) {
-        setImage(itemView, articleMessage.userPhoto)
+        itemView.userPhoto.loadImage(articleMessage.userPhoto, R.mipmap.ic_launcher_round)
+        itemView.userPhoto.shapeAppearanceModel = itemView.userPhoto.roundedCorner()
         itemView.userName.text = articleMessage.userName
-    }
-
-    private fun setImage(itemView: View, url: String) {
-        Glide.with(itemView.context)
-            .load(url)
-            .apply(
-                RequestOptions()
-                    .placeholder(R.mipmap.ic_launcher_round).fitCenter()
-            )
-            .into(itemView.userPhoto)
-        itemView.userPhoto.shapeAppearanceModel =
-            itemView.userPhoto.shapeAppearanceModel
-                .toBuilder()
-                .setAllCorners(
-                    CornerFamily.ROUNDED,
-                    itemView.resources.getDimension(R.dimen.image_corner_radius)
-                )
-                .build()
     }
 
     private fun setComment(articleMessage: ArticleMessage, itemView: View) {

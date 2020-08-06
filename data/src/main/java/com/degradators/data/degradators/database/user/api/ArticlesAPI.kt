@@ -55,4 +55,10 @@ interface ArticlesAPI {
         @Path("id") productId: String
     ): Single<Comments>
 
+    @DELETE("/api/s/message/{messageId}")
+    fun removeArticles(
+        @Header("Client-Id") clientId: String,
+        @Path("messageId") messageId: String
+    ) : Completable
+
 }
