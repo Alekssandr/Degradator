@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.viewpager.widget.ViewPager
 import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
+import com.degradators.degradators.ui.userMenu.MyListFragment
+import com.degradators.degradators.ui.userMenu.MyListFragment2
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import dagger.android.support.DaggerAppCompatActivity
@@ -66,8 +69,38 @@ class MainActivity : DaggerAppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        startActivity(Intent(this, LoginActivity::class.java))
-        return true
+
+        return when (item.itemId) {
+            R.id.nav_posts -> {
+                drawer_layout.closeDrawers()
+                supportFragmentManager.popBackStack()
+                tabs.visibility = View.VISIBLE
+                view_pager.visibility = View.VISIBLE
+
+                return true
+            }
+            R.id.nav_my_list -> {
+                drawer_layout.closeDrawers()
+                val myListFragment = MyListFragment()
+                tabs.visibility = View.GONE
+                view_pager.visibility = View.GONE
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.user_frame, myListFragment)
+                    .commitAllowingStateLoss()
+                return true
+            }
+            R.id.nav_my_list2 -> {
+                drawer_layout.closeDrawers()
+                val myListFragment2 = MyListFragment2()
+                tabs.visibility = View.GONE
+                view_pager.visibility = View.GONE
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.user_frame, myListFragment2)
+                    .commitAllowingStateLoss()
+                return true
+            }
+            else -> super.onNavigateUp()
+        }
     }
 
 
