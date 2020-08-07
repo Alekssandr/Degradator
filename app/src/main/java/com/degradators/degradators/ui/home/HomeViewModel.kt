@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.usecase.RemoveArticlesUseCase
 import com.degradators.degradators.usecase.SystemSettingsUseCase
 import com.degradators.degradators.usecase.articles.ArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
@@ -18,6 +19,7 @@ class HomeViewModel @Inject constructor(
     private val systemSettingsUseCase: SystemSettingsUseCase,
     private val articlesUseCase: ArticlesUseCase,
     private val likeUseCase: LikeUseCase,
+    private val removeArticlesUseCase: RemoveArticlesUseCase,
     private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers
 ) : ViewModel(), LifecycleObserver {
@@ -94,6 +96,18 @@ class HomeViewModel @Inject constructor(
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onComplete = {
                     text.value = "ddddd"
+                }, onError = {
+                    Log.e("Test111", "error: ${it.message} ?: ")
+                })
+    }
+
+    private fun removeArticles(messageId: String) {
+        disposables +=
+            removeArticlesUseCase.execute(settingsPreferences.clientId, messageId)
+                .subscribeOn(schedulers.io())
+                .observeOn(schedulers.mainThread())
+                .subscribeBy(onComplete = {
+                    text.value = "removed"
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")
                 })
