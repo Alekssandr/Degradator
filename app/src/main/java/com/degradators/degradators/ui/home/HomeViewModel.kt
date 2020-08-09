@@ -9,6 +9,7 @@ import com.degradators.degradators.usecase.RemoveArticlesUseCase
 import com.degradators.degradators.usecase.SystemSettingsUseCase
 import com.degradators.degradators.usecase.articles.ArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
+import com.degradators.degradators.usecase.user.UserInfoUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -20,6 +21,7 @@ class HomeViewModel @Inject constructor(
     private val articlesUseCase: ArticlesUseCase,
     private val likeUseCase: LikeUseCase,
     private val removeArticlesUseCase: RemoveArticlesUseCase,
+    private val userInfoUseCase: UserInfoUseCase,
     private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers
 ) : ViewModel(), LifecycleObserver {
@@ -39,6 +41,7 @@ class HomeViewModel @Inject constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
         if (settingsPreferences.clientId.isEmpty()) getSystemSetting()
+//        if (settingsPreferences.token.isNotEmpty()) getUser()
         getArticles()
     }
 

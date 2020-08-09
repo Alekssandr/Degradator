@@ -18,6 +18,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import com.degradators.degradators.R
 import com.degradators.degradators.ui.main.BaseActivity
+import com.google.android.gms.auth.api.credentials.CredentialPickerConfig.Prompt.SIGN_IN
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -33,6 +34,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
     lateinit var mGoogleSignInClient: GoogleSignInClient
 
     private val RC_SIGN_IN = 9001
+    private val SIGN_UP = 9002
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,7 +109,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
 
             signUp.setOnClickListener {
                 val intent = Intent(this@LoginActivity, RegisterActivity::class.java)
-                startActivity(intent)
+                startActivityForResult(intent, SIGN_UP)
             }
         }
 
@@ -166,6 +168,12 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
             val task =
                 GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
+        }
+        if (requestCode == SIGN_UP) {
+            if(resultCode == RESULT_OK){
+                setResult(RESULT_OK)
+                finish()
+            }
         }
     }
 

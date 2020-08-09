@@ -19,8 +19,15 @@ interface UserAuthAPI {
     fun login(@Header("Authorization") user: String): Single<Response<ResponseBody>>
 
     @GET("/api/s/user")
-    fun getUser(
+    fun socialSignIn(
         @Header("M-Token") token: String
+    ): Single<User>
+
+    //TODO we need different header for different sign in
+    @GET("/api/s/user")
+    fun getUser(
+        @Header("X-Auth-Token") token: String
+//        @Header("M-Token") token: String
     ): Single<User>
 
     @GET("/api/p/systemSettings")

@@ -12,8 +12,8 @@ class UserAuthDataRepository(
     private val api: UserAuthAPI
 ) : UserAuthRepository {
 
-    override fun getUser(token: String): Single<User> =
-        api.getUser(token)
+    override fun socialSignIn(token: String): Single<User> =
+        api.socialSignIn(token)
 
     override fun getSystemSettings(): Single<String> = api.getSystemSettings().map {
         it.clientId
@@ -25,6 +25,8 @@ class UserAuthDataRepository(
             it.headers().get("X-Auth-Token")
         }
     }
+
+    override fun getUserInfo(token: String): Single<User> = api.getUser(token)
 
     override fun insertNewUser(user: User): Completable {
         val userNew = JsonObject()

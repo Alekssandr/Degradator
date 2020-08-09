@@ -12,6 +12,7 @@ import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.AuthUserUseCase
 import com.degradators.degradators.usecase.InsertNewUserUseCase
 import com.degradators.degradators.usecase.SocialSignInUseCase
+import com.degradators.degradators.usecase.user.UserInfoUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -69,6 +70,7 @@ class LoginViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
+                settingsPreferences.token = token
                 Log.d("Test11123", "token: $it")
                 _loginResult.value =
                     LoginResult(success = LoggedInUserView(displayName = "sign in success"))

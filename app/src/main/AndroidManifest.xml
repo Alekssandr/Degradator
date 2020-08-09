@@ -38,12 +38,10 @@
         <activity
             android:name=".ui.login.LoginActivity"
             android:screenOrientation="portrait"
-            android:noHistory="true"
             android:label="@string/title_activity_login" />
 
         <activity
             android:name=".ui.login.RegisterActivity"
-            android:noHistory="true"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_create_account" />
 

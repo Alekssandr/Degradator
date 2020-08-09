@@ -10,20 +10,15 @@
             android:id="@+id/nav_my_list"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="My List" />
-        <item
-            android:id="@+id/nav_my_list2"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="My List2" />
-
     </group>
 
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_RChangePassword"
+                android:id="@+id/nav_changePassword"
                 android:title="Change Password" />
             <item
-                android:id="@+id/nav_RLogout"
+                android:id="@+id/nav_Logout"
                 android:title="Log out" />
         </menu>
     </item>
