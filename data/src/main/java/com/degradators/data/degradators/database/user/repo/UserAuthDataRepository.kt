@@ -2,7 +2,7 @@ package com.degradators.data.degradators.database.user.repo
 
 import android.util.Base64
 import com.degradators.data.degradators.database.user.api.UserAuthAPI
-import com.degradators.degradators.model.User
+import com.degradators.degradators.model.user.User
 import com.degradators.degradators.repo.UserAuthRepository
 import com.google.gson.JsonObject
 import io.reactivex.Completable

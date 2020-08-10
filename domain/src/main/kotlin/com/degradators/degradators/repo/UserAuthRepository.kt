@@ -1,6 +1,6 @@
 package com.degradators.degradators.repo
 
-import com.degradators.degradators.model.User
+import com.degradators.degradators.model.user.User
 import io.reactivex.Completable
 import io.reactivex.Single
 

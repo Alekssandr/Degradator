@@ -1,4 +1,4 @@
-package com.degradators.degradators.ui
+package com.degradators.degradators.ui.userMenu
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class MyListViewModel @Inject constructor(
     private val userInfoUseCase: UserInfoUseCase,
     private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers

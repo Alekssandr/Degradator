@@ -1,7 +1,7 @@
 package com.degradators.data.degradators.database.user.api
 
 import com.degradators.degradators.model.ClientId
-import com.degradators.degradators.model.User
+import com.degradators.degradators.model.user.User
 import com.google.gson.JsonObject
 import io.reactivex.Completable
 import io.reactivex.Single
