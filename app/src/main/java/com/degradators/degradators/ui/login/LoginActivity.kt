@@ -1,5 +1,6 @@
 package com.degradators.degradators.ui.login
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -18,6 +19,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import com.degradators.degradators.R
 import com.degradators.degradators.ui.main.BaseActivity
+import com.facebook.*
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -25,12 +27,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_login.*
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 
-class LoginActivity : BaseActivity<LoginViewModel>(){
 
-   override val viewModel: LoginViewModel by viewModels { factory }
+class LoginActivity : BaseActivity<LoginViewModel>() {
+
+    override val viewModel: LoginViewModel by viewModels { factory }
 
     lateinit var mGoogleSignInClient: GoogleSignInClient
+
+    lateinit var callbackManager: CallbackManager
+
 
     private val RC_SIGN_IN = 9001
 
@@ -43,7 +51,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
         val password = findViewById<EditText>(R.id.password)
         val login = findViewById<Button>(R.id.login)
         val loading = findViewById<ProgressBar>(R.id.loading)
-
+        facebookSignIn()
         viewModel.loginFormState.observe(this@LoginActivity, Observer {
             val loginState = it ?: return@Observer
 
@@ -115,12 +123,41 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
             signIn()
         }
 
-//        setSupportActionBar(toolbar)
+//        facebookSignIn()
+
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 
-    fun getGoogle(){
+    fun facebookSignIn() {
+        callbackManager = CallbackManager.Factory.create()
+
+        sign_in_button_fb.setOnClickListener {
+            LoginManager.getInstance()
+                .logInWithReadPermissions(this, listOf("email"))
+        }
+        LoginManager.getInstance()
+            .registerCallback(callbackManager, object : FacebookCallback<LoginResult?> {
+                override fun onSuccess(loginResult: LoginResult?) {
+                    Log.d("TAG", "Success Login")
+                    viewModel.socialSignIn(loginResult?.accessToken?.token.toString())
+                }
+
+                override fun onCancel() {
+                    Toast.makeText(this@LoginActivity, "Login Cancelled", Toast.LENGTH_LONG).show()
+                }
+
+                override fun onError(exception: FacebookException) {
+                    Toast.makeText(this@LoginActivity, exception.message, Toast.LENGTH_LONG).show()
+                }
+            })
+    }
+
+    fun logOutUserFB() {
+        LoginManager.getInstance().logOut()
+    }
+
+    fun getGoogle() {
         val gso =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("546237982303-jev6kd0kosqc66vrfrmoke6vqp4mh646.apps.googleusercontent.com")
@@ -138,6 +175,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
         onBackPressed()
         return super.onSupportNavigateUp()
     }
+
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome)
         val displayName = model.displayName
@@ -167,6 +205,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
                 GoogleSignIn.getSignedInAccountFromIntent(data)
             handleSignInResult(task)
         }
+        callbackManager.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
@@ -179,31 +218,8 @@ class LoginActivity : BaseActivity<LoginViewModel>(){
             val googleId = account?.idToken ?: ""
             Log.i("Google ID", googleId)
 
-            val googleFirstName = account?.givenName ?: ""
-            Log.i("Google First Name", googleFirstName)
-
-            val googleLastName = account?.familyName ?: ""
-            Log.i("Google Last Name", googleLastName)
-
-            val googleEmail = account?.email ?: ""
-            Log.i("Google Email", googleEmail)
-
-            val googleProfilePicURL = account?.photoUrl.toString()
-            Log.i("Google Profile Pic URL", googleProfilePicURL)
-
-            val googleIdToken = account?.idToken ?: ""
-            Log.i("Google ID Token", googleIdToken)
-
             viewModel.socialSignIn(googleId)
 
-//            val myIntent = Intent(this, DetailsActivity::class.java)
-//            myIntent.putExtra("google_id", googleId)
-//            myIntent.putExtra("google_first_name", googleFirstName)
-//            myIntent.putExtra("google_last_name", googleLastName)
-//            myIntent.putExtra("google_email", googleEmail)
-//            myIntent.putExtra("google_profile_pic_url", googleProfilePicURL)
-//            myIntent.putExtra("google_id_token", googleIdToken)
-//            this.startActivity(myIntent)
         } catch (e: ApiException) {
             // Sign in was unsuccessful
             Log.e(

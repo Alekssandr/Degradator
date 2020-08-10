@@ -18,6 +18,7 @@ interface UserAuthAPI {
     @GET("/api/s/ka")
     fun login(@Header("Authorization") user: String): Single<Response<ResponseBody>>
 
+    //add Fb-Oauth-Token
     @GET("/api/s/user")
     fun getUser(
         @Header("M-Token") token: String
