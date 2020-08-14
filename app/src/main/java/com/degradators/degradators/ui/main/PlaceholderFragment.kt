@@ -99,7 +99,7 @@ class PlaceholderFragment : DaggerFragment() {
                 super.onScrolled(recyclerView, dx, dy)
                 if (!isLoading)
                 {
-                    if (layoutManagerRW.findLastCompletelyVisibleItemPosition() == layoutManagerRW.itemCount - 1)
+                    if (layoutManagerRW.findLastVisibleItemPosition() == layoutManagerRW.itemCount - 1)
                     {
                         homeViewModel.getArticles(layoutManagerRW.itemCount.toLong())
                         isLoading = true
