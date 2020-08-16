@@ -138,16 +138,6 @@ class MainActivity : BaseActivity<MainViewModel>(),
                     .commitAllowingStateLoss()
                 return true
             }
-//            R.id.nav_my_list2 -> {
-//                drawer_layout.closeDrawers()
-//                val myListFragment2 = MyListFragment2()
-//                tabs.visibility = View.GONE
-//                view_pager.visibility = View.GONE
-//                supportFragmentManager.beginTransaction()
-//                    .replace(R.id.user_frame, myListFragment2)
-//                    .commitAllowingStateLoss()
-//                return true
-//            }
             R.id.nav_Logout -> {
                 drawer_layout.closeDrawers()
                 viewModel.logout()

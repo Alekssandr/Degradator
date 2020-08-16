@@ -4,6 +4,7 @@ import com.degradators.data.degradators.database.user.model.article.ArticlesEnti
 import com.degradators.data.degradators.database.user.model.article.ImageEntity
 import com.degradators.degradators.model.NewComment
 import com.degradators.degradators.model.NewPost
+import com.degradators.degradators.model.PostIds
 import com.degradators.degradators.model.comment.Comments
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -38,6 +39,12 @@ interface ArticlesAPI {
         @Header("X-Auth-Token") token: String,
         @Body newPost: NewPost
     ): Completable
+
+    @Headers("Content-Type: application/json")
+    @POST("/api/p/message")
+    fun getArticlesByList(
+        @Body postIds: PostIds
+    ): Single<ArticlesEntity>
 
     @PUT("/api/p/message")
     fun addComment(
