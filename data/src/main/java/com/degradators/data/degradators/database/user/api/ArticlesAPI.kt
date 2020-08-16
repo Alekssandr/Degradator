@@ -1,16 +1,13 @@
 package com.degradators.data.degradators.database.user.api
 
+import com.degradators.data.degradators.database.user.model.article.ArticlesEntity
 import com.degradators.data.degradators.database.user.model.article.ImageEntity
 import com.degradators.degradators.model.NewComment
-import com.degradators.degradators.model.article.Articles
 import com.degradators.degradators.model.NewPost
-import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.model.comment.Comments
 import io.reactivex.Completable
 import io.reactivex.Single
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
-import retrofit2.Response
 import retrofit2.http.*
 
 
@@ -21,7 +18,7 @@ interface ArticlesAPI {
         @Header("Client-Id") clientId: String,
         @Query("type") type: String,
         @Query("skip") skip: Long
-    ): Single<Articles>
+    ): Single<ArticlesEntity>
 
     @GET("/api/p/likeOrDislike?")
     fun getLike(

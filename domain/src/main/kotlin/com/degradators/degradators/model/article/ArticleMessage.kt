@@ -12,5 +12,6 @@ data class ArticleMessage(
     var header: String = "",
     var userName: String = "",
     var userPhoto: String = "",
-    var content: List<ArticleBlock> = emptyList()
+    var content: List<ArticleBlock> = emptyList(),
+    var like: Int = 0
 ) : Serializable
