@@ -18,6 +18,7 @@ import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
 import com.degradators.degradators.ui.userMenu.MyListFragment
+import com.degradators.degradators.ui.utils.loadImage
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
@@ -88,7 +89,20 @@ class MainActivity : BaseActivity<MainViewModel>(),
                 }
             }
         }
+        observeEvents(navHeaderMainBinding)
+    }
+
+    private fun observeEvents(navHeaderMainBinding: NavHeaderMainBinding){
         changeHeaderSize(navHeaderMainBinding)
+        viewModel.userUrl.observe(this, Observer {url ->
+            navHeaderMainBinding.userPhotoLogIn.let {
+                it.loadImage(
+                    url?: "",
+                    R.mipmap.ic_launcher_round
+                )
+            }
+
+        })
     }
 
     private fun changeHeaderSize(navHeaderMainBinding: NavHeaderMainBinding) {

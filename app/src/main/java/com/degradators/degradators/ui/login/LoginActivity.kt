@@ -43,6 +43,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
     private val RC_SIGN_IN = 9001
     private val SIGN_UP = 9002
+    private val FB_AUTH = 64206
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -212,7 +213,9 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
                 finish()
             }
         }
-        /callbackManager.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == FB_AUTH){
+            callbackManager.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {

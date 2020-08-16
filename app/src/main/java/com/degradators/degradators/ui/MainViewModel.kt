@@ -19,9 +19,8 @@ class MainViewModel @Inject constructor(
     private val disposables = CompositeDisposable()
     val userPhotoLoginVisibility = MutableLiveData<Boolean>()
     val userSignedIn = MutableLiveData<Boolean>()
-
-
-    val text: MutableLiveData<String> = MutableLiveData<String>()
+    val userName: MutableLiveData<String> = MutableLiveData<String>()
+    val userUrl: MutableLiveData<String> = MutableLiveData<String>()
 
     init {
         isLogin()
@@ -50,7 +49,8 @@ class MainViewModel @Inject constructor(
             .subscribeBy(onSuccess = {
                 settingsPreferences.clientId = it.id
                 userPhotoLoginVisibility.value = true
-                text.value = it.mail
+                userUrl.value = it.photo
+                userName.value = if(it.username.isNullOrEmpty()) it.mail else it.username
                 userSignedIn.value = true
                 Log.d("Test11123", "token: $it")
             }, onError = {
