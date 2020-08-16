@@ -22,11 +22,10 @@ interface ArticlesAPI {
 
     @GET("/api/p/likeOrDislike?")
     fun getLike(
-        @Header("Client-Id") clientId: String,
+        @Header("X-Auth-Token") token: String,
         @Query("messageId") messageId : String,
         @Query("value") like: Int
     ):  Completable
-
 
     @Multipart
     @POST("/api/p/upload")
@@ -36,19 +35,19 @@ interface ArticlesAPI {
 
     @PUT("/api/p/message")
     fun addArticle(
-        @Header("Client-Id") clientId: String,
+        @Header("X-Auth-Token") token: String,
         @Body newPost: NewPost
     ): Completable
 
     @PUT("/api/p/message")
     fun addComment(
-        @Header("Client-Id") clientId: String,
+        @Header("X-Auth-Token") token: String,
         @Body newComment: NewComment
     ): Completable
 
     @GET("api/p/comment/{id}")
     fun getComment(
-        @Header("Client-Id") clientId: String,
+        @Header("X-Auth-Token") token: String,
         @Path("id") productId: String
     ): Single<Comments>
 

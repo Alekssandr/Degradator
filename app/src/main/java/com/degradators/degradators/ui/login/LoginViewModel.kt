@@ -7,7 +7,7 @@ import android.util.Patterns
 import com.degradators.degradators.R
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
-import com.degradators.degradators.model.User
+import com.degradators.degradators.model.user.User
 import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.AuthUserUseCase
 import com.degradators.degradators.usecase.InsertNewUserUseCase
@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
 
     fun signUp(username: String, password: String){
         disposables += insertNewUserUseCase
-            .execute(User(mail = username, password = password))
+            .execute(User(mail = username, password = password, username = username))
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onComplete = {
@@ -69,6 +69,7 @@ class LoginViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
+                settingsPreferences.token = token
                 Log.d("Test11123", "token: $it")
                 _loginResult.value =
                     LoginResult(success = LoggedInUserView(displayName = "sign in success"))

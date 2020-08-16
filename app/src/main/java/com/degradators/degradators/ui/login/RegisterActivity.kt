@@ -52,11 +52,9 @@ class RegisterActivity : BaseActivity<LoginViewModel>() {
                 showLoginFailed(loginResult.error)
             }
             if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
                 setResult(Activity.RESULT_OK)
-                val intent = Intent(this@RegisterActivity, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
+                updateUiWithUser(loginResult.success)
+                finish()
             }
         })
 

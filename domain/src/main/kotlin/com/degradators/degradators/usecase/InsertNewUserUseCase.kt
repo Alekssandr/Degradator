@@ -1,6 +1,6 @@
 package com.degradators.degradators.usecase
 
-import com.degradators.degradators.model.User
+import com.degradators.degradators.model.user.User
 import com.degradators.degradators.repo.UserAuthRepository
 import io.reactivex.Completable
 import javax.inject.Inject

@@ -17,7 +17,7 @@ fun ArticleMessageEntity.toModel() =
         summary.toSummaryModel(),
         userId ?: "",
         header ?: "",
-        userName ?: "",
+        userName?.userName() ?: "",
         userPhoto ?: "",
         content.map { it.toModel() },
         like ?: 0
@@ -39,3 +39,7 @@ fun ArticleBlockEntity.toModel() =
         type ?: "",
         index ?: 0
     )
+
+fun String?.userName() =
+    this?.let { if (indexOf(" ") > 1) substring(0, indexOf(" ")) else this }
+

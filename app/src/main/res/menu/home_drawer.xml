@@ -3,27 +3,22 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_Financial"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="My Financial" />
+            android:id="@+id/nav_posts"
+            android:icon="@drawable/ic_list_24dp"
+            android:title="Posts" />
         <item
-            android:id="@+id/nav_RReport"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="My Visitor" />
-        <item
-            android:id="@+id/nav_RComplaint"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="My Complaint" />
-
+            android:id="@+id/nav_my_list"
+            android:icon="@drawable/ic_favorite_24dp"
+            android:title="My List" />
     </group>
 
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_RChangePassword"
+                android:id="@+id/nav_changePassword"
                 android:title="Change Password" />
             <item
-                android:id="@+id/nav_RLogout"
+                android:id="@+id/nav_Logout"
                 android:title="Log out" />
         </menu>
     </item>

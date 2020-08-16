@@ -2,7 +2,7 @@ package com.degradators.data.degradators.database.user.repo
 
 import android.util.Base64
 import com.degradators.data.degradators.database.user.api.UserAuthAPI
-import com.degradators.degradators.model.User
+import com.degradators.degradators.model.user.User
 import com.degradators.degradators.repo.UserAuthRepository
 import com.google.gson.JsonObject
 import io.reactivex.Completable
@@ -12,8 +12,8 @@ class UserAuthDataRepository(
     private val api: UserAuthAPI
 ) : UserAuthRepository {
 
-    override fun getUser(token: String): Single<User> =
-        api.getUser(token)
+    override fun socialSignIn(token: String): Single<User> =
+        api.socialSignIn(token)
 
     override fun getSystemSettings(): Single<String> = api.getSystemSettings().map {
         it.clientId
@@ -26,10 +26,13 @@ class UserAuthDataRepository(
         }
     }
 
+    override fun getUserInfo(token: String): Single<User> = api.getUser(token)
+
     override fun insertNewUser(user: User): Completable {
         val userNew = JsonObject()
         userNew.addProperty("login", user.mail)
         userNew.addProperty("password", user.password)
+        userNew.addProperty("username", user.mail)
         return api.register(userNew)
     }
 

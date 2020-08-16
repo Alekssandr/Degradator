@@ -33,7 +33,7 @@ class ArticleDetailsViewModel @Inject constructor(
 
     fun putLikes(it: Pair<String, Int>) {
         disposables +=
-            likeUseCase.execute(settingsPreferences.clientId, it.first, it.second)
+            likeUseCase.execute(settingsPreferences.token, it.first, it.second)
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onComplete = {
@@ -45,7 +45,7 @@ class ArticleDetailsViewModel @Inject constructor(
 
     fun getComment(id: String) {
         disposables +=
-            commentUseCase.execute(settingsPreferences.clientId, id)
+            commentUseCase.execute(settingsPreferences.token, id)
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onSuccess = {
@@ -64,7 +64,7 @@ class ArticleDetailsViewModel @Inject constructor(
     fun putComment(commentList: CommentList, getComment: () -> Unit) {
         val block = Block(text = commentList.content[0].text, type = "text")
         disposables +=
-            addCommentUseCase.execute(settingsPreferences.clientId,
+            addCommentUseCase.execute(settingsPreferences.token,
                 NewComment(commentList.ancestorId, commentList.parentPostId, listOf(block)))
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
