@@ -32,6 +32,7 @@ class UserAuthDataRepository(
         val userNew = JsonObject()
         userNew.addProperty("login", user.mail)
         userNew.addProperty("password", user.password)
+        userNew.addProperty("username", user.mail)
         return api.register(userNew)
     }
 

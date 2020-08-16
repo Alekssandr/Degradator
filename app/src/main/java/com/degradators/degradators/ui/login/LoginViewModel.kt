@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
 
     fun signUp(username: String, password: String){
         disposables += insertNewUserUseCase
-            .execute(User(mail = username, password = password))
+            .execute(User(mail = username, password = password, username = username))
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onComplete = {

@@ -20,7 +20,7 @@ interface UserAuthAPI {
 
     @GET("/api/s/user")
     fun socialSignIn(
-        @Header("M-Token") token: String
+        @Header("X-Auth-Token") token: String
     ): Single<User>
 
     @GET("/api/s/user")

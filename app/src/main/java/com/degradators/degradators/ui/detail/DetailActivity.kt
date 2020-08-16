@@ -77,11 +77,14 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     }
 
     private fun initRecycler(binding: ActivityDetailBinding) {
+        val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
         binding.commentsBlock.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             this.adapter = CommentsAdapter {
                 if (it.second == 0) {
-                    viewModel.putComment(it.first) {}
+                    viewModel.putComment(it.first) {
+                        viewModel.getComment(articleDetails.id)
+                    }
                     val countsComments = Integer.valueOf(messageText.text.toString()) + 1
                     intentBindDetails.putExtra(COMMENTS, countsComments)
                     setComment(countsComments)

@@ -94,7 +94,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getLikes(it: Pair<String, Int>) {
         disposables +=
-            likeUseCase.execute(settingsPreferences.clientId, it.first, it.second)
+            likeUseCase.execute(settingsPreferences.token, it.first, it.second)
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onComplete = {
