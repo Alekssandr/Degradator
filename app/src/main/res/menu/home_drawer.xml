@@ -12,15 +12,17 @@
             android:title="My List" />
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_changePassword"
-                android:title="Change Password" />
-            <item
-                android:id="@+id/nav_Logout"
-                android:title="Log out" />
-        </menu>
-    </item>
+    <group android:id="@+id/communicate">
+        <item android:title="Communicate">
+            <menu>
+                <item
+                    android:id="@+id/nav_changePassword"
+                    android:title="Change Password" />
+                <item
+                    android:id="@+id/nav_Logout"
+                    android:title="Log out" />
+            </menu>
+        </item>
+    </group>
 
 </menu>

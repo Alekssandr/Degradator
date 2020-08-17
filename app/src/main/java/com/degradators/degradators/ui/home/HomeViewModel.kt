@@ -4,12 +4,10 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
-import com.degradators.degradators.model.PostIds
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.usecase.RemoveArticlesUseCase
 import com.degradators.degradators.usecase.SystemSettingsUseCase
 import com.degradators.degradators.usecase.articles.ArticlesUseCase
-import com.degradators.degradators.usecase.articles.LikeListArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
 import com.degradators.degradators.usecase.user.UserInfoUseCase
 import io.reactivex.Observable
@@ -24,7 +22,6 @@ class HomeViewModel @Inject constructor(
     private val likeUseCase: LikeUseCase,
     private val removeArticlesUseCase: RemoveArticlesUseCase,
     private val userInfoUseCase: UserInfoUseCase,
-    private val likeListArticlesUseCase: LikeListArticlesUseCase,
     private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers
 ) : ViewModel(), LifecycleObserver {
@@ -105,21 +102,6 @@ class HomeViewModel @Inject constructor(
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")
                 })
-    }
-
-    //TODO pass list of user's likes
-    fun getArticlesBy(list: MutableList<String>) {
-//        val list = mutableListOf<String>()
-        list.add("5f392b16cf0df008aaa40534")
-        disposables += likeListArticlesUseCase
-            .execute(PostIds(idsList = list))
-            .subscribeOn(schedulers.io())
-            .observeOn(schedulers.mainThread())
-            .subscribeBy(onSuccess = {
-                articleMessage.value = it.messageList
-            }, onError = {
-                Log.e("Test111", "error: ${it.message} ?: ")
-            })
     }
 
     private fun removeArticles(messageId: String) {

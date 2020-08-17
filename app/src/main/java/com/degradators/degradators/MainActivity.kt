@@ -24,6 +24,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_home.*
 
+const val MESSAGEIDS = "messageIds"
 
 class MainActivity : BaseActivity<MainViewModel>(),
     NavigationView.OnNavigationItemSelectedListener {
@@ -114,6 +115,9 @@ class MainActivity : BaseActivity<MainViewModel>(),
             isLogin = it
             binding.navView.menu.findItem(R.id.nav_Logout).isVisible = it
             binding.navView.menu.findItem(R.id.nav_changePassword).isVisible = it
+            binding.navView.menu.findItem(R.id.nav_my_list).isVisible = it
+            //TODO doesn't hide
+            binding.navView.menu.setGroupVisible(R.id.communicate, it)
         })
     }
 
@@ -125,14 +129,20 @@ class MainActivity : BaseActivity<MainViewModel>(),
                 supportFragmentManager.popBackStack()
                 tabs.visibility = View.VISIBLE
                 view_pager.visibility = View.VISIBLE
-
+                user_frame.visibility = View.GONE
                 return true
             }
             R.id.nav_my_list -> {
                 drawer_layout.closeDrawers()
-                val myListFragment = MyListFragment()
+                val array = viewModel.messageIds.value
+                val myListFragment = MyListFragment().apply {
+                    arguments = Bundle().apply {
+                        putStringArray(MESSAGEIDS, array?.toTypedArray())
+                    }
+                }
                 tabs.visibility = View.GONE
                 view_pager.visibility = View.GONE
+                user_frame.visibility = View.VISIBLE
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.user_frame, myListFragment)
                     .commitAllowingStateLoss()
