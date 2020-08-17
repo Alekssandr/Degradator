@@ -1,6 +1,7 @@
 package com.degradators.degradators.ui
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
@@ -21,6 +22,9 @@ class MainViewModel @Inject constructor(
     val userSignedIn = MutableLiveData<Boolean>()
     val userName: MutableLiveData<String> = MutableLiveData<String>()
     val userUrl: MutableLiveData<String> = MutableLiveData<String>()
+    private var _messageIds = MutableLiveData<List<String>>()
+    val messageIds: LiveData<List<String>>
+        get() = _messageIds
 
     init {
         isLogin()
@@ -47,6 +51,8 @@ class MainViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
+                val flattened: List<String> = it.markList.flatMap { aa -> mutableListOf<String>(aa.messageId)}
+                _messageIds.value = flattened
                 settingsPreferences.clientId = it.id
                 userPhotoLoginVisibility.value = true
                 userUrl.value = it.photo

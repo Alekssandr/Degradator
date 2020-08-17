@@ -4,6 +4,7 @@ import com.degradators.data.degradators.database.user.api.ArticlesAPI
 import com.degradators.data.degradators.database.user.mapper.toModel
 import com.degradators.degradators.model.NewComment
 import com.degradators.degradators.model.NewPost
+import com.degradators.degradators.model.PostIds
 import com.degradators.degradators.model.article.Articles
 import com.degradators.degradators.model.comment.Comments
 import com.degradators.degradators.repo.ArticlesRepository
@@ -21,6 +22,16 @@ class ArticlesDataRepository(
                     it.map { articlesMessageEntity -> articlesMessageEntity.toModel() }
                 }.let { Articles(it) }
         }
+
+    override fun getArticlesByList(articleId: PostIds): Single<Articles> =
+        api.getArticlesByList(articleId)
+            .map { articlesEntity ->
+                articlesEntity.messageList
+                    .let {
+                        it.map { articlesMessageEntity -> articlesMessageEntity.toModel() }
+                    }.let { Articles(it) }
+            }
+
 
     override fun getLike(clientId: String, articleId: String, like: Int): Completable =
         api.getLike(clientId, articleId, like)
