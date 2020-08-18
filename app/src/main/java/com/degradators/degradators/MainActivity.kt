@@ -113,11 +113,9 @@ class MainActivity : BaseActivity<MainViewModel>(),
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
             isLogin = it
-            binding.navView.menu.findItem(R.id.nav_Logout).isVisible = it
-            binding.navView.menu.findItem(R.id.nav_changePassword).isVisible = it
             binding.navView.menu.findItem(R.id.nav_my_list).isVisible = it
             //TODO doesn't hide
-            binding.navView.menu.setGroupVisible(R.id.communicate, it)
+            binding.navView.menu.findItem(R.id.nav_Logout).isVisible = it
         })
     }
 
