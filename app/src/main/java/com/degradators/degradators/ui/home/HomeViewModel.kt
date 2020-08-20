@@ -30,7 +30,7 @@ class HomeViewModel @Inject constructor(
 
     val text: MutableLiveData<String> = MutableLiveData<String>()
 
-    val articleMessage: MutableLiveData<List<ArticleMessage>> = MutableLiveData()
+    val articleMessage: MutableLiveData<Pair<List<ArticleMessage>, Boolean>> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(
         _index.value = index
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onCreate() {
         if (settingsPreferences.clientId.isEmpty()) getSystemSetting()
 //        if (settingsPreferences.token.isNotEmpty()) getUser()
@@ -75,7 +75,7 @@ class HomeViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-                articleMessage.value = it.messageList
+                articleMessage.value = Pair(it.messageList, skip == 0.toLong())
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")
             })

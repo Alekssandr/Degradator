@@ -39,7 +39,7 @@ class MyListFragment : BaseFragment<MyListViewModel>() {
 
             }
         viewModel.articleMessage.observe(viewLifecycleOwner, Observer<List<ArticleMessage>> {
-            bindArticleMessagesAdapter.update(it)
+            bindArticleMessagesAdapter.update(it, true)
         })
 
         observeLifecycleIn(viewModel)

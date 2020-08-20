@@ -32,15 +32,17 @@ class MainActivity : BaseActivity<MainViewModel>(),
     override val viewModel: MainViewModel by viewModels { factory }
     lateinit var binding: ActivityMainBinding
     private val SIGN_IN = 9002
+    private val ADD_ARTICLE_ACTIVITY = 1000
     private var isLogin = false
 
+    lateinit var sectionsPagerAdapter: SectionsPagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
+        sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
         val viewPager: ViewPager = findViewById(R.id.view_pager)
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = findViewById(R.id.tabs)
@@ -64,7 +66,7 @@ class MainActivity : BaseActivity<MainViewModel>(),
 
         fab.setOnClickListener {
             val intent = Intent(this, AddArticleActivity::class.java)
-            startActivity(intent)
+            startActivityForResult(intent, ADD_ARTICLE_ACTIVITY)
         }
     }
 
@@ -162,6 +164,9 @@ class MainActivity : BaseActivity<MainViewModel>(),
             if (resultCode == RESULT_OK) {
                 viewModel.isLogin()
             }
+        }
+        if(requestCode == ADD_ARTICLE_ACTIVITY){
+            sectionsPagerAdapter.notifyDataSetChanged()
         }
     }
 }

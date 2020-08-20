@@ -43,8 +43,8 @@ class PlaceholderFragment : DaggerFragment() {
 
         homeViewModel.apply { setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1) }
 
-        homeViewModel.articleMessage.observe(viewLifecycleOwner, Observer<List<ArticleMessage>> {
-            bindArticleMessagesAdapter.update(it)
+        homeViewModel.articleMessage.observe(viewLifecycleOwner, Observer {
+            bindArticleMessagesAdapter.update(it.first, it.second)
             isLoading = false
         })
 
@@ -52,7 +52,6 @@ class PlaceholderFragment : DaggerFragment() {
 
         return binding.root
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
