@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.ui.main.BaseViewModel
+import com.degradators.degradators.usecase.SystemSettingsUseCase
 import com.degradators.degradators.usecase.user.UserInfoUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val userInfoUseCase: UserInfoUseCase,
+    private val systemSettingsUseCase: SystemSettingsUseCase,
     private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers
 ) : BaseViewModel() {
@@ -41,8 +43,10 @@ class MainViewModel @Inject constructor(
 
     fun logout() {
         settingsPreferences.token = ""
+        settingsPreferences.clientId = ""
+        settingsPreferences.userId = ""
         userPhotoLoginVisibility.value = false
-        userSignedIn.value = false
+        getSystemSetting()
     }
 
     private fun getUser() {
@@ -53,7 +57,7 @@ class MainViewModel @Inject constructor(
             .subscribeBy(onSuccess = {
                 val flattened: List<String> = it.markList.flatMap { aa -> mutableListOf<String>(aa.messageId)}
                 _messageIds.value = flattened
-                settingsPreferences.clientId = it.id
+                settingsPreferences.userId = it.id
                 userPhotoLoginVisibility.value = true
                 userUrl.value = it.photo
                 userName.value = if(it.username.isNullOrEmpty()) it.mail else it.username
@@ -61,6 +65,20 @@ class MainViewModel @Inject constructor(
                 Log.d("Test11123", "token: $it")
             }, onError = {
                 Log.e("Test11123", "error: ${it.message} ?: ")
+            })
+    }
+
+    //объединить с хомом
+    private fun getSystemSetting() {
+        disposables += systemSettingsUseCase
+            .execute()
+            .subscribeOn(schedulers.io())
+            .observeOn(schedulers.mainThread())
+            .subscribeBy(onSuccess = {
+                settingsPreferences.clientId = it
+                userSignedIn.value = false
+            }, onError = {
+                Log.e("Test111", "error: ${it.message} ?: ")
             })
     }
 

@@ -36,8 +36,8 @@ class ArticlesDataRepository(
     override fun getLike(clientId: String, articleId: String, like: Int): Completable =
         api.getLike(clientId, articleId, like)
 
-    override fun addArticle(clientId: String, newPost: NewPost): Completable =
-        api.addArticle(clientId, newPost)
+    override fun addArticle(token: String, clientId: String, newPost: NewPost): Completable =
+        api.addArticle(token, clientId, newPost)
 
     override fun addComment(clientId: String, newComment: NewComment): Completable =
         api.addComment(clientId, newComment)

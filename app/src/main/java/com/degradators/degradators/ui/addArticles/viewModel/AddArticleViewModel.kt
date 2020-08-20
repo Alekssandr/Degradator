@@ -68,7 +68,7 @@ class AddArticleViewModel @Inject constructor(
         articleHeader: String
     ) {
         disposables += addNewArticleUseCase
-            .execute(settingsPreferences.token, NewPost(articleHeader, articleList))
+            .execute(settingsPreferences.token, settingsPreferences.clientId, NewPost(articleHeader, articleList))
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onComplete = {

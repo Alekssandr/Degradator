@@ -63,6 +63,10 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
                 )
             listener(Pair(articleDetails, position))
         }
+        //работает но сделать покрасивее, отдельный метод? байндине?
+        if(articleMessageList[position].isRemovable){
+            a.itemView.removeArticle.visibility = View.VISIBLE
+        }
     }
 
     private fun setUser(articleMessage: ArticleMessage, itemView: View) {

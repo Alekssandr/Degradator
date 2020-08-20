@@ -13,7 +13,7 @@ interface ArticlesRepository {
     fun getComment(clientId: String, id: String): Single<Comments>
     fun getLike(clientId: String, articleId: String, like: Int): Completable
     fun addComment(clientId: String, newComment: NewComment): Completable
-    fun addArticle(clientId: String, newPost: NewPost): Completable
+    fun addArticle(token: String, clientId: String, newPost: NewPost): Completable
     fun removeArticles(clientId: String, messageId: String): Completable
     fun getArticlesByList(articleId: PostIds): Single<Articles>
 }

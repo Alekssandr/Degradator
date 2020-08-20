@@ -14,6 +14,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
@@ -75,7 +76,26 @@ class HomeViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
+                if (settingsPreferences.userId.isNotEmpty()) {
+                    it.messageList.forEach {articles ->
+                            if(articles.userId == settingsPreferences.userId){
+                                if(articles.time + TimeUnit.DAYS.toMillis(1) > System.currentTimeMillis()){
+                                    articles.isRemovable = true
+                                }
+                            }
+                    }
+                    //работает но сделать покрасивее
+                } else {
+                    it.messageList.forEach {articles ->
+                        if(articles.clientId == settingsPreferences.clientId){
+                            if(articles.time + TimeUnit.MINUTES.toMillis(2) > System.currentTimeMillis()){
+                                articles.isRemovable = true
+                            }
+                        }
+                    }
+                }
                 articleMessage.value = Pair(it.messageList, skip == 0.toLong())
+
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")
             })
@@ -89,7 +109,6 @@ class HomeViewModel @Inject constructor(
                 .subscribe {
                     getLikes(it)
                 }
-
     }
 
     private fun getLikes(it: Pair<String, Int>) {

@@ -9,9 +9,11 @@ data class ArticleMessage(
     var type: String = "",
     var summary: Summary,
     var userId: String = "",
+    var clientId: String = "",
     var header: String = "",
     var userName: String = "",
     var userPhoto: String = "",
     var content: List<ArticleBlock> = emptyList(),
-    var like: Int = 0
+    var like: Int = 0,
+    var isRemovable: Boolean = false
 ) : Serializable
