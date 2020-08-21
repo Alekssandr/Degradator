@@ -37,6 +37,7 @@ interface ArticlesAPI {
     @PUT("/api/p/message")
     fun addArticle(
         @Header("X-Auth-Token") token: String,
+        @Header("Client-Id") clientId: String,
         @Body newPost: NewPost
     ): Completable
 
@@ -60,6 +61,7 @@ interface ArticlesAPI {
 
     @DELETE("/api/s/message/{messageId}")
     fun removeArticles(
+        @Header("X-Auth-Token") token: String,
         @Header("Client-Id") clientId: String,
         @Path("messageId") messageId: String
     ) : Completable

@@ -9,7 +9,7 @@ class AddNewArticleUseCase @Inject constructor(
     private val articlesRepository: ArticlesRepository
 
 ) {
-    fun execute(clientId: String, newPost: NewPost): Completable {
-        return articlesRepository.addArticle(clientId, newPost)
+    fun execute(token: String, clientId: String, newPost: NewPost): Completable {
+        return articlesRepository.addArticle(token, clientId, newPost)
     }
 }

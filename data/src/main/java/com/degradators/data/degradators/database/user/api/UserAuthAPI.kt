@@ -1,5 +1,6 @@
 package com.degradators.data.degradators.database.user.api
 
+import com.degradators.data.degradators.database.user.model.user.UserEntity
 import com.degradators.degradators.model.ClientId
 import com.degradators.degradators.model.user.User
 import com.google.gson.JsonObject
@@ -21,12 +22,12 @@ interface UserAuthAPI {
     @GET("/api/s/user")
     fun socialSignIn(
         @Header("X-Auth-Token") token: String
-    ): Single<User>
+    ): Single<UserEntity>
 
     @GET("/api/s/user")
     fun getUser(
         @Header("X-Auth-Token") token: String
-    ): Single<User>
+    ): Single<UserEntity>
 
     @GET("/api/p/systemSettings")
     fun getSystemSettings(): Single<ClientId>

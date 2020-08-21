@@ -43,8 +43,8 @@ class PlaceholderFragment : DaggerFragment() {
 
         homeViewModel.apply { setIndex(arguments?.getInt(ARG_SECTION_NUMBER) ?: 1) }
 
-        homeViewModel.articleMessage.observe(viewLifecycleOwner, Observer<List<ArticleMessage>> {
-            bindArticleMessagesAdapter.update(it)
+        homeViewModel.articleMessage.observe(viewLifecycleOwner, Observer {
+            bindArticleMessagesAdapter.update(it.first, it.second)
             isLoading = false
         })
 
@@ -52,7 +52,6 @@ class PlaceholderFragment : DaggerFragment() {
 
         return binding.root
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -83,6 +82,10 @@ class PlaceholderFragment : DaggerFragment() {
                     putExtra(DETAILS_EXTRA, it.first)
                     putExtra(DETAILS_POSITION, it.second)
                 }, SECOND_ACTIVITY_REQUEST_CODE)
+            }.also {
+                it.getlistenerRemoveItem { messageId ->
+                    homeViewModel.removeArticles(messageId)
+                }
             }
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
@@ -90,17 +93,12 @@ class PlaceholderFragment : DaggerFragment() {
         }
     }
 
-    private fun addScrollerListener()
-    {
-        recycler_articles.addOnScrollListener(object : RecyclerView.OnScrollListener()
-        {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
-            {
+    private fun addScrollerListener() {
+        recycler_articles.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (!isLoading)
-                {
-                    if (layoutManagerRW.findLastVisibleItemPosition() == layoutManagerRW.itemCount - 1)
-                    {
+                if (!isLoading) {
+                    if (layoutManagerRW.findLastVisibleItemPosition() == layoutManagerRW.itemCount - 1) {
                         homeViewModel.getArticles(layoutManagerRW.itemCount.toLong())
                         isLoading = true
                     }

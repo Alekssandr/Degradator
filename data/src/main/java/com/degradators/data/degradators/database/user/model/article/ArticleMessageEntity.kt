@@ -7,6 +7,7 @@ data class ArticleMessageEntity(
     var type: String? = "",
     var summary: SummaryEntity,
     var userId: String? = "",
+    var clientId: String? = "",
     var header: String? = "",
     var userName: String? = "",
     var userPhoto: String? = "",

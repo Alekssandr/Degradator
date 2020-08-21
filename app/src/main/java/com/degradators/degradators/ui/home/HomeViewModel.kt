@@ -11,9 +11,11 @@ import com.degradators.degradators.usecase.articles.ArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
 import com.degradators.degradators.usecase.user.UserInfoUseCase
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
@@ -30,7 +32,7 @@ class HomeViewModel @Inject constructor(
 
     val text: MutableLiveData<String> = MutableLiveData<String>()
 
-    val articleMessage: MutableLiveData<List<ArticleMessage>> = MutableLiveData()
+    val articleMessage: MutableLiveData<Pair<List<ArticleMessage>, Boolean>> = MutableLiveData()
 
     private val disposables = CompositeDisposable()
 
@@ -38,8 +40,8 @@ class HomeViewModel @Inject constructor(
         _index.value = index
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun onCreate() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onStart() {
         if (settingsPreferences.clientId.isEmpty()) getSystemSetting()
 //        if (settingsPreferences.token.isNotEmpty()) getUser()
         getArticles()
@@ -68,17 +70,41 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-
     fun getArticles(skip: Long = 0) {
         disposables += articlesUseCase
             .execute(settingsPreferences.clientId, getTabName(), skip)//20
+            .toObservable()
+            .flatMapIterable {
+                it.messageList
+            }
+            .flatMapSingle {
+                changeRemovable(it)
+            }
+            .toList()
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-                articleMessage.value = it.messageList
+                articleMessage.value = Pair(it, skip == 0.toLong())
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")
             })
+    }
+
+    private fun changeRemovable(it: ArticleMessage): Single<ArticleMessage> {
+        if (settingsPreferences.userId.isNotEmpty()) {
+            if (it.userId == settingsPreferences.userId &&
+                it.time + TimeUnit.DAYS.toMillis(1) > System.currentTimeMillis()
+            ) {
+                it.isRemovable = true
+            }
+        } else {
+            if (it.clientId == settingsPreferences.clientId &&
+                it.time + TimeUnit.MINUTES.toMillis(2) > System.currentTimeMillis()
+            ) {
+                it.isRemovable = true
+            }
+        }
+        return Single.just(it)
     }
 
     fun subscribeForItemClick(clickItemObserver: Observable<Pair<String, Int>>) {
@@ -89,7 +115,6 @@ class HomeViewModel @Inject constructor(
                 .subscribe {
                     getLikes(it)
                 }
-
     }
 
     private fun getLikes(it: Pair<String, Int>) {
@@ -104,13 +129,13 @@ class HomeViewModel @Inject constructor(
                 })
     }
 
-    private fun removeArticles(messageId: String) {
+    fun removeArticles(messageId: String) {
         disposables +=
-            removeArticlesUseCase.execute(settingsPreferences.clientId, messageId)
+            removeArticlesUseCase.execute(settingsPreferences.token, settingsPreferences.clientId, messageId)
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onComplete = {
-                    text.value = "removed"
+                    getArticles()
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")
                 })

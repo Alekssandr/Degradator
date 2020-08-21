@@ -16,6 +16,7 @@ fun ArticleMessageEntity.toModel() =
         type ?: "",
         summary.toSummaryModel(),
         userId ?: "",
+        clientId ?: "",
         header ?: "",
         userName?.userName() ?: "",
         userPhoto ?: "",
