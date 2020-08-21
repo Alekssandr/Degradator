@@ -21,8 +21,10 @@ const val DETAILS_POSITION = "details_position"
 const val DETAILS_LIKE = "details_like"
 const val COMMENTS = "comments"
 
-class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) :
+class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    lateinit var listenerRemoveItem: (String) -> Unit
 
     private var articleMessageList = mutableListOf<ArticleMessage>()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
@@ -34,6 +36,10 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
         )
     }
 
+    fun getlistenerRemoveItem(listenerRemoveItem: (String) -> Unit){
+        this.listenerRemoveItem = listenerRemoveItem
+    }
+
     override fun getItemCount(): Int {
         return articleMessageList.size
     }
@@ -43,13 +49,13 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val a = (holder as ImageViewHolder)
+        val item = (holder as ImageViewHolder)
         Log.d("test1111", "size: " + articleMessageList.size.toString() + " pos: " + position)
-        a.bind(articleMessageList[position])
+        item.bind(articleMessageList[position])
         setLikeDislike(articleMessageList[position], holder.itemView)
         setComment(articleMessageList[position], holder.itemView)
         setUser(articleMessageList[position], holder.itemView)
-        a.itemView.message.setOnClickListener {
+        item.itemView.message.setOnClickListener {
             val article = articleMessageList[position]
             val articleDetails =
                 ArticleMessage(
@@ -61,11 +67,20 @@ class ArticleMessagesAdapter(val listener: (Pair<ArticleMessage, Int>) -> Unit) 
                     userPhoto = article.userPhoto,
                     userName = article.userName
                 )
-            listener(Pair(articleDetails, position))
+            listenerOpenDetail(Pair(articleDetails, position))
         }
-        //работает но сделать покрасивее, отдельный метод? байндине?
-        if(articleMessageList[position].isRemovable){
-            a.itemView.removeArticle.visibility = View.VISIBLE
+        removeArticleBy(position, item)
+    }
+
+    private fun removeArticleBy(
+        position: Int,
+        item: ImageViewHolder
+    ) {
+        if (articleMessageList[position].isRemovable) {
+            item.itemView.removeArticle.visibility = View.VISIBLE
+            item.itemView.removeArticle.setOnClickListener {
+                listenerRemoveItem(articleMessageList[position].id)
+            }
         }
     }
 

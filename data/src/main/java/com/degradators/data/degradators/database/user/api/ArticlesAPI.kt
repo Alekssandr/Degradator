@@ -61,6 +61,7 @@ interface ArticlesAPI {
 
     @DELETE("/api/s/message/{messageId}")
     fun removeArticles(
+        @Header("X-Auth-Token") token: String,
         @Header("Client-Id") clientId: String,
         @Path("messageId") messageId: String
     ) : Completable

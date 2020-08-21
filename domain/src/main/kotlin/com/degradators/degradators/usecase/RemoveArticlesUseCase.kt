@@ -8,7 +8,7 @@ class RemoveArticlesUseCase @Inject constructor(
     private val articlesRepository: ArticlesRepository
 
 ) {
-    fun execute(clientId: String, messageId: String): Completable {
-        return articlesRepository.removeArticles(clientId, messageId)
+    fun execute(token: String, clientId: String, messageId: String): Completable {
+        return articlesRepository.removeArticles(token, clientId, messageId)
     }
 }

@@ -82,6 +82,10 @@ class PlaceholderFragment : DaggerFragment() {
                     putExtra(DETAILS_EXTRA, it.first)
                     putExtra(DETAILS_POSITION, it.second)
                 }, SECOND_ACTIVITY_REQUEST_CODE)
+            }.also {
+                it.getlistenerRemoveItem { messageId ->
+                    homeViewModel.removeArticles(messageId)
+                }
             }
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
@@ -89,17 +93,12 @@ class PlaceholderFragment : DaggerFragment() {
         }
     }
 
-    private fun addScrollerListener()
-    {
-        recycler_articles.addOnScrollListener(object : RecyclerView.OnScrollListener()
-        {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
-            {
+    private fun addScrollerListener() {
+        recycler_articles.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (!isLoading)
-                {
-                    if (layoutManagerRW.findLastVisibleItemPosition() == layoutManagerRW.itemCount - 1)
-                    {
+                if (!isLoading) {
+                    if (layoutManagerRW.findLastVisibleItemPosition() == layoutManagerRW.itemCount - 1) {
                         homeViewModel.getArticles(layoutManagerRW.itemCount.toLong())
                         isLoading = true
                     }

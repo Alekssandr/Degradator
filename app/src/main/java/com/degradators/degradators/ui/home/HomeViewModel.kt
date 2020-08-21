@@ -11,6 +11,7 @@ import com.degradators.degradators.usecase.articles.ArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
 import com.degradators.degradators.usecase.user.UserInfoUseCase
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -40,7 +41,7 @@ class HomeViewModel @Inject constructor(
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onCreate() {
+    fun onStart() {
         if (settingsPreferences.clientId.isEmpty()) getSystemSetting()
 //        if (settingsPreferences.token.isNotEmpty()) getUser()
         getArticles()
@@ -69,36 +70,41 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-
     fun getArticles(skip: Long = 0) {
         disposables += articlesUseCase
             .execute(settingsPreferences.clientId, getTabName(), skip)//20
+            .toObservable()
+            .flatMapIterable {
+                it.messageList
+            }
+            .flatMapSingle {
+                changeRemovable(it)
+            }
+            .toList()
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-                if (settingsPreferences.userId.isNotEmpty()) {
-                    it.messageList.forEach {articles ->
-                            if(articles.userId == settingsPreferences.userId){
-                                if(articles.time + TimeUnit.DAYS.toMillis(1) > System.currentTimeMillis()){
-                                    articles.isRemovable = true
-                                }
-                            }
-                    }
-                    //работает но сделать покрасивее
-                } else {
-                    it.messageList.forEach {articles ->
-                        if(articles.clientId == settingsPreferences.clientId){
-                            if(articles.time + TimeUnit.MINUTES.toMillis(2) > System.currentTimeMillis()){
-                                articles.isRemovable = true
-                            }
-                        }
-                    }
-                }
-                articleMessage.value = Pair(it.messageList, skip == 0.toLong())
-
+                articleMessage.value = Pair(it, skip == 0.toLong())
             }, onError = {
                 Log.e("Test111", "error: ${it.message} ?: ")
             })
+    }
+
+    private fun changeRemovable(it: ArticleMessage): Single<ArticleMessage> {
+        if (settingsPreferences.userId.isNotEmpty()) {
+            if (it.userId == settingsPreferences.userId &&
+                it.time + TimeUnit.DAYS.toMillis(1) > System.currentTimeMillis()
+            ) {
+                it.isRemovable = true
+            }
+        } else {
+            if (it.clientId == settingsPreferences.clientId &&
+                it.time + TimeUnit.MINUTES.toMillis(2) > System.currentTimeMillis()
+            ) {
+                it.isRemovable = true
+            }
+        }
+        return Single.just(it)
     }
 
     fun subscribeForItemClick(clickItemObserver: Observable<Pair<String, Int>>) {
@@ -123,13 +129,13 @@ class HomeViewModel @Inject constructor(
                 })
     }
 
-    private fun removeArticles(messageId: String) {
+    fun removeArticles(messageId: String) {
         disposables +=
-            removeArticlesUseCase.execute(settingsPreferences.clientId, messageId)
+            removeArticlesUseCase.execute(settingsPreferences.token, settingsPreferences.clientId, messageId)
                 .subscribeOn(schedulers.io())
                 .observeOn(schedulers.mainThread())
                 .subscribeBy(onComplete = {
-                    text.value = "removed"
+                    getArticles()
                 }, onError = {
                     Log.e("Test111", "error: ${it.message} ?: ")
                 })

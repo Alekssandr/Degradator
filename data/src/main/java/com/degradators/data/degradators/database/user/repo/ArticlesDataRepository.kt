@@ -45,7 +45,7 @@ class ArticlesDataRepository(
     override fun getComment(clientId: String, id: String): Single<Comments> =
         api.getComment(clientId, id)
 
-    override fun removeArticles(clientId: String, messageId: String): Completable =
-        api.removeArticles(clientId, messageId)
+    override fun removeArticles(token: String, clientId: String, messageId: String): Completable =
+        api.removeArticles(token, clientId, messageId)
 }
 

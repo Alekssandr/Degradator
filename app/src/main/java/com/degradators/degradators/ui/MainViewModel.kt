@@ -55,12 +55,13 @@ class MainViewModel @Inject constructor(
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {
-                val flattened: List<String> = it.markList.flatMap { aa -> mutableListOf<String>(aa.messageId)}
+                val flattened: List<String> =
+                    it.markList.flatMap { list -> mutableListOf(list.messageId) }
                 _messageIds.value = flattened
                 settingsPreferences.userId = it.id
                 userPhotoLoginVisibility.value = true
                 userUrl.value = it.photo
-                userName.value = if(it.username.isNullOrEmpty()) it.mail else it.username
+                userName.value = if (it.username.isNullOrEmpty()) it.mail else it.username
                 userSignedIn.value = true
                 Log.d("Test11123", "token: $it")
             }, onError = {
@@ -68,7 +69,6 @@ class MainViewModel @Inject constructor(
             })
     }
 
-    //объединить с хомом
     private fun getSystemSetting() {
         disposables += systemSettingsUseCase
             .execute()
