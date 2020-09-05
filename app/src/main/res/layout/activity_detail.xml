@@ -59,6 +59,18 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
+                        <TextView
+                            android:id="@+id/dateOfPost"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="date"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/detailsImageTextTitle" />
+
+
                         <LinearLayout
                             android:id="@+id/mainContainer"
                             android:layout_width="match_parent"
@@ -67,7 +79,7 @@
                             android:padding="8dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/detailsImageTextTitle" />
+                            app:layout_constraintTop_toBottomOf="@+id/dateOfPost" />
 
                         <ImageButton
                             android:id="@+id/detailsLike"

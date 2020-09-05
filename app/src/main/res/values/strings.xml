@@ -14,7 +14,7 @@
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome !"</string>
     <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_password">Password shouldn\'t be empty</string>
     <string name="login_failed">"Login failed"</string>
     <string name="signup_failed">"signup failed"</string>
     <string name="title_activity_add_article">Add article</string>
@@ -43,5 +43,16 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="facebook_app_id">2551287921828495</string> <string name="fb_login_protocol_scheme">fb2551287921828495</string>
+    <string name="min_ago"> minutes ago</string>
+    <string name="just_now">just now</string>
+    <string name="minute_ago">a minute ago</string>
+    <string name="hour_ago">an hour ago</string>
+    <string name="hours_ago">hours ago</string>
+    <string name="yesterday">yesterday</string>
+    <string name="days_ago">days ago</string>
+    <string name="weeks_ago">weeks ago</string>
+    <string name="month">month ago</string>
+    <string name="months_ago">months ago</string>
+    <string name="more_than_year"> more than year ago</string>
 
 </resources>

@@ -10,11 +10,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
+import java.util.*
 
 const val DETAILS_EXTRA = "details"
 const val DETAILS_POSITION = "details_position"
@@ -55,11 +57,15 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         setLikeDislike(articleMessageList[position], holder.itemView)
         setComment(articleMessageList[position], holder.itemView)
         setUser(articleMessageList[position], holder.itemView)
+        val date = Date(articleMessageList[position].time)
+        holder.itemView.dateOfPost.text = date.getTimeAgo(context = holder.itemView.context)
+
         item.itemView.message.setOnClickListener {
             val article = articleMessageList[position]
             val articleDetails =
                 ArticleMessage(
                     id = article.id,
+                    time = article.time,
                     type = article.type,
                     summary = article.summary,
                     header = article.header,

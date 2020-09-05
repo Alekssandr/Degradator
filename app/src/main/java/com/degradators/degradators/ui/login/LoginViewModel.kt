@@ -100,6 +100,6 @@ class LoginViewModel @Inject constructor(
 
     // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
-        return password.length > 5
+        return password.isNotEmpty()
     }
 }
