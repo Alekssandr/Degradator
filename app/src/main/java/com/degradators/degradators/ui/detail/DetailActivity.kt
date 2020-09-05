@@ -23,9 +23,13 @@ import com.degradators.degradators.model.comment.Expanded
 import com.degradators.degradators.ui.detail.adapter.CommentsAdapter
 import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
 import com.degradators.degradators.ui.main.BaseActivity
+import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
 import kotlinx.android.synthetic.main.activity_detail.*
+import kotlinx.android.synthetic.main.activity_detail.messageText
+import kotlinx.android.synthetic.main.article_item_image_text.view.*
+import java.util.*
 
 
 class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
@@ -139,6 +143,9 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
 
     private fun showArticle(articleDetails: ArticleMessage) {
         detailsImageTextTitle.text = articleDetails.header
+
+        val date = Date(articleDetails.time)
+        dateOfPost.text = date.getTimeAgo(this)
 
         setLikeDislike(articleDetails)
 
