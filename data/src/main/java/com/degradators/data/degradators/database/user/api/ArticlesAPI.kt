@@ -66,4 +66,11 @@ interface ArticlesAPI {
         @Path("messageId") messageId: String
     ) : Completable
 
+    @GET("api/s/user/submissions")
+    fun getListSubmissions(
+        @Header("X-Auth-Token") token: String,
+        @Header("Client-Id") clientId: String,
+        @Query("skip") skip: Long
+    ): Single<ArticlesEntity>
+
 }

@@ -10,6 +10,14 @@
             android:id="@+id/nav_my_list"
             android:icon="@drawable/ic_favorite_24dp"
             android:title="My List" />
+        <item
+            android:id="@+id/nav_my_posts"
+            android:icon="@drawable/ic_description_24px"
+            android:title="My Posts" />
+        <item
+            android:id="@+id/nav_my_comments"
+            android:icon="@drawable/ic_comment_24px"
+            android:title="My Comments" />
     </group>
 
     <group android:id="@+id/communicate">

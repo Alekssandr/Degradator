@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +17,6 @@ import com.degradators.degradators.R
 import com.degradators.degradators.common.adapter.*
 import com.degradators.degradators.common.lifecircle.observeLifecycleIn
 import com.degradators.degradators.databinding.FragmentHomeBinding
-import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.DetailActivity
 import com.degradators.degradators.ui.home.HomeViewModel
 import dagger.android.support.DaggerFragment

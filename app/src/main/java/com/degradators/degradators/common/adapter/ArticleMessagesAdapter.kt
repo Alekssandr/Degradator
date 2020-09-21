@@ -161,7 +161,11 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         RecyclerView.ViewHolder(itemView) {
 
         fun bind(articleMessage: ArticleMessage) {
-            itemView.imageTextTitle.text = articleMessage.header
+            if(articleMessage.header.isNotEmpty()){
+                itemView.imageTextTitle.text = articleMessage.header
+            } else {
+                itemView.imageTextTitle.visibility = View.GONE
+            }
             articleMessage.content.forEach {
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
