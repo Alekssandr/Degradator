@@ -9,18 +9,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.degradators.degradators.MESSAGEIDS
 import com.degradators.degradators.common.BaseFragment
 import com.degradators.degradators.common.adapter.*
 import com.degradators.degradators.common.lifecircle.observeLifecycleIn
-import com.degradators.degradators.databinding.FragmentMyListBinding
-import com.degradators.degradators.databinding.FragmentMySubmissionsBinding
+import com.degradators.degradators.databinding.FragmentMyPostsBinding
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.DetailActivity
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
-class MySubmissionsFragment : BaseFragment<MySubmissionsViewModel>() {
+class MyPostsFragment : BaseFragment<MySubmissionsViewModel>() {
 
     override val viewModel: MySubmissionsViewModel by viewModels { factory }
 
@@ -32,8 +30,8 @@ class MySubmissionsFragment : BaseFragment<MySubmissionsViewModel>() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentMySubmissionsBinding =
-            FragmentMySubmissionsBinding.inflate(inflater, container, false).apply {
+        val binding: FragmentMyPostsBinding =
+            FragmentMyPostsBinding.inflate(inflater, container, false).apply {
                 mySubmissionsViewModel = viewModel
             }
         viewModel.articleMessage.observe(viewLifecycleOwner, Observer<List<ArticleMessage>> {

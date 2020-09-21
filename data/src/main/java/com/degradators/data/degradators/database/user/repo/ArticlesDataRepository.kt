@@ -24,10 +24,11 @@ class ArticlesDataRepository(
         }
 
     override fun getListSubmissions(token: String, clientId: String, skip: Long): Single<Articles> =
-        api.getListSubmissions(clientId, clientId, skip).map { articlesEntity ->
+        api.getListSubmissions(token, clientId, skip).map { articlesEntity ->
             articlesEntity.messageList
                 .let {
-                    it.map { articlesMessageEntity -> articlesMessageEntity.toModel() }
+                    it.filter { it.type == "POST" }
+                        .map { articlesMessageEntity -> articlesMessageEntity.toModel() }
                 }.let { Articles(it) }
         }
 

@@ -11,9 +11,9 @@
             android:icon="@drawable/ic_favorite_24dp"
             android:title="My List" />
         <item
-            android:id="@+id/nav_my_submissions"
-            android:icon="@drawable/ic_favorite_24dp"
-            android:title="My Submissions" />
+            android:id="@+id/nav_my_posts"
+            android:icon="@drawable/ic_description_24px"
+            android:title="My Posts" />
     </group>
 
     <group android:id="@+id/communicate">

@@ -18,7 +18,7 @@ import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
 import com.degradators.degradators.ui.userMenu.MyListFragment
-import com.degradators.degradators.ui.userMenu.MySubmissionsFragment
+import com.degradators.degradators.ui.userMenu.MyPostsFragment
 import com.degradators.degradators.ui.utils.loadImage
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
@@ -117,7 +117,7 @@ class MainActivity : BaseActivity<MainViewModel>(),
             )
             isLogin = it
             binding.navView.menu.findItem(R.id.nav_my_list).isVisible = it
-            binding.navView.menu.findItem(R.id.nav_my_submissions).isVisible = it
+            binding.navView.menu.findItem(R.id.nav_my_posts).isVisible = it
             //TODO doesn't hide
             binding.navView.menu.findItem(R.id.nav_Logout).isVisible = it
         })
@@ -150,10 +150,10 @@ class MainActivity : BaseActivity<MainViewModel>(),
                     .commitAllowingStateLoss()
                 return true
             }
-            R.id.nav_my_submissions -> {
+            R.id.nav_my_posts -> {
                 drawer_layout.closeDrawers()
                 val array = viewModel.messageIds.value
-                val myListFragment = MySubmissionsFragment()
+                val myListFragment = MyPostsFragment()
                 tabs.visibility = View.GONE
                 view_pager.visibility = View.GONE
                 user_frame.visibility = View.VISIBLE
