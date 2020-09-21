@@ -9,7 +9,7 @@ class GetSubmissionsArticleUseCase @Inject constructor(
     private val articlesRepository: ArticlesRepository
 
 ) {
-    fun execute(token: String, clientId: String, skip: Long): Single<Articles> {
-        return articlesRepository.getListSubmissions(token, clientId, skip)
+    fun execute(token: String, clientId: String, skip: Long, type: String): Single<Articles> {
+        return articlesRepository.getListSubmissions(token, clientId, skip, type)
     }
 }

@@ -25,14 +25,9 @@ class MySubmissionsViewModel @Inject constructor(
 
     val text: MutableLiveData<String> = MutableLiveData<String>()
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun onCreate() {
-        getSubmissionsArticles()
-    }
-
-    private fun getSubmissionsArticles() {
+    fun getSubmissionsArticles(type: String) {
         disposables += getSubmissionsArticleUseCase
-            .execute(settingsPreferences.token, settingsPreferences.clientId, 0)
+            .execute(settingsPreferences.token, settingsPreferences.clientId, 0, type)
             .subscribeOn(schedulers.io())
             .observeOn(schedulers.mainThread())
             .subscribeBy(onSuccess = {

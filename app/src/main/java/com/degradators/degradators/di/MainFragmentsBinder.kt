@@ -1,6 +1,7 @@
 package com.degradators.degradators.di
 
 import com.degradators.degradators.ui.main.PlaceholderFragment
+import com.degradators.degradators.ui.userMenu.MyCommentsFragment
 import com.degradators.degradators.ui.userMenu.MyListFragment
 import com.degradators.degradators.ui.userMenu.MyPostsFragment
 import dagger.Module
@@ -17,5 +18,8 @@ abstract class MainFragmentsBinder {
 
     @ContributesAndroidInjector(modules = [MainFragmentsModule::class])
     abstract fun bindMySubmissionsFragment(): MyPostsFragment
+
+    @ContributesAndroidInjector(modules = [MainFragmentsModule::class])
+    abstract fun bindMyCommentsFragment(): MyCommentsFragment
 
 }

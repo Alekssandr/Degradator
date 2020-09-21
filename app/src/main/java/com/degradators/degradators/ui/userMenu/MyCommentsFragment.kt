@@ -32,7 +32,7 @@ class MyCommentsFragment : BaseFragment<MySubmissionsViewModel>() {
     ): View? {
         val binding: FragmentMyPostsBinding =
             FragmentMyPostsBinding.inflate(inflater, container, false).apply {
-                mySubmissionsViewModel = viewModel
+                mySubmissionsViewModel = viewModel.apply { this.getSubmissionsArticles("COMMENT") }
             }
         viewModel.articleMessage.observe(viewLifecycleOwner, Observer<List<ArticleMessage>> {
             bindArticleMessagesAdapter.update(it, true)

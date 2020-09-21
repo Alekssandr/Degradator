@@ -17,6 +17,7 @@ import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
+import com.degradators.degradators.ui.userMenu.MyCommentsFragment
 import com.degradators.degradators.ui.userMenu.MyListFragment
 import com.degradators.degradators.ui.userMenu.MyPostsFragment
 import com.degradators.degradators.ui.utils.loadImage
@@ -118,6 +119,7 @@ class MainActivity : BaseActivity<MainViewModel>(),
             isLogin = it
             binding.navView.menu.findItem(R.id.nav_my_list).isVisible = it
             binding.navView.menu.findItem(R.id.nav_my_posts).isVisible = it
+            binding.navView.menu.findItem(R.id.nav_my_comments).isVisible = it
             //TODO doesn't hide
             binding.navView.menu.findItem(R.id.nav_Logout).isVisible = it
         })
@@ -152,13 +154,21 @@ class MainActivity : BaseActivity<MainViewModel>(),
             }
             R.id.nav_my_posts -> {
                 drawer_layout.closeDrawers()
-                val array = viewModel.messageIds.value
-                val myListFragment = MyPostsFragment()
                 tabs.visibility = View.GONE
                 view_pager.visibility = View.GONE
                 user_frame.visibility = View.VISIBLE
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.user_frame, myListFragment)
+                    .replace(R.id.user_frame, MyPostsFragment())
+                    .commitAllowingStateLoss()
+                return true
+            }
+            R.id.nav_my_comments -> {
+                drawer_layout.closeDrawers()
+                tabs.visibility = View.GONE
+                view_pager.visibility = View.GONE
+                user_frame.visibility = View.VISIBLE
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.user_frame, MyCommentsFragment())
                     .commitAllowingStateLoss()
                 return true
             }

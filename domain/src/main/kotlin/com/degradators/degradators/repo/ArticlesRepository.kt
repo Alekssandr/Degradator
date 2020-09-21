@@ -16,5 +16,5 @@ interface ArticlesRepository {
     fun addArticle(token: String, clientId: String, newPost: NewPost): Completable
     fun removeArticles(token: String, clientId: String, messageId: String): Completable
     fun getArticlesByList(articleId: PostIds): Single<Articles>
-    fun getListSubmissions(token: String, clientId: String, skip: Long): Single<Articles>
+    fun getListSubmissions(token: String, clientId: String, skip: Long, type: String): Single<Articles>
 }
