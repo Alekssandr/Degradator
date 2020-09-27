@@ -32,6 +32,8 @@ ext {
     daggerVersion = '2.25.2'
     googleMapsUtilsVersion = '0.5'
     livedataextVersion ='1.2.1'
+    exoPlayerVersion = '2.11.4'
+
 
     googleAuth = '18.0.0'
     playServicesAuth  = '18.0.0'
@@ -60,7 +62,8 @@ ext {
             navigation:                 "androidx.navigation:navigation-fragment-ktx:${navigation}",
             navigationUI:               "androidx.navigation:navigation-ui-ktx:${navigation}",
             facebookSignIn:             "com.facebook.android:facebook-login:$facebookSignIn",
-            circleimageview:             "de.hdodenhof:circleimageview:$circleimageview",
+            circleimageview:            "de.hdodenhof:circleimageview:$circleimageview",
+            exoPlayer :                 "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}"
     ]
 
     daggerDependencies = [

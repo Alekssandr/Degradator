@@ -52,6 +52,14 @@
             android:noHistory="true"
             android:label="@string/detail" />
 
+        <activity
+            android:name=".ui.video.PlayerActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:label="@string/detail" />
+
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

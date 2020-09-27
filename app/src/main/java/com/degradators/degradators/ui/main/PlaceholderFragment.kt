@@ -19,6 +19,9 @@ import com.degradators.degradators.common.lifecircle.observeLifecycleIn
 import com.degradators.degradators.databinding.FragmentHomeBinding
 import com.degradators.degradators.ui.detail.DetailActivity
 import com.degradators.degradators.ui.home.HomeViewModel
+import com.degradators.degradators.ui.userMenu.MyCommentsFragment
+import com.degradators.degradators.ui.userMenu.MyPostsFragment
+import com.degradators.degradators.ui.video.PlayerActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
@@ -87,6 +90,11 @@ class PlaceholderFragment : DaggerFragment() {
             }.also {
                 it.getlistenerRemoveItem { messageId ->
                     homeViewModel.removeArticles(messageId)
+                }
+                it.getlistenerOpenVideoFragment { url ->
+                    startActivity(Intent(activity, PlayerActivity::class.java).apply {
+                        putExtra(VIDEO_URL, url)
+                    })
                 }
             }
             adapter = bindArticleMessagesAdapter

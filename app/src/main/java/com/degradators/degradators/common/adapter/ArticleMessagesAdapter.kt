@@ -1,24 +1,40 @@
 package com.degradators.degradators.common.adapter
 
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
+import com.degradators.degradators.model.article.ArticleBlock
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.drm.DrmSessionManager
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
+import kotlinx.android.synthetic.main.video_layout.view.*
 import java.util.*
 
+
 const val DETAILS_EXTRA = "details"
+const val VIDEO_URL = "url"
 const val DETAILS_POSITION = "details_position"
 const val DETAILS_LIKE = "details_like"
 const val COMMENTS = "comments"
@@ -27,9 +43,17 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     lateinit var listenerRemoveItem: (String) -> Unit
+    lateinit var listenerOpenVideo: (String) -> Unit
 
     private var articleMessageList = mutableListOf<ArticleMessage>()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
+    private var videoPlayer: SimpleExoPlayer? = null
+    private lateinit var videoSurfaceView: PlayerView
+    private var progressBar: ProgressBar? = null
+    private var isVideoViewAdded = false
+    private var frameLayout: ConstraintLayout? = null
+    private var thumbnail: ImageView? = null
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return ImageViewHolder(
@@ -38,8 +62,12 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         )
     }
 
-    fun getlistenerRemoveItem(listenerRemoveItem: (String) -> Unit){
+    fun getlistenerRemoveItem(listenerRemoveItem: (String) -> Unit) {
         this.listenerRemoveItem = listenerRemoveItem
+    }
+
+    fun getlistenerOpenVideoFragment(listenerOpenVideo: (String) -> Unit) {
+        this.listenerOpenVideo = listenerOpenVideo
     }
 
     override fun getItemCount(): Int {
@@ -75,7 +103,60 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 )
             listenerOpenDetail(Pair(articleDetails, position))
         }
+        item.itemView.container_video.setOnClickListener {
+//            listenerOpenVideo("https://html5demos.com/assets/dizzy.mp4")
+            playVideo(it, "https://html5demos.com/assets/dizzy.mp4")
+//            listenerOpenVideo(articleMessageList[position].content.first { it.urlVideo.isNotEmpty() }.urlVideo)
+        }
         removeArticleBy(position, item)
+
+        // 2. Create the player
+        videoSurfaceView = PlayerView(item.itemView.context)
+        videoSurfaceView.videoSurfaceView
+        videoSurfaceView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
+
+        frameLayout = item.itemView.container_video
+
+        // 2. Create the player
+        videoPlayer = SimpleExoPlayer.Builder(item.itemView.context).build()
+        // Bind the player to the view.
+        videoSurfaceView.useController = false
+        videoSurfaceView.player = videoPlayer
+        videoPlayer?.volume = 0f
+        videoPlayer?.repeatMode = Player.REPEAT_MODE_ONE
+        videoPlayer = SimpleExoPlayer.Builder(item.itemView.context).build()
+        // Bind the player to the view.
+        videoSurfaceView.useController = false
+        videoSurfaceView.player = videoPlayer
+        videoPlayer?.volume = 0f
+        videoPlayer?.repeatMode = Player.REPEAT_MODE_ONE
+
+        videoPlayer?.addListener(object : Player.EventListener {
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                when (playbackState) {
+                    Player.STATE_BUFFERING -> {
+                        progressBar?.visibility = View.VISIBLE
+                    }
+                    Player.STATE_READY -> {
+                        progressBar?.visibility = View.GONE
+                        if (!isVideoViewAdded) {
+                            addVideoView()
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        })
+
+    }
+
+    private fun addVideoView() {
+        frameLayout!!.addView(videoSurfaceView)
+        isVideoViewAdded = true
+        videoSurfaceView.requestFocus()
+        videoSurfaceView.visibility = View.VISIBLE
+        videoSurfaceView.alpha = 1f
+        thumbnail?.visibility = View.GONE
     }
 
     private fun removeArticleBy(
@@ -151,29 +232,89 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         }
     }
 
+    fun playVideo(view: View, url: String) {
+        resetVideoView()
+
+        videoSurfaceView.player = videoPlayer
+        val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory( view.context,
+            Util.getUserAgent(view.context, "RecyclerView VideoPlayer")
+        )
+
+        val mediaUrl: String? = url
+        if (mediaUrl != null) {
+            val videoSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+                .createMediaSource(Uri.parse(mediaUrl))
+            videoPlayer?.prepare(videoSource)
+            videoPlayer?.playWhenReady = true
+        }
+
+    }
+
+    // Remove the old player
+    private fun removeVideoView(videoView: PlayerView?) {
+        val parent = videoView?.parent as ViewGroup?
+        val index = parent?.indexOfChild(videoView)
+        if (index != null && index >= 0) {
+            parent.removeViewAt(index)
+            isVideoViewAdded = false
+        }
+    }
+
+    private fun resetVideoView() {
+        if (isVideoViewAdded) {
+            removeVideoView(videoSurfaceView)
+            progressBar?.visibility = View.INVISIBLE
+            videoSurfaceView.visibility = View.INVISIBLE
+            thumbnail?.visibility = View.VISIBLE
+        }
+    }
+
     fun update(items: List<ArticleMessage>, isInitialList: Boolean) {
         if (isInitialList) this.articleMessageList.clear()
         this.articleMessageList.addAll(items.toMutableList())
         notifyDataSetChanged()
     }
 
+
     class ImageViewHolder(itemView: View) :
         RecyclerView.ViewHolder(itemView) {
+        private lateinit var videoSurfaceView: PlayerView
+        private var videoPlayer: SimpleExoPlayer? = null
 
         fun bind(articleMessage: ArticleMessage) {
-            if(articleMessage.header.isNotEmpty()){
+            if (articleMessage.header.isNotEmpty()) {
                 itemView.imageTextTitle.text = articleMessage.header
             } else {
                 itemView.imageTextTitle.visibility = View.GONE
             }
-            articleMessage.content.forEach {
+
+            val newForTest = articleMessage.content.toMutableList()
+            newForTest.add(
+                ArticleBlock(
+                    type = "video",
+                    urlImageForVideo = "https://images-na.ssl-images-amazon.com/images/I/81dwqKFOfwL._SX522_.jpg",
+                    urlVideo = "https://html5demos.com/assets/dizzy.mp4"
+                )
+            )
+
+            newForTest.forEach {
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
                 params.setMargins(0, 10, 0, 0)
+                if (it.urlVideo.isNotEmpty()) {
+                    val videoLayout =
+                        LayoutInflater.from(itemView.container.context)
+                            .inflate(R.layout.video_layout, itemView.container, false)
+                    val imageBg: ImageView = videoLayout.image_bg
+                    setImage(imageBg, it.urlImageForVideo)
+                    itemView.container.addView(videoLayout)
 
-                if (it.url.isNullOrEmpty()) {
+
+
+
+                } else if (it.url.isEmpty()) {
                     val text = TextView(itemView.context)
                     text.text = it.text
                     text.layoutParams = params
