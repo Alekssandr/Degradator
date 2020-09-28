@@ -91,11 +91,6 @@ class PlaceholderFragment : DaggerFragment() {
                 it.getlistenerRemoveItem { messageId ->
                     homeViewModel.removeArticles(messageId)
                 }
-                it.getlistenerOpenVideoFragment { url ->
-                    startActivity(Intent(activity, PlayerActivity::class.java).apply {
-                        putExtra(VIDEO_URL, url)
-                    })
-                }
             }
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
