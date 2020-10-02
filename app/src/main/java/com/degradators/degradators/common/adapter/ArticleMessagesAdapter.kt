@@ -1,13 +1,15 @@
 package com.degradators.degradators.common.adapter
 
 import android.content.Context
-import android.graphics.Color
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
@@ -28,9 +30,6 @@ import com.google.android.exoplayer2.util.Util
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
-import kotlinx.android.synthetic.main.article_item_image_text.view.container
-import kotlinx.android.synthetic.main.article_item_image_text.view.message
-import kotlinx.android.synthetic.main.article_item_image_text.view.messageText
 import kotlinx.android.synthetic.main.video_layout.view.*
 import java.util.*
 
@@ -54,6 +53,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     private var isVideoViewAdded = false
     private var frameLayout: ConstraintLayout? = null
     private lateinit var imageForeground: ImageView
+    private lateinit var imageBG: ImageView
     private var isPlayed = false
 
 
@@ -107,12 +107,22 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
             listenerOpenDetail(Pair(articleDetails, position))
         }
         item.itemView.container_video.setOnClickListener {
-            if(!isPlayed){
-
+            if(isPlaying()){
+                videoPlayer?.playWhenReady = false
+            }  else if(isPaused()){
+                videoPlayer?.playWhenReady = true
+            } else {
                 playVideo(it, "https://html5demos.com/assets/dizzy.mp4")
             }
         }
         removeArticleBy(position, item)
+    }
+
+    fun isPlaying(): Boolean {
+        return videoPlayer!!.playbackState == Player.STATE_READY && videoPlayer!!.playWhenReady
+    }
+    fun isPaused(): Boolean {
+        return videoPlayer!!.playbackState == Player.STATE_READY && !videoPlayer!!.playWhenReady
     }
 
     private fun initVideo(context: Context) {
@@ -127,6 +137,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         videoPlayer?.volume = 0f
         videoPlayer?.repeatMode = Player.REPEAT_MODE_OFF
         videoSurfaceView.controllerAutoShow = true
+
         videoPlayer?.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
@@ -138,15 +149,21 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                         progressBar?.visibility = View.GONE
                         if (!isVideoViewAdded) {
                             addVideoView()
+                            imageBG.visibility = View.GONE
                             isPlayed = true
                         }
                     }
                     Player.STATE_ENDED -> {
                         resetVideoView()
                         imageForeground.visibility = View.VISIBLE
+                        imageBG.visibility = View.VISIBLE
                         isPlayed = false
                     }
+                    Player.STATE_IDLE -> {
+                        val a = 0
+                    }
                     else -> {
+                        imageForeground.visibility = View.VISIBLE
                     }
                 }
             }
@@ -239,6 +256,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 
         progressBar = view.video_progressbar
         imageForeground = view.image_foreground
+        imageBG = view.image_bg
         frameLayout= view.container_video
         // set the position of the list-item that is to be played
         if (!::videoSurfaceView.isInitialized) {
@@ -289,6 +307,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         RecyclerView.ViewHolder(itemView) {
         lateinit var videoProgressbar: ProgressBar
         lateinit var imageForeground: ImageView
+        lateinit var imageBg: ImageView
 
         fun bind(articleMessage: ArticleMessage) {
             if (articleMessage.header.isNotEmpty()) {
@@ -316,16 +335,12 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                     val videoLayout =
                         LayoutInflater.from(itemView.container.context)
                             .inflate(R.layout.video_layout, itemView.container, false)
-                    val imageBg: ImageView = videoLayout.image_bg
+                    imageBg = videoLayout.image_bg
                     videoProgressbar = videoLayout.video_progressbar
                     imageForeground = videoLayout.image_foreground
-                    setImage(imageBg, it.urlImageForVideo)
 
+                    setImage(imageBg, it.urlVideo)
                     itemView.container.addView(videoLayout)
-
-
-
-
                 } else if (it.url.isEmpty()) {
                     val text = TextView(itemView.context)
                     text.text = it.text
