@@ -55,4 +55,11 @@
     <string name="months_ago">months ago</string>
     <string name="more_than_year"> more than year ago</string>
 
+    <string name="write_comment">Write comment</string>
+    <string name="make_photo">Make photo</string>
+    <string name="make_video">Make video</string>
+    <string name="get_video_from_folder">Get video from folder</string>
+    <string name="get_image_from_gallery">Get picture from gallery</string>
+
+
 </resources>

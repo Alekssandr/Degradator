@@ -10,29 +10,45 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.degradators.degradators.R
 import com.degradators.degradators.databinding.ActivityAddArticleBinding
 import com.degradators.degradators.di.common.ViewModelFactory
 import com.degradators.degradators.model.Block
 import com.degradators.degradators.ui.addArticles.components.TYPE_IMAGE
 import com.degradators.degradators.ui.addArticles.components.TYPE_TEXT
+import com.degradators.degradators.ui.addArticles.components.TYPE_VIDEO
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
+import com.degradators.degradators.ui.addArticles.viewModel.AddArticle
 import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
+import com.google.android.material.circularreveal.cardview.CircularRevealCardView
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_article.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
 
+const val REQUEST_VIDEO_CAPTURE = 123
 
 class AddArticleActivity : AppCompatActivity() {
 
@@ -52,28 +68,40 @@ class AddArticleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        val binding: ActivityAddArticleBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_article)
+        val binding: ActivityAddArticleBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_add_article)
         binding.run {
             this.addArticleViewModel = viewmodel
             lifecycleOwner = this@AddArticleActivity
         }
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        val fabMargin = resources.getDimensionPixelSize(R.dimen.spacing_medium)
+        val sheet: CircularRevealCardView = findViewById(R.id.sheet)
+        val scrim: View = findViewById(R.id.scrim)
+
+        ViewCompat.setOnApplyWindowInsetsListener(add_article_layout) { _, insets ->
+            fabText.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                leftMargin = fabMargin + insets.systemWindowInsetLeft
+                rightMargin = fabMargin + insets.systemWindowInsetRight
+                bottomMargin = fabMargin + insets.systemWindowInsetBottom
+            }
+            sheet.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                leftMargin = fabMargin + insets.systemWindowInsetLeft
+                rightMargin = fabMargin + insets.systemWindowInsetRight
+                bottomMargin = fabMargin + insets.systemWindowInsetBottom
+            }
+            insets
+        }
+
+
+        scrim.setOnClickListener {
+            // Shrink the menu sheet back into the FAB.
+            fabText.isExpanded = false
+        }
+
         fabText.setOnClickListener {
-            container.setArticleItem(
-                ArticleItem(
-                    TYPE_TEXT,
-                    "",
-                    action = { removeArticleItem(it) }
-                ))
-        }
-
-        fabImage.setOnClickListener {
             checkPermission()
-        }
-
-        fabPhoto.setOnClickListener {
-            makePhoto()
         }
 
         publicArticle.setOnClickListener {
@@ -83,14 +111,52 @@ class AddArticleActivity : AppCompatActivity() {
         viewmodel.closeScreen.observe(this, Observer {
             finish()
         })
+
+        observeEvent()
+    }
+
+    fun addText(){
+        container.setArticleItem(
+                ArticleItem(
+                    TYPE_TEXT,
+                    "",
+                    action = { removeArticleItem(it) }
+                ))
+    }
+
+    fun observeEvent(){
+        viewmodel.addArticleEvent.observe(this, Observer {
+            startEvent(it)
+        })
+    }
+
+    fun startEvent(addArticle:AddArticle){
+        when(addArticle){
+            AddArticle.WriteComment -> addText()
+            AddArticle.MakePhoto -> makePhoto()
+            AddArticle.MakeVideo -> makeVideo()
+            AddArticle.GetVideoFromFolder ->  openGalleryForVideo()
+            AddArticle.GetImageFromGallery ->  openGallery()
+        }
+        fabText.isExpanded = false
     }
 
     private fun removeArticleItem(articleItem: Int) {
         container.removeArticleItem(articleItem)
     }
 
+    private fun addVideo(videoUri: Uri) {
+        container.setArticleItem(
+            ArticleItem(
+                TYPE_VIDEO,
+                "",
+                videoUri = videoUri,
+                action = { removeArticleItem(it) }
+            ))
+    }
+
     private fun addImage(bitmap: Bitmap, path: String = "") {
-       val newBitmap = compressBitmap(bitmap, 2)
+        val newBitmap = compressBitmap(bitmap, 0)
         container.setArticleItem(
             ArticleItem(
                 TYPE_IMAGE,
@@ -101,7 +167,8 @@ class AddArticleActivity : AppCompatActivity() {
             ))
     }
 
-    private fun compressBitmap(bitmap:Bitmap, quality:Int):Bitmap{
+
+    private fun compressBitmap(bitmap: Bitmap, quality: Int): Bitmap {
         val stream = ByteArrayOutputStream()
 
         bitmap.compress(Bitmap.CompressFormat.PNG, quality, stream)
@@ -110,6 +177,46 @@ class AddArticleActivity : AppCompatActivity() {
 
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
     }
+
+    private fun openGalleryForVideo() {
+        val intent = Intent()
+        intent.type = "video/*"
+        intent.action = Intent.ACTION_PICK
+        startActivityForResult(Intent.createChooser(intent, "Select Video"), REQUEST_VIDEO_CAPTURE)
+    }
+
+
+    private fun createVideoFile(): File {
+        val fileName = "MyVideo"
+        val storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES)
+        return File.createTempFile(
+            fileName,
+            "mp4",
+            storageDir
+        )
+    }
+
+    lateinit var videoUri: Uri
+    private fun recordVideo() {
+        val videoFile = createVideoFile()
+        videoUri = FileProvider.getUriForFile(
+            this, "com.degradators.degradators.fileprovider",
+            videoFile
+        )
+        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
+        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE)
+    }
+
+
+    private fun makeVideo() {
+        Intent(MediaStore.ACTION_VIDEO_CAPTURE).also { takeVideoIntent ->
+            takeVideoIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE)
+            }
+        }
+    }
+
 
     private fun checkPermission() {
         val checkSelfPermission = ContextCompat.checkSelfPermission(
@@ -123,7 +230,7 @@ class AddArticleActivity : AppCompatActivity() {
                 arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 1
             )
         } else {
-            openGallery()
+            fabText.isExpanded = true
         }
     }
 
@@ -217,7 +324,7 @@ class AddArticleActivity : AppCompatActivity() {
                 if (grantedResults.isNotEmpty() && grantedResults[0] ==
                     PackageManager.PERMISSION_GRANTED
                 ) {
-                    openGallery()
+                    fabText.isExpanded = true
                 }
         }
     }
@@ -226,7 +333,9 @@ class AddArticleActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             OPERATION_CAPTURE_PHOTO ->
-                if (resultCode == Activity.RESULT_OK) {
+//                Log.d("Test111", )
+
+            if (resultCode == Activity.RESULT_OK) {
                     val bitmap = BitmapFactory.decodeStream(
                         contentResolver.openInputStream(mUri!!)
                     )
@@ -236,6 +345,13 @@ class AddArticleActivity : AppCompatActivity() {
                 if (resultCode == Activity.RESULT_OK) {
                     handleImageOnKitkat(data)
                 }
+            REQUEST_VIDEO_CAPTURE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val videoUri: Uri? = data?.data
+                    videoUri?.let { addVideo(it) }
+                }
+            }
+
         }
     }
 

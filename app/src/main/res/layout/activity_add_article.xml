@@ -16,8 +16,87 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#704DB6AC">
+        android:theme="@style/Theme.MaterialComponents.Light"
+        android:background="#704DB6AC"
+        android:id="@+id/add_article_layout">
 
+        <com.google.android.material.circularreveal.cardview.CircularRevealCardView
+            android:id="@+id/sheet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/spacing_medium"
+            android:elevation="@dimen/fab_elevation"
+            android:background="?attr/colorSurface"
+            android:visibility="invisible"
+            app:layout_behavior="@string/fab_transformation_sheet_behavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/sheet_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/spacing_small"
+                android:paddingBottom="@dimen/spacing_small">
+
+                <include
+                    android:id="@+id/write_comment"
+                    app:text="@{@string/write_comment}"
+                    app:addArticle="@{1}"
+                    app:image="@{@drawable/ic_create_black_18dp}"
+                    app:addArticleViewModel="@{addArticleViewModel}"
+                    layout="@layout/fab_adding_list_item" />
+
+                <include
+                    android:id="@+id/make_photo"
+                    app:image="@{@drawable/ic_photo_camera_black_18dp}"
+                    app:text="@{@string/make_photo}"
+                    app:addArticle="@{2}"
+                    layout="@layout/fab_adding_list_item"
+                    app:addArticleViewModel="@{addArticleViewModel}" />
+
+                <include
+                    android:id="@+id/make_video"
+                    app:text="@{@string/make_video}"
+                    app:image="@{@drawable/ic_videocam_black_18dp}"
+                    app:addArticle="@{3}"
+                    layout="@layout/fab_adding_list_item"
+                    app:addArticleViewModel="@{addArticleViewModel}" />
+
+                <include
+                    android:id="@+id/get_video_from_folder"
+                    app:image="@{@drawable/ic_movie_creation_black_18dp}"
+                    app:text ="@{@string/get_video_from_folder}"
+                    app:addArticle="@{4}"
+                    layout="@layout/fab_adding_list_item"
+                    app:addArticleViewModel="@{addArticleViewModel}" />
+
+                <include
+                    android:id="@+id/get_image_from_gallery"
+                    app:image="@{@drawable/ic_insert_photo_black_18dp}"
+                    app:text ="@{@string/get_image_from_gallery}"
+                    app:addArticle="@{5}"
+                    layout="@layout/fab_adding_list_item"
+                    app:addArticleViewModel="@{addArticleViewModel}" />
+
+            </LinearLayout>
+
+        </com.google.android.material.circularreveal.cardview.CircularRevealCardView>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            app:backgroundTint="#4db6ac"
+            app:borderWidth="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_create_white_18dp" />
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -45,7 +124,7 @@
                 app:backgroundTint="#4db6ac"
                 app:borderWidth="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/fabText"
+                app:layout_constraintEnd_toStartOf="@+id/fabTexts"
                 app:srcCompat="@drawable/ic_insert_photo_white_18dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -62,13 +141,14 @@
                 app:srcCompat="@drawable/ic_camera_alt_white_18dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabText"
+                android:id="@+id/fabTexts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 app:backgroundTint="#4db6ac"
+                android:visibility="gone"
                 app:borderWidth="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -88,6 +168,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/fabPhoto"
                 app:layout_constraintStart_toStartOf="@+id/main_block" />
+
+
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/main_block"
@@ -221,6 +303,15 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+            <View
+                android:id="@+id/scrim"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/dark_scrim"
+                android:visibility="invisible"
+                app:layout_behavior="@string/fab_transformation_scrim_behavior" />
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

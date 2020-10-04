@@ -29,6 +29,7 @@ class AddArticleViewModel @Inject constructor(
 
     private val disposables = CompositeDisposable()
     val closeScreen = MutableLiveData<Unit>()
+    val addArticleEvent = MutableLiveData<AddArticle>()
     val progressBarVisibility = MutableLiveData<Int>().apply {
         value = View.GONE
     }
@@ -102,8 +103,26 @@ class AddArticleViewModel @Inject constructor(
         return Single.just(articleContents)
     }
 
+    fun writeComment(event: Int){
+        when(event){
+            1 ->  addArticleEvent.value = AddArticle.WriteComment
+            2 ->  addArticleEvent.value = AddArticle.MakePhoto
+            3 ->  addArticleEvent.value = AddArticle.MakeVideo
+            4 ->  addArticleEvent.value = AddArticle.GetVideoFromFolder
+            5 ->  addArticleEvent.value = AddArticle.GetImageFromGallery
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         disposables.dispose()
     }
+}
+
+sealed class AddArticle {
+    object WriteComment  : AddArticle()
+    object MakePhoto  : AddArticle()
+    object MakeVideo  : AddArticle()
+    object GetVideoFromFolder  : AddArticle()
+    object GetImageFromGallery  : AddArticle()
 }
