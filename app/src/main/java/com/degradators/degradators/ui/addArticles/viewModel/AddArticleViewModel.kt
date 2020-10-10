@@ -8,6 +8,8 @@ import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.model.Block
 import com.degradators.degradators.model.NewPost
 import com.degradators.degradators.ui.addArticles.components.TYPE_IMAGE
+import com.degradators.degradators.ui.addArticles.model.AddArticleAction
+import com.degradators.degradators.ui.addArticles.model.AddArticleActionMain
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
 import com.degradators.degradators.usecase.articles.AddImageUseCase
 import com.degradators.degradators.usecase.articles.AddNewArticleUseCase
@@ -24,14 +26,20 @@ import javax.inject.Inject
 class AddArticleViewModel @Inject constructor(
     private val addImageUseCase: AddImageUseCase,
     private val addNewArticleUseCase: AddNewArticleUseCase,
-    private val settingsPreferences: SettingsPreferences
+    private val settingsPreferences: SettingsPreferences,
+    private val addArticleActionMain: AddArticleActionMain
 ) : ViewModel() {
 
     private val disposables = CompositeDisposable()
     val closeScreen = MutableLiveData<Unit>()
-    val addArticleEvent = MutableLiveData<AddArticle>()
+    val getArticleEvent = MutableLiveData<List<AddArticleAction>>()
     val progressBarVisibility = MutableLiveData<Int>().apply {
         value = View.GONE
+    }
+    val clickItem : MutableLiveData<(AddArticleActionMain.AddArticle) -> Unit> = MutableLiveData()
+
+    init {
+        getActions()
     }
 
     fun addArticle(
@@ -103,26 +111,12 @@ class AddArticleViewModel @Inject constructor(
         return Single.just(articleContents)
     }
 
-    fun writeComment(event: Int){
-        when(event){
-            1 ->  addArticleEvent.value = AddArticle.WriteComment
-            2 ->  addArticleEvent.value = AddArticle.MakePhoto
-            3 ->  addArticleEvent.value = AddArticle.MakeVideo
-            4 ->  addArticleEvent.value = AddArticle.GetVideoFromFolder
-            5 ->  addArticleEvent.value = AddArticle.GetImageFromGallery
-        }
+    private fun getActions() {
+        getArticleEvent.value = addArticleActionMain.articlesAction
     }
 
     override fun onCleared() {
         super.onCleared()
         disposables.dispose()
     }
-}
-
-sealed class AddArticle {
-    object WriteComment  : AddArticle()
-    object MakePhoto  : AddArticle()
-    object MakeVideo  : AddArticle()
-    object GetVideoFromFolder  : AddArticle()
-    object GetImageFromGallery  : AddArticle()
 }
