@@ -40,7 +40,7 @@
                 app:data="@{addArticleViewModel.getArticleEvent}"
                 app:callback="@{addArticleViewModel.clickItem}"
                 tools:itemCount="5"
-                tools:listitem="@layout/fab_adding_list_item2" />
+                tools:listitem="@layout/fab_adding_list_item" />
 
         </com.google.android.material.circularreveal.CircularRevealRelativeLayout>
 

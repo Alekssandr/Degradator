@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.ui.addArticles.model.AddArticleAction
 import com.degradators.degradators.ui.addArticles.model.AddArticleActionMain
-import kotlinx.android.synthetic.main.fab_adding_list_item2.view.*
+import kotlinx.android.synthetic.main.fab_adding_list_item.view.*
 
 class FabAddingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -18,7 +18,7 @@ class FabAddingAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fab_adding_list_item2, parent, false)
+            .inflate(R.layout.fab_adding_list_item, parent, false)
         return FabAddingViewHolder(view)
     }
 
