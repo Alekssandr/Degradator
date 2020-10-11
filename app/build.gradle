@@ -53,6 +53,7 @@ dependencies {
     implementation appDependencies.values()
     implementation daggerDependencies.values()
     implementation glideDependencies.values()
+    implementation 'androidx.exifinterface:exifinterface:1.1.0'
 
     kapt daggerProcessorDependencies.values()
 

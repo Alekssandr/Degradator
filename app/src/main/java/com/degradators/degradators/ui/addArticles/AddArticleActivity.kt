@@ -125,27 +125,33 @@ class AddArticleActivity : AppCompatActivity() {
     }
 
     private fun addImage(bitmap: Bitmap, path: String = "") {
-        val newBitmap = compressBitmap(bitmap, 0)
+        val newBitmap =
+            BitmapRotation.bitmapRotate(bitmapScale(bitmap),capturedImage.absolutePath)
         container.setArticleItem(
             ArticleItem(
                 TYPE_IMAGE,
                 "",
                 newBitmap,
-                path,
+                capturedImage.absolutePath,
                 action = { removeArticleItem(it) }
             ))
     }
 
-
-    private fun compressBitmap(bitmap: Bitmap, quality: Int): Bitmap {
-        val stream = ByteArrayOutputStream()
-
-        bitmap.compress(Bitmap.CompressFormat.PNG, quality, stream)
-
-        val byteArray = stream.toByteArray()
-
-        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    private fun bitmapScale(bitmap: Bitmap) : Bitmap {
+        val screenWidth = DeviceDimensionsHelper.getDisplayWidth(this)
+        return BitmapScaler.scaleToFitWidth(bitmap, screenWidth)
     }
+
+
+//    private fun compressBitmap(bitmap: Bitmap, quality: Int) : Bitmap {
+//        val stream = ByteArrayOutputStream()
+//
+//        bitmap.compress(Bitmap.CompressFormat.PNG, quality, stream)
+//
+//        val byteArray = stream.toByteArray()
+//
+//        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+//    }
 
     private fun openGalleryForVideo() {
         val intent = Intent()
@@ -206,8 +212,10 @@ class AddArticleActivity : AppCompatActivity() {
         }
     }
 
+    lateinit var capturedImage: File
+
     private fun makePhoto() {
-        val capturedImage = File(externalCacheDir, "My_Captured_Photo.jpg")
+        capturedImage = File(externalCacheDir, "My_Captured_Photo.jpg")
         if (capturedImage.exists()) {
             capturedImage.delete()
         }

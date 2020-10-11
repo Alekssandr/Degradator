@@ -88,7 +88,6 @@ class AddArticleViewModel @Inject constructor(
                 progressBarVisibility.value = View.GONE
                 closeScreen.value = Unit
                 Log.e("Test111", "error: ${it.message} ?: ")
-
             })
     }
 
