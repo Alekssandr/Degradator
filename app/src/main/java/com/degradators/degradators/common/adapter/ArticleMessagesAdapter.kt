@@ -55,6 +55,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     private lateinit var imageForeground: ImageView
     private lateinit var imageBG: ImageView
     private var isPlayed = false
+    private var lastUrl = ""
 
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -106,13 +107,39 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 )
             listenerOpenDetail(Pair(articleDetails, position))
         }
-        item.itemView.container_video.setOnClickListener {
-            if(isPlaying()){
-                videoPlayer?.playWhenReady = false
-            }  else if(isPaused()){
-                videoPlayer?.playWhenReady = true
-            } else {
-                playVideo(it, "https://html5demos.com/assets/dizzy.mp4")
+        if (item.itemView.container_video != null) {
+//            videoSurfaceView = item.itemView.playerView
+//            imageForeground = item.itemView.image_foreground
+//            imageBG = item.itemView.image_bg
+//            videoSurfaceView.player = videoPlayer
+//            val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
+//                item.itemView.context,
+//                Util.getUserAgent(item.itemView.context, "RecyclerView VideoPlayer")
+//            )
+//
+//            val mediaUrl: String? = articleMessageList[position].content.first { it.type == "video" }.url
+//            if (mediaUrl != null) {
+//                val videoSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
+//                    .createMediaSource(Uri.parse(mediaUrl))
+//                videoPlayer?.prepare(videoSource)
+//                videoPlayer?.seekTo(1)
+//            }
+            item.itemView.container_video.setOnClickListener {
+                val currentUrl =
+                    articleMessageList[position].content.first { it.type == "video" }.url
+                if (currentUrl != lastUrl) {
+                    videoPlayer?.stop()
+                }
+                if (isPlaying()) {
+                    videoPlayer?.playWhenReady = false
+                } else if (isPaused()) {
+                    videoPlayer?.playWhenReady = true
+                } else {
+                    playVideo(
+                        it,
+                        currentUrl
+                    )
+                }
             }
         }
         removeArticleBy(position, item)
@@ -253,7 +280,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 
     fun playVideo(view: View, url: String) {
         resetVideoView()
-
+        lastUrl = url
         progressBar = view.video_progressbar
         imageForeground = view.image_foreground
         imageBG = view.image_bg
@@ -316,22 +343,14 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 itemView.imageTextTitle.visibility = View.GONE
             }
 
-            val newForTest = articleMessage.content.toMutableList()
-            newForTest.add(
-                ArticleBlock(
-                    type = "video",
-                    urlImageForVideo = "https://images-na.ssl-images-amazon.com/images/I/81dwqKFOfwL._SX522_.jpg",
-                    urlVideo = "https://html5demos.com/assets/dizzy.mp4"
-                )
-            )
 
-            newForTest.forEach {
+            articleMessage.content.forEach {
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
                 params.setMargins(0, 10, 0, 0)
-                if (it.urlVideo.isNotEmpty()) {
+                if (it.type == "video") {
                     val videoLayout =
                         LayoutInflater.from(itemView.container.context)
                             .inflate(R.layout.video_layout, itemView.container, false)
