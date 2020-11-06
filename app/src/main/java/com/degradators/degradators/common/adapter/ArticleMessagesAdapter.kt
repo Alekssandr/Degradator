@@ -44,6 +44,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     lateinit var listenerRemoveItem: (String) -> Unit
+    lateinit var listenerUpdateCurrentItem: (Int) -> Unit
 
     private var articleMessageList = mutableListOf<ArticleMessage>()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
@@ -56,6 +57,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     private lateinit var imageBG: ImageView
     private var isPlayed = false
     private var lastUrl = ""
+    var lastView : View? = null
 
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -72,6 +74,10 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 
     fun getlistenerRemoveItem(listenerRemoveItem: (String) -> Unit) {
         this.listenerRemoveItem = listenerRemoveItem
+    }
+
+    fun getlistenerUpdateItemPosition(listenerUpdateCurrentItem: (Int) -> Unit) {
+        this.listenerUpdateCurrentItem = listenerUpdateCurrentItem
     }
 
     override fun getItemCount(): Int {
@@ -108,33 +114,22 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
             listenerOpenDetail(Pair(articleDetails, position))
         }
         if (item.itemView.container_video != null) {
-//            videoSurfaceView = item.itemView.playerView
-//            imageForeground = item.itemView.image_foreground
-//            imageBG = item.itemView.image_bg
-//            videoSurfaceView.player = videoPlayer
-//            val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
-//                item.itemView.context,
-//                Util.getUserAgent(item.itemView.context, "RecyclerView VideoPlayer")
-//            )
-//
-//            val mediaUrl: String? = articleMessageList[position].content.first { it.type == "video" }.url
-//            if (mediaUrl != null) {
-//                val videoSource: MediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-//                    .createMediaSource(Uri.parse(mediaUrl))
-//                videoPlayer?.prepare(videoSource)
-//                videoPlayer?.seekTo(1)
-//            }
             item.itemView.container_video.setOnClickListener {
+                listenerUpdateCurrentItem(position)
                 val currentUrl =
                     articleMessageList[position].content.first { it.type == "video" }.url
                 if (currentUrl != lastUrl) {
-                    videoPlayer?.stop()
+                    lastView?.let{
+                        it.image_bg.loadImage(lastUrl, R.drawable.ic_launcher_background)
+                    }
+                    videoSurfaceView.player?.stop(true)
                 }
                 if (isPlaying()) {
                     videoPlayer?.playWhenReady = false
                 } else if (isPaused()) {
                     videoPlayer?.playWhenReady = true
                 } else {
+                    lastView = it
                     playVideo(
                         it,
                         currentUrl
@@ -159,9 +154,9 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         // 2. Create the player
         videoPlayer = SimpleExoPlayer.Builder(context).build()
         // Bind the player to the view.
-        videoSurfaceView.useController = false
+        videoSurfaceView.useController = true
         videoSurfaceView.player = videoPlayer
-        videoPlayer?.volume = 0f
+//        videoPlayer?.volume = videoPlayer?.volume ?: 1.0f
         videoPlayer?.repeatMode = Player.REPEAT_MODE_OFF
         videoSurfaceView.controllerAutoShow = true
 
@@ -282,7 +277,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         resetVideoView()
         lastUrl = url
         progressBar = view.video_progressbar
-        imageForeground = view.image_foreground
+        imageForeground = view.image_foreground_start
         imageBG = view.image_bg
         frameLayout= view.container_video
         // set the position of the list-item that is to be played
@@ -356,9 +351,9 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                             .inflate(R.layout.video_layout, itemView.container, false)
                     imageBg = videoLayout.image_bg
                     videoProgressbar = videoLayout.video_progressbar
-                    imageForeground = videoLayout.image_foreground
+                    imageForeground = videoLayout.image_foreground_start
 
-                    setImage(imageBg, it.urlVideo)
+                    setImage(videoLayout.image_bg, it.url)
                     itemView.container.addView(videoLayout)
                 } else if (it.url.isEmpty()) {
                     val text = TextView(itemView.context)

@@ -91,6 +91,9 @@ class PlaceholderFragment : DaggerFragment() {
                 it.getlistenerRemoveItem { messageId ->
                     homeViewModel.removeArticles(messageId)
                 }
+                it.getlistenerUpdateItemPosition {position ->
+                    (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20);
+                }
             }
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
