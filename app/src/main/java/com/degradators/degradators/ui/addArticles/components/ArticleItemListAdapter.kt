@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
 import com.degradators.degradators.ui.login.afterTextChanged
+import com.degradators.degradators.ui.utils.loadImage
 import kotlinx.android.synthetic.main.add_article_item_image.view.*
 import kotlinx.android.synthetic.main.add_article_item_image.view.removeImage
 import kotlinx.android.synthetic.main.add_article_item_text.view.*
@@ -84,6 +85,7 @@ class ArticleItemListAdapter : ListAdapter<ArticleItem, RecyclerView.ViewHolder>
 
         fun bind(articleItem: ArticleItem) {
             itemView.video_view.setVideoURI(articleItem.videoUri)
+            itemView.video_view.seekTo(1)
             itemView.video_view.setOnClickListener {
                 if(itemView.video_view.isPlaying){
                     itemView.image_foreground.visibility = View.VISIBLE
