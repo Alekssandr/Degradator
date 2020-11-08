@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -21,6 +22,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.abedelazizshe.lightcompressorlibrary.CompressionListener
+import com.abedelazizshe.lightcompressorlibrary.VideoCompressor
+import com.abedelazizshe.lightcompressorlibrary.VideoQuality
 import com.degradators.degradators.R
 import com.degradators.degradators.databinding.ActivityAddArticleBinding
 import com.degradators.degradators.di.common.ViewModelFactory
@@ -33,7 +37,6 @@ import com.degradators.degradators.ui.addArticles.model.ArticleItem
 import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_article.*
-import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.inject.Inject
 
@@ -82,6 +85,7 @@ class AddArticleActivity : AppCompatActivity() {
         }
 
         viewmodel.closeScreen.observe(this, Observer {
+            deleteVideo()
             finish()
         })
 
@@ -114,30 +118,30 @@ class AddArticleActivity : AppCompatActivity() {
         container.removeArticleItem(articleItem)
     }
 
-    private fun addVideo(videoUri: Uri) {
+    private fun addVideo(videoPath: String) {
         container.setArticleItem(
             ArticleItem(
                 TYPE_VIDEO,
                 "",
-                videoUri = videoUri,
+                videoPath = videoPath,
                 action = { removeArticleItem(it) }
             ))
     }
 
     private fun addImage(bitmap: Bitmap, path: String = "") {
         val newBitmap =
-            BitmapRotation.bitmapRotate(bitmapScale(bitmap),capturedImage.absolutePath)
+            BitmapRotation.bitmapRotate(bitmapScale(bitmap), capturedImage?.absolutePath ?: path)
         container.setArticleItem(
             ArticleItem(
                 TYPE_IMAGE,
                 "",
                 newBitmap,
-                capturedImage.absolutePath,
+                capturedImage?.absolutePath ?: path,
                 action = { removeArticleItem(it) }
             ))
     }
 
-    private fun bitmapScale(bitmap: Bitmap) : Bitmap {
+    private fun bitmapScale(bitmap: Bitmap): Bitmap {
         val screenWidth = DeviceDimensionsHelper.getDisplayWidth(this)
         return BitmapScaler.scaleToFitWidth(bitmap, screenWidth)
     }
@@ -169,22 +173,11 @@ class AddArticleActivity : AppCompatActivity() {
         val storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES)
         return File.createTempFile(
             fileName,
-            "mp4",
+            ".mp4",
             storageDir
         )
     }
 
-    lateinit var videoUri: Uri
-    private fun recordVideo() {
-        val videoFile = createVideoFile()
-        videoUri = FileProvider.getUriForFile(
-            this, "com.degradators.degradators.fileprovider",
-            videoFile
-        )
-        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
-        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE)
-    }
 
 
     private fun makeVideo() {
@@ -212,18 +205,18 @@ class AddArticleActivity : AppCompatActivity() {
         }
     }
 
-    lateinit var capturedImage: File
+    var capturedImage: File? = null
 
     private fun makePhoto() {
         capturedImage = File(externalCacheDir, "My_Captured_Photo.jpg")
-        if (capturedImage.exists()) {
-            capturedImage.delete()
+        if (capturedImage!!.exists()) {
+            capturedImage!!.delete()
         }
-        capturedImage.createNewFile()
+        capturedImage!!.createNewFile()
         mUri = if (Build.VERSION.SDK_INT >= 24) {
             FileProvider.getUriForFile(
                 this, "com.degradators.degradators.fileprovider",
-                capturedImage
+                capturedImage!!
             )
         } else {
             Uri.fromFile(capturedImage)
@@ -313,8 +306,6 @@ class AddArticleActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             OPERATION_CAPTURE_PHOTO ->
-//                Log.d("Test111", )
-
                 if (resultCode == Activity.RESULT_OK) {
                     val bitmap = BitmapFactory.decodeStream(
                         contentResolver.openInputStream(mUri!!)
@@ -327,12 +318,107 @@ class AddArticleActivity : AppCompatActivity() {
                 }
             REQUEST_VIDEO_CAPTURE -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    val videoUri: Uri? = data?.data
-                    videoUri?.let { addVideo(it) }
+                    data?.data?.let {
+                        getPath(it)
+                    }
                 }
             }
 
         }
     }
+
+    fun compress(uri: Uri) {
+        val projection =
+            arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor? = managedQuery(uri, projection, null, null, null)
+        val pathNew = if (cursor != null) {
+            val column_index: Int = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA)
+            cursor.moveToFirst()
+            cursor.getString(column_index)
+        } else ""
+        val pathDestDefault = pathNew.dropLast(4) + "packdim_temp" + ".mp4"
+        VideoCompressor.start(
+            pathNew,
+            pathDestDefault ,
+            object : CompressionListener {
+                override fun onProgress(percent: Float) {
+                    // Update UI with progress value
+                    runOnUiThread {
+                        // update a text view
+                        progress.text = "Compress video: ${percent.toLong()}%"
+                        // update a progress bar
+                        progressBar.progress = percent.toInt()
+                    }
+                }
+
+                override fun onStart() {
+                    progressBar.visibility = View.VISIBLE
+                    progress.visibility = View.VISIBLE
+                    val a = 0
+                    // Compression start
+                }
+
+                override fun onSuccess() {
+                    progress.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    capturedVideo = File(pathDestDefault)
+
+                    addVideo(pathDestDefault)
+
+                    // On Compression success
+                }
+
+                override fun onFailure(failureMessage: String) {
+                    val a = 0
+                    // On Failure
+                }
+
+                override fun onCancelled() {
+                    val a = 0
+                    // On Cancelled
+                }
+
+            }, VideoQuality.VERY_LOW, isMinBitRateEnabled = false, keepOriginalResolution = false
+        )
+    }
+
+    fun deleteVideo(){
+        capturedVideo?.delete()
+    }
+
+    var capturedVideo: File? = null
+
+    fun getPath(uri: Uri) {
+        compress(uri)
+    }
+
+//    private fun putFileInAppFolder() : String? {
+//        capturedVideo = File(externalCacheDir?.absolutePath)
+//        if (capturedVideo!!.exists()) {
+//            capturedVideo!!.delete()
+//        }
+//        capturedVideo!!.createNewFile()
+//        return if (Build.VERSION.SDK_INT >= 24) {
+//            FileProvider.getUriForFile(
+//                this, "com.degradators.degradators.fileprovider",
+//                capturedVideo!!
+//            )
+//        } else {
+//            Uri.fromFile(capturedVideo)
+//        }.path
+//    }
+
+
+//    lateinit var videoUri: Uri
+//    private fun recordVideo()  : String? {
+//        val videoFile = createVideoFile()
+//        return FileProvider.getUriForFile(
+//            this, "com.degradators.degradators.fileprovider",
+//            videoFile
+//        ).path
+//        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
+//        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE)
+//    }
 
 }

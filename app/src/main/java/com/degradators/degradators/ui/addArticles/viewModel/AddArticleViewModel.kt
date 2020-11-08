@@ -8,6 +8,7 @@ import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.model.Block
 import com.degradators.degradators.model.NewPost
 import com.degradators.degradators.ui.addArticles.components.TYPE_IMAGE
+import com.degradators.degradators.ui.addArticles.components.TYPE_VIDEO
 import com.degradators.degradators.ui.addArticles.model.AddArticleAction
 import com.degradators.degradators.ui.addArticles.model.AddArticleActionMain
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
@@ -52,12 +53,20 @@ class AddArticleViewModel @Inject constructor(
             .flatMapIterable {
                 it
             }
-            .filter { it.type == TYPE_IMAGE }
+            .filter { it.type == TYPE_IMAGE || it.type == TYPE_VIDEO }
             .flatMapSingle {
-                addImageUseCase.execute(
-                    settingsPreferences.clientId,
-                    it.imagePath
-                )
+                if(it.type == TYPE_IMAGE ){
+                    addImageUseCase.execute(
+                        settingsPreferences.clientId,
+                        it.imagePath
+                    )
+                } else {
+                    addImageUseCase.execute(
+                        settingsPreferences.clientId,
+                        it.videoPath
+                    )
+                }
+
             }
             .toList()
             .flatMap {
@@ -100,11 +109,20 @@ class AddArticleViewModel @Inject constructor(
         articleList.filter { it.type == TYPE_IMAGE }.forEachIndexed { index, articleItem ->
             articleItem.imagePath = it.get(index)
         }
+        articleList.filter { it.type == TYPE_VIDEO }.forEachIndexed { index, articleItem ->
+            articleItem.videoPath = it.get(index)
+        }
         articleList.forEach {
-            if (it.type == TYPE_IMAGE) {
-                articleContents.add(Block(url = it.imagePath, type = "img"))
-            } else {
-                articleContents.add(Block(text = it.title, type = "text"))
+            when (it.type) {
+                TYPE_IMAGE -> {
+                    articleContents.add(Block(url = it.imagePath, type = "img"))
+                }
+                TYPE_VIDEO -> {
+                    articleContents.add(Block(url = it.videoPath, type = "video"))
+                }
+                else -> {
+                    articleContents.add(Block(text = it.title, type = "text"))
+                }
             }
         }
         return Single.just(articleContents)

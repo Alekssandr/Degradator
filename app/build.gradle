@@ -54,6 +54,7 @@ dependencies {
     implementation daggerDependencies.values()
     implementation glideDependencies.values()
     implementation 'androidx.exifinterface:exifinterface:1.1.0'
+    implementation 'com.github.AbedElazizShe:LightCompressor:0.7.6'
 
     kapt daggerProcessorDependencies.values()
 

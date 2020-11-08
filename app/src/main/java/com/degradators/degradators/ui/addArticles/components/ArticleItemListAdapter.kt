@@ -84,8 +84,9 @@ class ArticleItemListAdapter : ListAdapter<ArticleItem, RecyclerView.ViewHolder>
         RecyclerView.ViewHolder(itemView) {
 
         fun bind(articleItem: ArticleItem) {
-            itemView.video_view.setVideoURI(articleItem.videoUri)
+            itemView.video_view.setVideoPath(articleItem.videoPath)
             itemView.video_view.seekTo(1)
+            itemView.image_foreground.visibility = View.VISIBLE
             itemView.video_view.setOnClickListener {
                 if(itemView.video_view.isPlaying){
                     itemView.image_foreground.visibility = View.VISIBLE
