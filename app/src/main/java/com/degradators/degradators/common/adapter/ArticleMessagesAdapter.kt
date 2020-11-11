@@ -2,7 +2,6 @@ package com.degradators.degradators.common.adapter
 
 import android.content.Context
 import android.net.Uri
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,19 +17,14 @@ import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
-import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.ExoPlayerFactory.newSimpleInstance
-import com.google.android.exoplayer2.analytics.AnalyticsCollector
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelection
-import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.*
-import com.google.android.exoplayer2.util.Clock
+import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -157,56 +151,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         videoSurfaceView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
         videoSurfaceView.showController()
         // 2. Create the player
-        val trackSelector: TrackSelector = DefaultTrackSelector()
-
-        val loadControl: LoadControl = DefaultLoadControl.Builder()
-            .setAllocator(DefaultAllocator(true, 16))
-            .setBufferDurationsMs(
-                VideoPlayerConfig.MIN_BUFFER_DURATION,
-                VideoPlayerConfig.MAX_BUFFER_DURATION,
-                VideoPlayerConfig.MIN_PLAYBACK_START_BUFFER,
-                VideoPlayerConfig.MIN_PLAYBACK_RESUME_BUFFER
-            )
-            .setTargetBufferBytes(-1)
-            .setPrioritizeTimeOverSizeThresholds(true).createDefaultLoadControl()
-        videoPlayer = SimpleExoPlayer.Builder(this, trackSelector, loadControl)
-
-        val bandwidthMeter = DefaultBandwidthMeter.Builder(context).build()
-        val trackSelectionFactory = AdaptiveTrackSelection.Factory()
-        val trackSelector = DefaultTrackSelector(trackSelectionFactory)
-
-        val loadControl = DefaultLoadControl.Builder()
-            .setAllocator(DefaultAllocator(true, C.DEFAULT_BUFFER_SEGMENT_SIZE))
-            .setBufferDurationsMs(
-                5 * 60 * 1000, // this is it!
-                10 * 60 * 1000,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
-            )
-            .setTargetBufferBytes(DefaultLoadControl.DEFAULT_TARGET_BUFFER_BYTES)
-            .setPrioritizeTimeOverSizeThresholds(DefaultLoadControl.DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS)
-            .createDefaultLoadControl()
-
-        videoPlayer = ExoPlayerFactory.newSimpleInstance(
-            context,
-            DefaultRenderersFactory(context),
-            trackSelector,
-            loadControl,
-            null,
-            bandwidthMeter)
-
-
-        AnalyticsCollector analyticsCollector,
-        boolean useLazyPreparation,
-        Clock clock
-
-        videoPlayer = SimpleExoPlayer.Builder( context,
-            DefaultRenderersFactory(context),
-            trackSelector,
-            loadControl,
-            bandwidthMeter,
-            null,null,
-            ).build()
+        videoPlayer = SimpleExoPlayer.Builder(context).build()
         // Bind the player to the view.
         videoSurfaceView.useController = true
         videoSurfaceView.player = videoPlayer
