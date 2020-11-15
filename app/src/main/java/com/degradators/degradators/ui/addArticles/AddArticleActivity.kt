@@ -8,6 +8,8 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
+import android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -22,9 +24,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import com.abedelazizshe.lightcompressorlibrary.CompressionListener
-import com.abedelazizshe.lightcompressorlibrary.VideoCompressor
-import com.abedelazizshe.lightcompressorlibrary.VideoQuality
 import com.degradators.degradators.R
 import com.degradators.degradators.databinding.ActivityAddArticleBinding
 import com.degradators.degradators.di.common.ViewModelFactory
@@ -35,10 +34,12 @@ import com.degradators.degradators.ui.addArticles.components.TYPE_VIDEO
 import com.degradators.degradators.ui.addArticles.model.AddArticleActionMain
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
 import com.degradators.degradators.ui.addArticles.viewModel.AddArticleViewModel
+import com.zolad.videoslimmer.VideoSlimmer
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_add_article.*
 import java.io.File
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 const val REQUEST_VIDEO_CAPTURE = 123
 
@@ -52,10 +53,11 @@ class AddArticleActivity : AppCompatActivity() {
 
     private var mUri: Uri? = null
 
-    //Our constants
     private val OPERATION_CAPTURE_PHOTO = 1
     private val OPERATION_CHOOSE_PHOTO = 2
     var content: MutableList<Block> = mutableListOf()
+    var capturedVideo: File? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -319,7 +321,7 @@ class AddArticleActivity : AppCompatActivity() {
             REQUEST_VIDEO_CAPTURE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.data?.let {
-                        getPath(it)
+                        compress(it)
                     }
                 }
             }
@@ -337,88 +339,79 @@ class AddArticleActivity : AppCompatActivity() {
             cursor.getString(column_index)
         } else ""
         val pathDestDefault = pathNew.dropLast(4) + "packdim_temp" + ".mp4"
-        VideoCompressor.start(
+        val retriever = MediaMetadataRetriever()//1920 1080
+        retriever.setDataSource(pathNew)
+        var width: Int =
+            Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH))
+        var height: Int =
+            Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT))
+        val metaRotation = retriever.extractMetadata(METADATA_KEY_VIDEO_ROTATION)
+        retriever.release()
+        val pair = getNewVideoDimension(width, height)
+        if(metaRotation.toInt() > 0){
+            width = pair.second
+            height = pair.first
+        } else {
+            width = pair.first
+            height = pair.second
+        }
+
+        VideoSlimmer.convertVideo(
             pathNew,
-            pathDestDefault ,
-            object : CompressionListener {
-                override fun onProgress(percent: Float) {
-                    // Update UI with progress value
-                    runOnUiThread {
-                        // update a text view
-                        progress.text = "Compress video: ${percent.toLong()}%"
-                        // update a progress bar
-                        progressBar.progress = percent.toInt()
-                    }
+            pathDestDefault,
+            width,
+            height,
+            width/2 * height/2 * 5,
+            object : VideoSlimmer.ProgressListener {
+                override fun onFinish(result: Boolean) {
+                                        addVideo(pathDestDefault)
+                    progressText.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    capturedVideo = File(pathDestDefault)
+                }
+
+                override fun onProgress(progress: Float) {
+
+                    progressText.text = "Compress video: ${progress.toInt()}%"
+                        progressBar.progress = progress.toInt()
                 }
 
                 override fun onStart() {
                     progressBar.visibility = View.VISIBLE
-                    progress.visibility = View.VISIBLE
-                    val a = 0
-                    // Compression start
+                    progressText.visibility = View.VISIBLE
                 }
+            })
+    }
 
-                override fun onSuccess() {
-                    progress.visibility = View.GONE
-                    progressBar.visibility = View.GONE
-                    capturedVideo = File(pathDestDefault)
-
-                    addVideo(pathDestDefault)
-
-                    // On Compression success
-                }
-
-                override fun onFailure(failureMessage: String) {
-                    val a = 0
-                    // On Failure
-                }
-
-                override fun onCancelled() {
-                    val a = 0
-                    // On Cancelled
-                }
-
-            }, VideoQuality.VERY_LOW, isMinBitRateEnabled = false, keepOriginalResolution = false
-        )
+    fun getNewVideoDimension(width: Int, height: Int): Pair<Int, Int> {
+        var newWidth = 0
+        var newHeight = 0
+        when {
+            width >= 1920 || height >= 1920 -> {
+                newWidth = (((width * 0.5) / 25).roundToInt() * 16)
+                newHeight = (((height * 0.5) / 25f).roundToInt() * 16)
+            }
+            width >= 1280 || height >= 1280 -> {
+                newWidth = (((width * 0.75) / 25).roundToInt() * 16)
+                newHeight = (((height * 0.75) / 25).roundToInt() * 16)
+            }
+            width >= 960 || height >= 960 -> {
+                newWidth = (((640.0 * 0.95) / 25).roundToInt() * 16)
+                newHeight = (((360.0 * 0.95) / 16).roundToInt() * 16)
+            }
+            width >= 650 || height >= 650 -> {
+                newWidth = (((width * 0.95) / 25).roundToInt() * 16)
+                newHeight = (((height * 0.95) / 25).roundToInt() * 16)
+            }
+            else -> {
+                newWidth = (((width * 0.9) / 15).roundToInt() * 16)
+                newHeight = (((height * 0.9) / 15).roundToInt() * 16)
+            }
+        }
+        return Pair(newWidth,newHeight)
     }
 
     fun deleteVideo(){
         capturedVideo?.delete()
     }
-
-    var capturedVideo: File? = null
-
-    fun getPath(uri: Uri) {
-        compress(uri)
-    }
-
-//    private fun putFileInAppFolder() : String? {
-//        capturedVideo = File(externalCacheDir?.absolutePath)
-//        if (capturedVideo!!.exists()) {
-//            capturedVideo!!.delete()
-//        }
-//        capturedVideo!!.createNewFile()
-//        return if (Build.VERSION.SDK_INT >= 24) {
-//            FileProvider.getUriForFile(
-//                this, "com.degradators.degradators.fileprovider",
-//                capturedVideo!!
-//            )
-//        } else {
-//            Uri.fromFile(capturedVideo)
-//        }.path
-//    }
-
-
-//    lateinit var videoUri: Uri
-//    private fun recordVideo()  : String? {
-//        val videoFile = createVideoFile()
-//        return FileProvider.getUriForFile(
-//            this, "com.degradators.degradators.fileprovider",
-//            videoFile
-//        ).path
-//        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-//        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri)
-//        startActivityForResult(intent, REQUEST_VIDEO_CAPTURE)
-//    }
-
 }
