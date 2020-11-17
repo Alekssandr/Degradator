@@ -81,10 +81,6 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         this.listenerUpdateCurrentItem = listenerUpdateCurrentItem
     }
 
-    fun getlistenerLastItemPosition(listenerLastCurrentItem: (Int) -> Unit) {
-        this.listenerLastCurrentItem = listenerLastCurrentItem
-    }
-
     override fun getItemCount(): Int {
         return articleMessageList.size
     }
@@ -124,10 +120,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         }
 
         if (item.itemView.container_video != null) {
-
-
             currentPosition = position
-            listenerLastCurrentItem(position)
             item.itemView.container_video.setOnClickListener {
                 listenerUpdateCurrentItem(position)
                 val currentUrl =
@@ -158,7 +151,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         removeArticleBy(position, item)
     }
 
-    fun stopPlayer(last: Int, currentPosition: Int) {
+    fun stopPlayer(last: Int) {
         if(last!=currentPosition-1 ){
             videoPlayer?.let {
                 if(videoPlayer!!.isPlaying){
