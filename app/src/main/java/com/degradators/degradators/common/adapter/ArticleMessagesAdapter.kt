@@ -44,6 +44,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 
     lateinit var listenerRemoveItem: (String) -> Unit
     lateinit var listenerUpdateCurrentItem: (Int) -> Unit
+    lateinit var listenerLastCurrentItem: (Int) -> Unit
 
     private var articleMessageList = mutableListOf<ArticleMessage>()
     private val publishSubjectItem = PublishSubject.create<Pair<String, Int>>()
@@ -56,6 +57,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     private lateinit var imageBG: ImageView
     private var isPlayed = false
     private var lastUrl = ""
+    private var currentPosition = 0
     var lastView : View? = null
 
 
@@ -79,6 +81,10 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         this.listenerUpdateCurrentItem = listenerUpdateCurrentItem
     }
 
+    fun getlistenerLastItemPosition(listenerLastCurrentItem: (Int) -> Unit) {
+        this.listenerLastCurrentItem = listenerLastCurrentItem
+    }
+
     override fun getItemCount(): Int {
         return articleMessageList.size
     }
@@ -89,6 +95,10 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = (holder as ImageViewHolder)
+        holder.itemView.setOnFocusChangeListener { focusedView, hasFocus ->
+            val a = hasFocus
+        }
+
         Log.d("test1111", "size: " + articleMessageList.size.toString() + " pos: " + position)
         item.bind(articleMessageList[position])
         setLikeDislike(articleMessageList[position], holder.itemView)
@@ -112,8 +122,22 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 )
             listenerOpenDetail(Pair(articleDetails, position))
         }
+
         if (item.itemView.container_video != null) {
+
+
+            currentPosition = position
+            listenerLastCurrentItem(position)
             item.itemView.container_video.setOnClickListener {
+//                if (isPlaying()) {
+//
+//                    videoPlayer?.stop(true)
+//                    resetVideoView()
+//                    if (this::imageBG.isInitialized) { imageBG.visibility = View.VISIBLE }
+//                }
+
+
+//
                 listenerUpdateCurrentItem(position)
                 val currentUrl =
                     articleMessageList[position].content.first { it.type == "video" }.url
@@ -134,9 +158,49 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                         currentUrl
                     )
                 }
+                if (isPlaying()) {
+                    isVideoViewAdded = false
+                }
             }
+
         }
         removeArticleBy(position, item)
+    }
+//
+//    fun getPlayer(){
+//
+//    }
+//
+//    fun isNewItem(position: Int){
+//        if(lastPosition!=position){
+////            videoSurfaceView.player?.stop(true)
+//            videoPlayer?.playWhenReady = false
+//        }
+//    }
+
+
+    fun stopPlayer(last: Int, currentPosition: Int) {
+        if(last!=currentPosition-1 ){
+            videoPlayer?.let {
+                if(videoPlayer!!.isPlaying){
+                    Log.d("Testvv", "isPlaying")
+
+//                    videoPlayer?.stop()
+                    videoPlayer?.playWhenReady = true
+                    if (this::imageBG.isInitialized) { imageBG.visibility = View.VISIBLE }
+                }
+//                else {
+////                    Log.d("Testvv", "resetVideoView")
+//                    isVideoViewAdded = true
+//                    resetVideoView()
+//                }
+            }
+        }
+//        for (i in 0 until articleMessageList.size) {
+//            if (i != last) if (list.get(i).getPlayer() != null) articleMessageList.get(i).getPlayer()
+//                .setPlayWhenReady(false) else if (articleMessageList.get(i).getPlayer() != null) articleMessageList.get(i)
+//                .getPlayer().setPlayWhenReady(true)
+//        }
     }
 
     fun isPlaying(): Boolean {
@@ -163,10 +227,13 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_BUFFERING -> {
+                        Log.d("test", "STATE_BUFFERING")
                         imageForeground.visibility = View.GONE
                         progressBar?.visibility = View.VISIBLE
                     }
                     Player.STATE_READY -> {
+                        Log.d("test", "STATE_READY")
+
                         progressBar?.visibility = View.GONE
                         if (!isVideoViewAdded) {
                             addVideoView()
@@ -175,6 +242,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                         }
                     }
                     Player.STATE_ENDED -> {
+                        Log.d("test", "end")
                         resetVideoView()
                         imageForeground.visibility = View.VISIBLE
                         imageBG.visibility = View.VISIBLE
@@ -374,18 +442,4 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
             image.loadImage(url, R.drawable.ic_launcher_background)
         }
     }
-}
-
-object VideoPlayerConfig {
-    //Minimum Video you want to buffer while Playing
-    const val MIN_BUFFER_DURATION = 2000
-
-    //Max Video you want to buffer during PlayBack
-    const val MAX_BUFFER_DURATION = 5000
-
-    //Min Video you want to buffer before start Playing it
-    const val MIN_PLAYBACK_START_BUFFER = 1500
-
-    //Min video You want to buffer when user resumes video
-    const val MIN_PLAYBACK_RESUME_BUFFER = 2000
 }

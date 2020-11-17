@@ -3,12 +3,10 @@ package com.degradators.degradators.ui.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,9 +17,6 @@ import com.degradators.degradators.common.lifecircle.observeLifecycleIn
 import com.degradators.degradators.databinding.FragmentHomeBinding
 import com.degradators.degradators.ui.detail.DetailActivity
 import com.degradators.degradators.ui.home.HomeViewModel
-import com.degradators.degradators.ui.userMenu.MyCommentsFragment
-import com.degradators.degradators.ui.userMenu.MyPostsFragment
-import com.degradators.degradators.ui.video.PlayerActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_home.*
 import javax.inject.Inject
@@ -92,7 +87,28 @@ class PlaceholderFragment : DaggerFragment() {
                     homeViewModel.removeArticles(messageId)
                 }
                 it.getlistenerUpdateItemPosition {position ->
-                    (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20);
+                    (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
+                }
+                recycler_articles.setOnFocusChangeListener { view, b ->
+                    val a = b
+
+                }
+//                recycler_articles .addOnScrollListener(object : RecyclerView.OnScrollListener() {
+//                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                        super.onScrolled(recyclerView, dx, dy)
+//                        Log.d("test111", "dx: " + dx + "  |  dy:" + dy)
+//                        if(dy>100){
+//                            bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findLastVisibleItemPosition())
+//                        }
+////                        if (isLastItemDisplaying(recyclerView)) {
+////                            //Calling the method getdata again
+////                            getData()
+////                        }
+//                    }
+//                })
+                it.getlistenerLastItemPosition {
+                    bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition(),
+                        it)
                 }
             }
             adapter = bindArticleMessagesAdapter

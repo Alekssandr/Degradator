@@ -43,7 +43,6 @@ import kotlin.math.roundToInt
 
 const val REQUEST_VIDEO_CAPTURE = 123
 
-//photo enormous size
 class AddArticleActivity : AppCompatActivity() {
 
     @Inject
@@ -57,8 +56,6 @@ class AddArticleActivity : AppCompatActivity() {
     private val OPERATION_CHOOSE_PHOTO = 2
     var content: MutableList<Block> = mutableListOf()
     var capturedVideo: File? = null
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
