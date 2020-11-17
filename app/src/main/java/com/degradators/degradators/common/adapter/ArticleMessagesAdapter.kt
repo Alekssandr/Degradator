@@ -74,6 +74,10 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         )
     }
 
+    fun getlistenerLastItemPosition(listenerLastCurrentItem: (Int) -> Unit) {
+        this.listenerLastCurrentItem = listenerLastCurrentItem
+    }
+
     fun getlistenerRemoveItem(listenerRemoveItem: (String) -> Unit) {
         this.listenerRemoveItem = listenerRemoveItem
     }
@@ -120,7 +124,22 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
             listenerOpenDetail(Pair(articleDetails, position))
         }
 
+
+
         if (item.itemView.container_video != null) {
+//            listenerLastCurrentItem(position)
+
+//            lastView.let {
+//                if (this::imageBG.isInitialized) {
+//                    imageBG.visibility = View.VISIBLE
+//                    imageForeground.visibility = View.VISIBLE
+//                }
+//            }
+//            lastView = item.itemView
+//            playVideo(
+//                item.itemView.container_video,
+//                articleMessageList[position].content.first { it.type == "video" }.url
+//            )
             currentPosition = position
             item.itemView.container_video.setOnClickListener {
                 listenerUpdateCurrentItem(position)
@@ -154,26 +173,27 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                     isVideoViewAdded = false
                 }
             }
-
         }
         removeArticleBy(position, item)
     }
 
-    fun stopPlayer(last: Int) {
-//        if(last!=currentPosition-1 ){
-////            videoPlayer?.let {
-//                if(!videoPlayer!!.isPlaying){
-////                    Log.d("Testvv", "isPlaying")
-////                    videoPlayer?.stop()
-////                    videoSurfaceView.visibility = View.INVISIBLE
-//                    if (this::imageBG.isInitialized) {
-//                        imageBG.visibility = View.VISIBLE
-//                        imageForeground.visibility = View.VISIBLE
-//                    }
-//                }
-////
-////            }
-//        }
+    fun stopPlayer(view: View?, position: Int) {
+        view?.let {
+            if (view.container_video != null) {
+                lastView.let {
+                    if (this::imageBG.isInitialized) {
+                        imageBG.visibility = View.VISIBLE
+                        imageForeground.visibility = View.VISIBLE
+                    }
+                }
+                lastView = view
+                playVideo(
+                    view.container_video,
+                    articleMessageList[position].content.first { it.type == "video" }.url
+                )
+                currentPosition = position
+            }
+        }
     }
 
     fun isPlaying(): Boolean {

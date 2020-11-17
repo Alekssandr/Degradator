@@ -73,6 +73,7 @@ class PlaceholderFragment : DaggerFragment() {
         initRecycler()
     }
 
+    var oldPos = -2
     private fun initRecycler() {
         recycler_articles.apply {
             layoutManagerRW = LinearLayoutManager(context)
@@ -94,18 +95,24 @@ class PlaceholderFragment : DaggerFragment() {
 
                 }
                 recycler_articles .addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        Log.d("test111", "dx: " + dx + "  |  dy:" + dy)
-                        var scroll = dy
-                        if(scroll<0) {
-                            scroll *= -1
-                        }
-                        if(scroll>50){
-                            bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findLastVisibleItemPosition())
+
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+                        if (newState === RecyclerView.SCROLL_STATE_IDLE) {
+                            val position: Int =
+                                (recycler_articles.getLayoutManager() as LinearLayoutManager)
+                                    .findFirstVisibleItemPosition()
+                            if(oldPos != position){
+                                oldPos = position
+                                bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findViewByPosition(position), position)
+
+                            }
                         }
                     }
                 })
+//                it.getlistenerLastItemPosition {
+//                    bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findViewByPosition(it), it)
+//                }
             }
             recycler_articles.setItemViewCacheSize(50)
             adapter = bindArticleMessagesAdapter
