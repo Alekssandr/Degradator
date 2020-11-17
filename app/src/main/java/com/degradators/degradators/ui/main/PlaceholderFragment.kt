@@ -89,23 +89,6 @@ class PlaceholderFragment : DaggerFragment() {
                 it.getlistenerUpdateItemPosition {position ->
                     (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
                 }
-                recycler_articles.setOnFocusChangeListener { view, b ->
-                    val a = b
-
-                }
-//                recycler_articles .addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                        super.onScrolled(recyclerView, dx, dy)
-//                        Log.d("test111", "dx: " + dx + "  |  dy:" + dy)
-//                        if(dy>100){
-//                            bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findLastVisibleItemPosition())
-//                        }
-////                        if (isLastItemDisplaying(recyclerView)) {
-////                            //Calling the method getdata again
-////                            getData()
-////                        }
-//                    }
-//                })
                 it.getlistenerLastItemPosition {
                     bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition(),
                         it)

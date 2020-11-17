@@ -129,15 +129,6 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
             currentPosition = position
             listenerLastCurrentItem(position)
             item.itemView.container_video.setOnClickListener {
-//                if (isPlaying()) {
-//
-//                    videoPlayer?.stop(true)
-//                    resetVideoView()
-//                    if (this::imageBG.isInitialized) { imageBG.visibility = View.VISIBLE }
-//                }
-
-
-//
                 listenerUpdateCurrentItem(position)
                 val currentUrl =
                     articleMessageList[position].content.first { it.type == "video" }.url
@@ -166,41 +157,22 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         }
         removeArticleBy(position, item)
     }
-//
-//    fun getPlayer(){
-//
-//    }
-//
-//    fun isNewItem(position: Int){
-//        if(lastPosition!=position){
-////            videoSurfaceView.player?.stop(true)
-//            videoPlayer?.playWhenReady = false
-//        }
-//    }
-
 
     fun stopPlayer(last: Int, currentPosition: Int) {
         if(last!=currentPosition-1 ){
             videoPlayer?.let {
                 if(videoPlayer!!.isPlaying){
                     Log.d("Testvv", "isPlaying")
-
-//                    videoPlayer?.stop()
-                    videoPlayer?.playWhenReady = true
-                    if (this::imageBG.isInitialized) { imageBG.visibility = View.VISIBLE }
+                    videoPlayer?.stop()
+                    videoSurfaceView.visibility = View.INVISIBLE
+                    if (this::imageBG.isInitialized) {
+                        imageBG.visibility = View.VISIBLE
+                        imageForeground.visibility = View.VISIBLE
+                    }
                 }
-//                else {
-////                    Log.d("Testvv", "resetVideoView")
-//                    isVideoViewAdded = true
-//                    resetVideoView()
-//                }
+
             }
         }
-//        for (i in 0 until articleMessageList.size) {
-//            if (i != last) if (list.get(i).getPlayer() != null) articleMessageList.get(i).getPlayer()
-//                .setPlayWhenReady(false) else if (articleMessageList.get(i).getPlayer() != null) articleMessageList.get(i)
-//                .getPlayer().setPlayWhenReady(true)
-//        }
     }
 
     fun isPlaying(): Boolean {
@@ -222,7 +194,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 //        videoPlayer?.volume = videoPlayer?.volume ?: 1.0f
         videoPlayer?.repeatMode = Player.REPEAT_MODE_OFF
         videoSurfaceView.controllerAutoShow = true
-
+        videoSurfaceView.setKeepContentOnPlayerReset(true)
         videoPlayer?.addListener(object : Player.EventListener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
