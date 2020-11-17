@@ -107,6 +107,7 @@ class PlaceholderFragment : DaggerFragment() {
                     }
                 })
             }
+            recycler_articles.setItemViewCacheSize(50)
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
             addScrollerListener()

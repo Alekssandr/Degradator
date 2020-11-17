@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -136,7 +137,14 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 } else if (isPaused()) {
                     videoPlayer?.playWhenReady = true
                 } else {
+                    lastView.let {
+                        if (this::imageBG.isInitialized) {
+                            imageBG.visibility = View.VISIBLE
+                            imageForeground.visibility = View.VISIBLE
+                        }
+                    }
                     lastView = it
+
                     playVideo(
                         it,
                         currentUrl
@@ -152,20 +160,20 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     }
 
     fun stopPlayer(last: Int) {
-        if(last!=currentPosition-1 ){
-            videoPlayer?.let {
-                if(videoPlayer!!.isPlaying){
-                    Log.d("Testvv", "isPlaying")
-                    videoPlayer?.stop()
-                    videoSurfaceView.visibility = View.INVISIBLE
-                    if (this::imageBG.isInitialized) {
-                        imageBG.visibility = View.VISIBLE
-                        imageForeground.visibility = View.VISIBLE
-                    }
-                }
-
-            }
-        }
+//        if(last!=currentPosition-1 ){
+////            videoPlayer?.let {
+//                if(!videoPlayer!!.isPlaying){
+////                    Log.d("Testvv", "isPlaying")
+////                    videoPlayer?.stop()
+////                    videoSurfaceView.visibility = View.INVISIBLE
+//                    if (this::imageBG.isInitialized) {
+//                        imageBG.visibility = View.VISIBLE
+//                        imageForeground.visibility = View.VISIBLE
+//                    }
+//                }
+////
+////            }
+//        }
     }
 
     fun isPlaying(): Boolean {
@@ -318,9 +326,18 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         }
 
         videoSurfaceView.player = videoPlayer
-        val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory( view.context,
-            Util.getUserAgent(view.context, "RecyclerView VideoPlayer")
-        )
+
+        var dataSourceFactory: DataSource.Factory? =
+            DefaultDataSourceFactory(
+                view.context,
+                Util.getUserAgent(view.context, "AppName")
+            )
+        dataSourceFactory =
+            CacheDataSourceFactory(VideoCacheSingleton.getInstance(view.context), dataSourceFactory)
+
+//        val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory( view.context,
+//            Util.getUserAgent(view.context, "RecyclerView VideoPlayer")
+//        )
 
         val mediaUrl: String? = url
         if (mediaUrl != null) {
@@ -370,7 +387,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 itemView.imageTextTitle.visibility = View.GONE
             }
 
-
+            Log.d("tes1121", "bind")
             articleMessage.content.forEach {
                 val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -400,7 +417,8 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                     itemView.container.addView(image)
                 }
             }
-            itemView.container.setHasTransientState(true)
+
+//            itemView.container.setHasTransientState(true)
         }
 
         private fun setImage(image: ImageView, url: String) {
