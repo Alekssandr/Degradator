@@ -114,7 +114,7 @@ class PlaceholderFragment : DaggerFragment() {
 //                    bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findViewByPosition(it), it)
 //                }
             }
-            recycler_articles.setItemViewCacheSize(50)
+//            recycler_articles.setItemViewCacheSize(50)
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
             addScrollerListener()

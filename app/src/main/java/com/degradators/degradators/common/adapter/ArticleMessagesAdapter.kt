@@ -469,22 +469,24 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                     imageForeground = videoLayout.image_foreground_start
 
                     setImage(videoLayout.image_bg, it.url)
+                    itemView.container.setHasTransientState(true)
                     itemView.container.addView(videoLayout)
                 } else if (it.url.isEmpty()) {
                     val text = TextView(itemView.context)
                     text.text = it.text
                     text.layoutParams = params
+                    itemView.container.setHasTransientState(true)
                     itemView.container.addView(text)
                 } else {
                     val image = ImageView(itemView.context)
                     setImage(image, it.url)
                     image.layoutParams = params
                     image.adjustViewBounds = true
+                                itemView.container.setHasTransientState(true)
                     itemView.container.addView(image)
                 }
             }
 
-//            itemView.container.setHasTransientState(true)
         }
 
         private fun setImage(image: ImageView, url: String) {
