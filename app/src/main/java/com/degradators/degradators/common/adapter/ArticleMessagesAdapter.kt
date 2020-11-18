@@ -11,14 +11,17 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
@@ -30,6 +33,7 @@ import com.google.android.exoplayer2.util.Util
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
+import kotlinx.android.synthetic.main.exo_playback_control_view.view.*
 import kotlinx.android.synthetic.main.video_layout.view.*
 import java.util.*
 
@@ -60,6 +64,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     private var lastUrl = ""
     private var currentPosition = 0
     var lastView : View? = null
+    var isVolumeOff = true
 
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -163,7 +168,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                         }
                     }
                     lastView = it
-
+                    volumeMute()
                     playVideo(
                         it,
                         currentUrl
@@ -179,20 +184,37 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 
     fun stopPlayer(view: View?, position: Int) {
         view?.let {
+            lastView.let {
+                videoPlayer?.playWhenReady = false
+            }
             if (view.container_video != null) {
                 lastView.let {
+//                    videoPlayer?.playWhenReady = false
                     if (this::imageBG.isInitialized) {
                         imageBG.visibility = View.VISIBLE
                         imageForeground.visibility = View.VISIBLE
                     }
                 }
                 lastView = view
+                volumeMute()
+
+                if (this::imageForeground.isInitialized) {
+                    imageForeground.visibility = View.VISIBLE
+                }
                 playVideo(
                     view.container_video,
                     articleMessageList[position].content.first { it.type == "video" }.url
                 )
                 currentPosition = position
             }
+        }
+    }
+
+    private fun volumeMute() {
+        if (isVolumeOff) {
+            videoPlayer?.volume = 0f
+        } else {
+            videoPlayer?.volume = 1f
         }
     }
 
@@ -211,8 +233,8 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         videoPlayer = SimpleExoPlayer.Builder(context).build()
         // Bind the player to the view.
         videoSurfaceView.useController = true
+        addVolumeController(context)
         videoSurfaceView.player = videoPlayer
-//        videoPlayer?.volume = videoPlayer?.volume ?: 1.0f
         videoPlayer?.repeatMode = Player.REPEAT_MODE_OFF
         videoSurfaceView.controllerAutoShow = true
         videoSurfaceView.setKeepContentOnPlayerReset(true)
@@ -250,6 +272,30 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 }
             }
         })
+    }
+
+    private fun addVolumeController(context: Context) {
+        videoSurfaceView.volumeController.setOnClickListener {
+            if (isVolumeOff) {
+                isVolumeOff = false
+                videoSurfaceView.volumeController.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_volume_up_white_36dp
+                    )
+                )
+                videoPlayer?.volume = 1f
+            } else {
+                isVolumeOff = true
+                videoSurfaceView.volumeController.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_volume_off_white_36dp
+                    )
+                )
+                videoPlayer?.volume = 0f
+            }
+        }
     }
 
     private fun addVideoView() {
