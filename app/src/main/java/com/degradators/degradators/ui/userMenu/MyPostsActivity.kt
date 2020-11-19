@@ -3,30 +3,17 @@ package com.degradators.degradators.ui.userMenu
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.StringRes
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.degradators.degradators.MESSAGEIDS
-import com.degradators.degradators.MainActivity
 import com.degradators.degradators.R
 import com.degradators.degradators.common.adapter.*
-import com.degradators.degradators.common.lifecircle.observeLifecycleIn
-import com.degradators.degradators.databinding.FragmentMyListBinding
-import com.degradators.degradators.databinding.FragmentMyPostsBinding
+import com.degradators.degradators.databinding.ActivityMyPostsBinding
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.DetailActivity
 import com.degradators.degradators.ui.main.BaseActivity
-import kotlinx.android.synthetic.main.activity_create_account.*
 import kotlinx.android.synthetic.main.fragment_home.*
 
 class MyPostsActivity : BaseActivity<MySubmissionsViewModel>() {
@@ -35,13 +22,13 @@ class MyPostsActivity : BaseActivity<MySubmissionsViewModel>() {
     private lateinit var bindArticleMessagesAdapter: ArticleMessagesAdapter
     lateinit var layoutManagerRW : LinearLayoutManager
     private val SECOND_ACTIVITY_REQUEST_CODE = 0
-    lateinit var binding: FragmentMyPostsBinding
+    lateinit var binding: ActivityMyPostsBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.fragment_my_posts)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_my_posts)
         binding.apply {
                 mySubmissionsViewModel = viewModel.apply { this.getSubmissionsArticles("POST") }
         }

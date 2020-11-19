@@ -21,6 +21,7 @@ import com.degradators.degradators.MainActivity
 import com.degradators.degradators.R
 import com.degradators.degradators.common.adapter.*
 import com.degradators.degradators.common.lifecircle.observeLifecycleIn
+import com.degradators.degradators.databinding.ActivityMyCommentsBinding
 import com.degradators.degradators.databinding.FragmentMyListBinding
 import com.degradators.degradators.databinding.FragmentMyPostsBinding
 import com.degradators.degradators.model.article.ArticleMessage
@@ -35,13 +36,13 @@ class MyCommentsActivity : BaseActivity<MySubmissionsViewModel>() {
     private lateinit var bindArticleMessagesAdapter: ArticleMessagesAdapter
     lateinit var layoutManagerRW : LinearLayoutManager
     private val SECOND_ACTIVITY_REQUEST_CODE = 0
-    lateinit var binding: FragmentMyPostsBinding
+    lateinit var binding: ActivityMyCommentsBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.fragment_my_posts)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_my_comments)
         binding.apply {
                 mySubmissionsViewModel = viewModel.apply { this.getSubmissionsArticles("COMMENT") }
         }
