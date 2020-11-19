@@ -36,4 +36,8 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
         // Show 2 total pages.
         return 3
     }
+
+    override fun getItemPosition(`object`: Any): Int {
+        return POSITION_NONE
+    }
 }

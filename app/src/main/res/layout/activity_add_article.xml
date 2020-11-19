@@ -16,7 +16,46 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#704DB6AC">
+        android:theme="@style/Theme.MaterialComponents.Light"
+        android:background="#704DB6AC"
+        android:id="@+id/add_article_layout">
+
+        <com.google.android.material.circularreveal.CircularRevealRelativeLayout
+            android:id="@+id/sheet"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/spacing_medium"
+            android:elevation="@dimen/fab_elevation"
+            android:background="?attr/colorSurface"
+            android:visibility="invisible"
+            app:layout_behavior="@string/fab_transformation_sheet_behavior"
+            tools:visibility="visible">
+
+            <com.degradators.degradators.ui.addArticles.components.FabAddingListContainer
+                android:id="@+id/articleEvent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:data="@{addArticleViewModel.getArticleEvent}"
+                app:callback="@{addArticleViewModel.clickItem}"
+                tools:itemCount="5"
+                tools:listitem="@layout/fab_adding_list_item" />
+
+        </com.google.android.material.circularreveal.CircularRevealRelativeLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="24dp"
+            app:backgroundTint="#4db6ac"
+            app:borderWidth="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_create_white_18dp"/>
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -35,50 +74,10 @@
             android:paddingBottom="16dp"
             tools:context=".ui.login.LoginActivity">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                app:backgroundTint="#4db6ac"
-                app:borderWidth="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/fabText"
-                app:srcCompat="@drawable/ic_insert_photo_white_18dp" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabPhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                app:backgroundTint="#4db6ac"
-                app:borderWidth="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/fabImage"
-                app:srcCompat="@drawable/ic_camera_alt_white_18dp" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:backgroundTint="#4db6ac"
-                app:borderWidth="5dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:srcCompat="@drawable/ic_create_white_18dp" />
-
             <Button
                 android:id="@+id/publicArticle"
-                android:layout_width="0dp"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/red_style"
                 android:paddingTop="16dp"
@@ -86,7 +85,6 @@
                 android:text="Public"
                 android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/fabPhoto"
                 app:layout_constraintStart_toStartOf="@+id/main_block" />
 
             <androidx.cardview.widget.CardView
@@ -95,7 +93,7 @@
                 android:layout_height="0dp"
                 android:layout_marginBottom="16dp"
                 app:cardCornerRadius="5dp"
-                app:layout_constraintBottom_toTopOf="@+id/fabPhoto"
+                app:layout_constraintBottom_toTopOf="@+id/publicArticle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -219,10 +217,28 @@
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
+                    <TextView
+                        android:id="@+id/progressText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:text="TextView"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/scrim"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/dark_scrim"
+            android:visibility="invisible"
+            app:layout_behavior="@string/fab_transformation_scrim_behavior" />
 
         <ProgressBar
             android:id="@+id/progressBar"

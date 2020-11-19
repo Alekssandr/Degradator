@@ -3,12 +3,10 @@ package com.degradators.degradators.ui.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,7 +50,33 @@ class PlaceholderFragment : DaggerFragment() {
 
         observeLifecycleIn(homeViewModel)
 
+        view?.viewTreeObserver?.addOnWindowFocusChangeListener {
+                hasFocus ->
+            val a = hasFocus
+        }
+
         return binding.root
+    }
+
+
+    override fun setMenuVisibility(isvisible: Boolean) {
+        super.setMenuVisibility(isvisible)
+        if (isvisible) {
+            Log.d("Viewpager", "fragment is visible ")
+        } else {
+            Log.d("Viewpager", "fragment is not visible ")
+        }
+    }
+
+//    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+//        super.setUserVisibleHint(isVisibleToUser)
+//    }
+    override fun onPause() {
+        super.onPause()
+        recycler_articles.apply {
+//            bindArticleMessagesAdapter.stopWorkingVideoWhenOpenNavBar((layoutManager as LinearLayoutManager).findViewByPosition(oldPos))
+            bindArticleMessagesAdapter.pausePlayer()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -75,6 +99,7 @@ class PlaceholderFragment : DaggerFragment() {
         initRecycler()
     }
 
+    var oldPos = -2
     private fun initRecycler() {
         recycler_articles.apply {
             layoutManagerRW = LinearLayoutManager(context)
@@ -88,7 +113,34 @@ class PlaceholderFragment : DaggerFragment() {
                 it.getlistenerRemoveItem { messageId ->
                     homeViewModel.removeArticles(messageId)
                 }
+                it.getlistenerUpdateItemPosition {position ->
+                    (layoutManager as LinearLayoutManager).scrollToPositionWithOffset(position, 20)
+                }
+                recycler_articles.setOnFocusChangeListener { view, b ->
+                    val a = b
+
+                }
+                recycler_articles .addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+//                        if (newState === RecyclerView.SCROLL_STATE_DRAGGING) {
+                            val position: Int =
+                                (recycler_articles.getLayoutManager() as LinearLayoutManager)
+                                    .findFirstVisibleItemPosition()
+                            if(oldPos != position){
+                                oldPos = position
+                                bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findViewByPosition(position), position)
+
+                            }
+//                        }
+                    }
+                })
+//                it.getlistenerLastItemPosition {
+//                    bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findViewByPosition(it), it)
+//                }
             }
+//            recycler_articles.setItemViewCacheSize(50)
             adapter = bindArticleMessagesAdapter
             homeViewModel.subscribeForItemClick(bindArticleMessagesAdapter.getClickItemObserver())
             addScrollerListener()

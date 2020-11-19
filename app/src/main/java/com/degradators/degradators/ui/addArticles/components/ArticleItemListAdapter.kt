@@ -9,12 +9,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.ui.addArticles.model.ArticleItem
 import com.degradators.degradators.ui.login.afterTextChanged
+import com.degradators.degradators.ui.utils.loadImage
 import kotlinx.android.synthetic.main.add_article_item_image.view.*
+import kotlinx.android.synthetic.main.add_article_item_image.view.removeImage
 import kotlinx.android.synthetic.main.add_article_item_text.view.*
+import kotlinx.android.synthetic.main.add_article_item_video.view.*
 
 
 const val TYPE_IMAGE = 0
 const val TYPE_TEXT = 1
+const val TYPE_VIDEO = 2
 
 class ArticleItemListAdapter : ListAdapter<ArticleItem, RecyclerView.ViewHolder>(ArticleItemDiffCallback()) {
     private var articleItemList: MutableList<ArticleItem> = mutableListOf()
@@ -28,6 +32,10 @@ class ArticleItemListAdapter : ListAdapter<ArticleItem, RecyclerView.ViewHolder>
             TYPE_TEXT -> return TextViewHolder(
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.add_article_item_text, parent, false)
+            )
+            TYPE_VIDEO -> return VideoViewHolder(
+                LayoutInflater.from(parent.context)
+                    .inflate(R.layout.add_article_item_video, parent, false)
             )
         }
         return TextViewHolder(
@@ -44,6 +52,10 @@ class ArticleItemListAdapter : ListAdapter<ArticleItem, RecyclerView.ViewHolder>
             }
             TYPE_TEXT -> {
                 val a = (holder as TextViewHolder)
+                a.bind(articleItemList[position])
+            }
+            TYPE_VIDEO -> {
+                val a = (holder as VideoViewHolder)
                 a.bind(articleItemList[position])
             }
         }
@@ -63,8 +75,32 @@ class ArticleItemListAdapter : ListAdapter<ArticleItem, RecyclerView.ViewHolder>
         when (articleItemList[position].type) {
             0 -> return TYPE_IMAGE
             1 -> return TYPE_TEXT
+            2 -> return TYPE_VIDEO
         }
         return TYPE_TEXT
+    }
+
+    class VideoViewHolder(itemView: View) :
+        RecyclerView.ViewHolder(itemView) {
+
+        fun bind(articleItem: ArticleItem) {
+            itemView.video_view.setVideoPath(articleItem.videoPath)
+            itemView.video_view.seekTo(1)
+            itemView.image_foreground.visibility = View.VISIBLE
+            itemView.video_view.setOnClickListener {
+                if(itemView.video_view.isPlaying){
+                    itemView.image_foreground.visibility = View.VISIBLE
+                    itemView.video_view.pause()
+                }
+                else  {
+                    itemView.image_foreground.visibility = View.GONE
+                    itemView.video_view.start()
+                }
+            }
+            itemView.removeImage.setOnClickListener {
+                articleItem.action.invoke(layoutPosition)
+            }
+        }
     }
 
     class ImageViewHolder(itemView: View) :

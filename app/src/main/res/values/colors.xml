@@ -8,4 +8,5 @@
     <color name="comment">#EDEDED</color>
     <color name="transparent">#00000000</color>
     <color name="facebookBlue">#1778F2</color>
+    <color name="dark_scrim">#66333333</color>
 </resources>

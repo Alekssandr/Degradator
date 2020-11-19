@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
 
     <application
         android:name=".di.DegradatorApplication"
@@ -46,11 +48,35 @@
             android:label="@string/title_activity_create_account" />
 
         <activity
+            android:name=".ui.userMenu.MyListActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_my_list" />
+
+        <activity
+            android:name=".ui.userMenu.MyPostsActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_my_posts" />
+
+        <activity
+            android:name=".ui.userMenu.MyCommentsActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_my_comments" />
+
+
+        <activity
             android:name=".ui.detail.DetailActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:noHistory="true"
             android:label="@string/detail" />
+
+        <activity
+            android:name=".ui.video.PlayerActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            android:noHistory="true"
+            android:label="@string/detail" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

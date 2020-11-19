@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.degradators.degradators.databinding.ActivityMainBinding
@@ -15,11 +16,13 @@ import com.degradators.degradators.databinding.NavHeaderMainBinding
 import com.degradators.degradators.ui.MainViewModel
 import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.login.LoginActivity
+import com.degradators.degradators.ui.login.RegisterActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
+import com.degradators.degradators.ui.userMenu.MyCommentsActivity
 import com.degradators.degradators.ui.userMenu.MyCommentsFragment
-import com.degradators.degradators.ui.userMenu.MyListFragment
-import com.degradators.degradators.ui.userMenu.MyPostsFragment
+import com.degradators.degradators.ui.userMenu.MyListActivity
+import com.degradators.degradators.ui.userMenu.MyPostsActivity
 import com.degradators.degradators.ui.utils.loadImage
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
@@ -38,6 +41,7 @@ class MainActivity : BaseActivity<MainViewModel>(),
     private var isLogin = false
 
     lateinit var sectionsPagerAdapter: SectionsPagerAdapter
+    lateinit var viewPager: ViewPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +49,7 @@ class MainActivity : BaseActivity<MainViewModel>(),
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         sectionsPagerAdapter = SectionsPagerAdapter(this, supportFragmentManager)
-        val viewPager: ViewPager = findViewById(R.id.view_pager)
+        viewPager = findViewById(R.id.view_pager)
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = findViewById(R.id.tabs)
         tabs.setupWithViewPager(viewPager)
@@ -131,48 +135,67 @@ class MainActivity : BaseActivity<MainViewModel>(),
             R.id.nav_posts -> {
                 drawer_layout.closeDrawers()
                 supportFragmentManager.popBackStack()
-                tabs.visibility = View.VISIBLE
-                view_pager.visibility = View.VISIBLE
-                user_frame.visibility = View.GONE
+//                tabs.visibility = View.VISIBLE
+//                view_pager.visibility = View.VISIBLE
+//                user_frame.visibility = View.GONE
                 return true
             }
             R.id.nav_my_list -> {
+//                sectionsPagerAdapter.notifyDataSetChanged()
                 drawer_layout.closeDrawers()
                 val array = viewModel.messageIds.value
-                val myListFragment = MyListFragment().apply {
-                    arguments = Bundle().apply {
-                        putStringArray(MESSAGEIDS, array?.toTypedArray())
-                    }
+//                val myListFragment = MyListFragment().apply {
+//                    arguments = Bundle().apply {
+//                        putStringArray(MESSAGEIDS, array?.toTypedArray())
+//                    }
+//                }
+
+                val intent = Intent(this, MyListActivity::class.java).apply {
+                    putExtra(MESSAGEIDS, array?.toTypedArray())
                 }
-                tabs.visibility = View.GONE
-                view_pager.visibility = View.GONE
-                user_frame.visibility = View.VISIBLE
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.user_frame, myListFragment)
-                    .commitAllowingStateLoss()
+                startActivity(intent)
+//
+//                tabs.visibility = View.GONE
+//                view_pager.visibility = View.GONE
+//                user_frame.visibility = View.VISIBLE
+//                supportFragmentManager.beginTransaction()
+//                    .replace(R.id.user_frame, myListFragment)
+//                    .commitAllowingStateLoss()
                 return true
             }
             R.id.nav_my_posts -> {
+//                sectionsPagerAdapter.notifyDataSetChanged()
                 drawer_layout.closeDrawers()
-                tabs.visibility = View.GONE
-                view_pager.visibility = View.GONE
-                user_frame.visibility = View.VISIBLE
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.user_frame, MyPostsFragment())
-                    .commitAllowingStateLoss()
+//                tabs.visibility = View.GONE
+//                view_pager.visibility = View.GONE
+//                user_frame.visibility = View.VISIBLE
+                val intent = Intent(this, MyPostsActivity::class.java)
+                startActivity(intent)
+
+//                supportFragmentManager.beginTransaction()
+//                    .replace(R.id.user_frame, MyPostsFragment())
+//                    .commitAllowingStateLoss()
                 return true
             }
             R.id.nav_my_comments -> {
+//                viewPager.adapter?.notifyDataSetChanged()
+//                sectionsPagerAdapter.notifyDataSetChanged()
+//                viewPager.visibility = View.GONE
                 drawer_layout.closeDrawers()
-                tabs.visibility = View.GONE
-                view_pager.visibility = View.GONE
-                user_frame.visibility = View.VISIBLE
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.user_frame, MyCommentsFragment())
-                    .commitAllowingStateLoss()
+                val intent = Intent(this, MyCommentsActivity::class.java)
+                startActivity(intent)
+
+//                tabs.visibility = View.GONE
+//                view_pager.visibility = View.GONE
+//                user_frame.visibility = View.VISIBLE
+//                supportFragmentManager.beginTransaction()
+//                    .replace(R.id.user_frame, MyCommentsFragment())
+//                    .commitAllowingStateLoss()
                 return true
             }
             R.id.nav_Logout -> {
+
+                sectionsPagerAdapter.notifyDataSetChanged()
                 drawer_layout.closeDrawers()
                 viewModel.logout()
                 return true
@@ -184,6 +207,8 @@ class MainActivity : BaseActivity<MainViewModel>(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+//        sectionsPagerAdapter.notifyDataSetChanged()
+
         if (requestCode == SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 viewModel.isLogin()
