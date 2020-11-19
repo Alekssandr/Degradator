@@ -1,9 +1,7 @@
 package com.degradators.degradators.ui.userMenu
 
 import android.util.Log
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.OnLifecycleEvent
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.article.ArticleMessage

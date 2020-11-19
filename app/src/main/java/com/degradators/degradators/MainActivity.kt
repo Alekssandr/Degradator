@@ -20,7 +20,6 @@ import com.degradators.degradators.ui.login.RegisterActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
 import com.degradators.degradators.ui.userMenu.MyCommentsActivity
-import com.degradators.degradators.ui.userMenu.MyCommentsFragment
 import com.degradators.degradators.ui.userMenu.MyListActivity
 import com.degradators.degradators.ui.userMenu.MyPostsActivity
 import com.degradators.degradators.ui.utils.loadImage
