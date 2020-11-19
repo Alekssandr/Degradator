@@ -182,6 +182,24 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         removeArticleBy(position, item)
     }
 
+    fun stopWorkingVideoWhenOpenNavBar(view: View?){
+        view?.let {
+            lastView.let {
+                videoPlayer?.release()
+            }
+            if (view.container_video != null) {
+                lastView.let {
+//                    videoPlayer?.playWhenReady = false
+                    if (this::imageBG.isInitialized) {
+                        imageBG.visibility = View.VISIBLE
+                        imageForeground.visibility = View.VISIBLE
+                    }
+                }
+                lastView = view
+            }
+        }
+    }
+
     fun stopPlayer(view: View?, position: Int) {
         view?.let {
             lastView.let {
@@ -198,9 +216,6 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
                 lastView = view
                 volumeMute()
 
-                if (this::imageForeground.isInitialized) {
-                    imageForeground.visibility = View.VISIBLE
-                }
                 playVideo(
                     view.container_video,
                     articleMessageList[position].content.first { it.type == "video" }.url
@@ -223,6 +238,10 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     }
     fun isPaused(): Boolean {
         return videoPlayer!!.playbackState == Player.STATE_READY && !videoPlayer!!.playWhenReady
+    }
+
+    fun pausePlayer() {
+        videoPlayer?.stop()
     }
 
     private fun initVideo(context: Context) {

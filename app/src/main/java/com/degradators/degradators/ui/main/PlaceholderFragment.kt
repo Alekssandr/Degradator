@@ -50,7 +50,33 @@ class PlaceholderFragment : DaggerFragment() {
 
         observeLifecycleIn(homeViewModel)
 
+        view?.viewTreeObserver?.addOnWindowFocusChangeListener {
+                hasFocus ->
+            val a = hasFocus
+        }
+
         return binding.root
+    }
+
+
+    override fun setMenuVisibility(isvisible: Boolean) {
+        super.setMenuVisibility(isvisible)
+        if (isvisible) {
+            Log.d("Viewpager", "fragment is visible ")
+        } else {
+            Log.d("Viewpager", "fragment is not visible ")
+        }
+    }
+
+//    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+//        super.setUserVisibleHint(isVisibleToUser)
+//    }
+    override fun onPause() {
+        super.onPause()
+        recycler_articles.apply {
+//            bindArticleMessagesAdapter.stopWorkingVideoWhenOpenNavBar((layoutManager as LinearLayoutManager).findViewByPosition(oldPos))
+            bindArticleMessagesAdapter.pausePlayer()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -98,7 +124,7 @@ class PlaceholderFragment : DaggerFragment() {
 
                     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                         super.onScrollStateChanged(recyclerView, newState)
-                        if (newState === RecyclerView.SCROLL_STATE_IDLE) {
+//                        if (newState === RecyclerView.SCROLL_STATE_DRAGGING) {
                             val position: Int =
                                 (recycler_articles.getLayoutManager() as LinearLayoutManager)
                                     .findFirstVisibleItemPosition()
@@ -107,7 +133,7 @@ class PlaceholderFragment : DaggerFragment() {
                                 bindArticleMessagesAdapter.stopPlayer((layoutManager as LinearLayoutManager).findViewByPosition(position), position)
 
                             }
-                        }
+//                        }
                     }
                 })
 //                it.getlistenerLastItemPosition {

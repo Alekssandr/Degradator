@@ -14,6 +14,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.degradators.degradators.R
@@ -44,6 +45,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
+import kotlinx.android.synthetic.main.exo_playback_control_view.view.*
 import kotlinx.android.synthetic.main.video_layout.view.*
 import java.util.*
 
@@ -63,6 +65,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     private lateinit var videoSurfaceView: PlayerView
     private var isVideoViewAdded = false
     private var isPlayed = false
+    var isVolumeOff = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,6 +83,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
 
         fillData()
     }
+
 
     private fun fillData() {
         val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
@@ -224,6 +228,30 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
         }
     }
 
+    private fun addVolumeController(context: Context) {
+        videoSurfaceView.volumeController.setOnClickListener {
+            if (isVolumeOff) {
+                isVolumeOff = false
+                videoSurfaceView.volumeController.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_volume_up_white_36dp
+                    )
+                )
+                videoPlayer?.volume = 1f
+            } else {
+                isVolumeOff = true
+                videoSurfaceView.volumeController.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        context,
+                        R.drawable.ic_volume_off_white_36dp
+                    )
+                )
+                videoPlayer?.volume = 0f
+            }
+        }
+    }
+
     private fun initVideo(context: Context) {
         videoSurfaceView = PlayerView(context)
         videoSurfaceView.resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
@@ -232,7 +260,9 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
         videoPlayer = SimpleExoPlayer.Builder(context).build()
         // Bind the player to the view.
         videoSurfaceView.useController = true
+        addVolumeController(context)
         videoSurfaceView.player = videoPlayer
+        videoPlayer?.volume = 0f
 //        videoPlayer?.volume = videoPlayer?.volume ?: 1.0f
         videoPlayer?.repeatMode = Player.REPEAT_MODE_OFF
         videoSurfaceView.controllerAutoShow = true
@@ -349,6 +379,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        videoPlayer?.stop()
         val position = intent.getIntExtra(DETAILS_POSITION, 0)
         intentBindDetails.putExtra(DETAILS_POSITION, position)
         setResult(Activity.RESULT_OK, intentBindDetails)

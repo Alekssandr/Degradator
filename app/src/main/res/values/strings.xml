@@ -8,6 +8,9 @@
     <string name="title_account">Account</string>
     <string name="title_activity_login">Sign in</string>
     <string name="title_activity_create_account">Create account</string>
+    <string name="title_activity_my_list">My List</string>
+    <string name="title_activity_my_posts">My Posts</string>
+    <string name="title_activity_my_comments">My Comments</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>

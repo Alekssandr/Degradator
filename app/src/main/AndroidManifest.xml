@@ -48,6 +48,22 @@
             android:label="@string/title_activity_create_account" />
 
         <activity
+            android:name=".ui.userMenu.MyListActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_my_list" />
+
+        <activity
+            android:name=".ui.userMenu.MyPostsActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_my_posts" />
+
+        <activity
+            android:name=".ui.userMenu.MyCommentsActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_my_comments" />
+
+
+        <activity
             android:name=".ui.detail.DetailActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTop"
