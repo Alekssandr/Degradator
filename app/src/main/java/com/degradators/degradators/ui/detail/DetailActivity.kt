@@ -103,10 +103,13 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
             )
 
             viewModel.putComment(comment) {
-                val countsComments = Integer.valueOf(messageText.text.toString()) + 1
-                setComment(countsComments)
-                intentBindDetails.putExtra(COMMENTS, countsComments)
-                viewModel.getComment(articleDetails.id)
+                //check later
+                messageText?.let {
+                    val countsComments = Integer.valueOf(messageText.text.toString()) + 1
+                    setComment(countsComments)
+                    intentBindDetails.putExtra(COMMENTS, countsComments)
+                    viewModel.getComment(articleDetails.id)
+                }
             }
         }
     }
@@ -308,19 +311,21 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     }
 
     fun setVideoClick(articleDetails: ArticleMessage) {
-        if (videoLayout.container_video != null) {
-            videoLayout.container_video.setOnClickListener {
-                val currentUrl =
-                    articleDetails.content.first { it.type == "video" }.url
-                if (isPlaying()) {
-                    videoPlayer?.playWhenReady = false
-                } else if (isPaused()) {
-                    videoPlayer?.playWhenReady = true
-                } else {
-                    playVideo(
-                        it,
-                        currentUrl
-                    )
+        if(this::videoLayout.isInitialized){
+            if (videoLayout.container_video != null) {
+                videoLayout.container_video.setOnClickListener {
+                    val currentUrl =
+                        articleDetails.content.first { it.type == "video" }.url
+                    if (isPlaying()) {
+                        videoPlayer?.playWhenReady = false
+                    } else if (isPaused()) {
+                        videoPlayer?.playWhenReady = true
+                    } else {
+                        playVideo(
+                            it,
+                            currentUrl
+                        )
+                    }
                 }
             }
         }
