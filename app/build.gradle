@@ -13,17 +13,25 @@ android {
         applicationId "com.degradators.degradators"
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.21"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField 'String', "API_URL", degradatorUrl
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            testCoverageEnabled true
+            debuggable true
+            buildConfigField 'String', "GOOGLE_CLIENT_ID", googleClientIdRelease
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             testCoverageEnabled false
             debuggable false
+            buildConfigField 'String', "GOOGLE_CLIENT_ID", googleClientIdDebug
         }
     }
 

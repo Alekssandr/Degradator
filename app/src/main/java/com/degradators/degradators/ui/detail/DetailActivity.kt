@@ -103,13 +103,14 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
             )
 
             viewModel.putComment(comment) {
-                //check later
-                messageText?.let {
-                    val countsComments = Integer.valueOf(messageText.text.toString()) + 1
-                    setComment(countsComments)
-                    intentBindDetails.putExtra(COMMENTS, countsComments)
-                    viewModel.getComment(articleDetails.id)
+                var msgTextCounts = 0
+                if (messageText != null) {
+                    msgTextCounts = Integer.valueOf(messageText.text.toString())
                 }
+                val countsComments = msgTextCounts + 1
+                setComment(countsComments)
+                intentBindDetails.putExtra(COMMENTS, countsComments)
+                viewModel.getComment(articleDetails.id)
             }
         }
     }
@@ -205,9 +206,13 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
             params.setMargins(0, 10, 0, 0)
             when {
                 it.type == "video" -> {
-                    videoLayout  =
+                    videoLayout =
                         LayoutInflater.from(this)
-                            .inflate(R.layout.video_layout, mainContainer, false) as ConstraintLayout
+                            .inflate(
+                                R.layout.video_layout,
+                                mainContainer,
+                                false
+                            ) as ConstraintLayout
                     imageBg = videoLayout.image_bg
                     videoProgressbar = videoLayout.video_progressbar
                     imageForeground = videoLayout.image_foreground_start
@@ -311,7 +316,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     }
 
     fun setVideoClick(articleDetails: ArticleMessage) {
-        if(this::videoLayout.isInitialized){
+        if (this::videoLayout.isInitialized) {
             if (videoLayout.container_video != null) {
                 videoLayout.container_video.setOnClickListener {
                     val currentUrl =
@@ -334,20 +339,22 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     fun isPlaying(): Boolean {
         return videoPlayer!!.playbackState == Player.STATE_READY && videoPlayer!!.playWhenReady
     }
+
     fun isPaused(): Boolean {
         return videoPlayer!!.playbackState == Player.STATE_READY && !videoPlayer!!.playWhenReady
     }
 
     fun playVideo(view: View, url: String) {
         resetVideoView()
-        frameLayout= view.container_video
+        frameLayout = view.container_video
         // set the position of the list-item that is to be played
         if (!::videoSurfaceView.isInitialized) {
             return
         }
 
         videoSurfaceView.player = videoPlayer
-        val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory( view.context,
+        val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
+            view.context,
             Util.getUserAgent(view.context, "RecyclerView VideoPlayer")
         )
 

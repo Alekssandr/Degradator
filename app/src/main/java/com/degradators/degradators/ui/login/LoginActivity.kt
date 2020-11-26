@@ -1,6 +1,5 @@
 package com.degradators.degradators.ui.login
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -17,10 +16,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
+import com.degradators.degradators.BuildConfig
 import com.degradators.degradators.R
 import com.degradators.degradators.ui.main.BaseActivity
-import com.facebook.*
-import com.google.android.gms.auth.api.credentials.CredentialPickerConfig.Prompt.SIGN_IN
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -28,8 +31,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_login.*
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
 
 
 class LoginActivity : BaseActivity<LoginViewModel>() {
@@ -162,7 +163,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
     fun getGoogle() {
         val gso =
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("546237982303-jev6kd0kosqc66vrfrmoke6vqp4mh646.apps.googleusercontent.com")
+                .requestIdToken(BuildConfig.GOOGLE_CLIENT_ID)
                 .requestEmail()
                 .build()
 
