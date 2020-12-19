@@ -6,11 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
@@ -18,10 +14,8 @@ import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
-import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
@@ -57,7 +51,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     private lateinit var videoSurfaceView: PlayerView
     private var progressBar: ProgressBar? = null
     private var isVideoViewAdded = false
-    private var frameLayout: ConstraintLayout? = null
+    private var frameLayout: FrameLayout? = null
     private lateinit var imageForeground: ImageView
     private lateinit var imageBG: ImageView
     private var isPlayed = false
@@ -284,6 +278,8 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
     }
 
     private fun addVideoView() {
+        frameLayout!!.layoutParams.height = imageBG.height
+        frameLayout!!.layoutParams.width = imageBG.width
         frameLayout!!.addView(videoSurfaceView)
         isVideoViewAdded = true
         videoSurfaceView.requestFocus()
@@ -370,7 +366,7 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         progressBar = view.video_progressbar
         imageForeground = view.image_foreground_start
         imageBG = view.image_bg
-        frameLayout= view.container_video
+        frameLayout= view.video_frame
         // set the position of the list-item that is to be played
         if (!::videoSurfaceView.isInitialized) {
             return
