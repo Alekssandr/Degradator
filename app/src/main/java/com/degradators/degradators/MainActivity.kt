@@ -3,20 +3,18 @@ package com.degradators.degradators
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
+import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.databinding.ActivityMainBinding
 import com.degradators.degradators.databinding.NavHeaderMainBinding
 import com.degradators.degradators.ui.MainViewModel
 import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.login.LoginActivity
-import com.degradators.degradators.ui.login.RegisterActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
 import com.degradators.degradators.ui.userMenu.MyCommentsActivity
@@ -27,6 +25,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_home.*
+import javax.inject.Inject
 
 const val MESSAGEIDS = "messageIds"
 
@@ -34,6 +33,9 @@ class MainActivity : BaseActivity<MainViewModel>(),
     NavigationView.OnNavigationItemSelectedListener {
 
     override val viewModel: MainViewModel by viewModels { factory }
+
+    @Inject
+    lateinit var settingsPreferences: SettingsPreferences
     lateinit var binding: ActivityMainBinding
     private val SIGN_IN = 9002
     private val ADD_ARTICLE_ACTIVITY = 1000
@@ -72,6 +74,14 @@ class MainActivity : BaseActivity<MainViewModel>(),
         fab.setOnClickListener {
             val intent = Intent(this, AddArticleActivity::class.java)
             startActivityForResult(intent, ADD_ARTICLE_ACTIVITY)
+        }
+
+        if(settingsPreferences.isFirstOpen){
+            startActivityForResult(
+                Intent(this@MainActivity, LoginActivity::class.java),
+                SIGN_IN
+            )
+
         }
     }
 

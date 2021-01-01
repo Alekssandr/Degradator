@@ -108,6 +108,28 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         holder.itemView.dateOfPost.text = date.getTimeAgo(context = holder.itemView.context)
 
         item.itemView.message.setOnClickListener {
+
+//            val text = "Look at my awesome picture"
+//            val pictureUri = Uri.parse("file://my_picture")
+//            val shareIntent = Intent()
+//            shareIntent.action = Intent.ACTION_SEND
+//            shareIntent.putExtra(Intent.EXTRA_TEXT, text)
+//            shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
+//            shareIntent.type = "image/*"
+//            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//            startActivity(Intent.createChooser(shareIntent, "Share images..."))
+
+//            val sendIntent: Intent = Intent().apply {
+//                action = Intent.ACTION_SEND
+//                putExtra(Intent.EXTRA_TEXT, articleMessageList[position].summary.comment)
+//                putExtra(Intent.EXTRA_STREAM, articleMessageList[position].userPhoto)
+//                type = "image/*"
+//            }
+//
+//            val shareIntent = Intent.createChooser(sendIntent, "Share images...")
+////            startActivity(item.itemView.context, shareIntent, null)
+//            startActivity(Intent.createChooser(shareIntent, "Share images..."))
+
             val article = articleMessageList[position]
             val articleDetails =
                 ArticleMessage(

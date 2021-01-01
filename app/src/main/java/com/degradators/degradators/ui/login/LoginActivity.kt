@@ -18,6 +18,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.Observer
 import com.degradators.degradators.BuildConfig
 import com.degradators.degradators.R
+import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.ui.main.BaseActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -31,6 +32,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.activity_login.*
+import javax.inject.Inject
 
 
 class LoginActivity : BaseActivity<LoginViewModel>() {
@@ -41,6 +43,8 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
     lateinit var callbackManager: CallbackManager
 
+    @Inject
+    lateinit var settingsPreferences: SettingsPreferences
 
     private val RC_SIGN_IN = 9001
     private val SIGN_UP = 9002
@@ -82,6 +86,9 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
                 setResult(Activity.RESULT_OK)
+                //here check in activity stack if there are not activity instead of finsih launch mainActivity and remove from stack current one.
+                // add skip on the ui for the first time
+                //the sond time app will open and the first screen will be MainActivity.
                 finish()
             }
         })
@@ -125,6 +132,15 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
 
         sign_in_button.setOnClickListener {
             signIn()
+        }
+
+        if(settingsPreferences.isFirstOpen){
+            settingsPreferences.isFirstOpen = false
+            skip.visibility = View.VISIBLE
+        }
+
+        skip.setOnClickListener {
+            finish()
         }
 
 //        setSupportActionBar(toolbar)
@@ -212,6 +228,7 @@ class LoginActivity : BaseActivity<LoginViewModel>() {
             if(resultCode == RESULT_OK){
                 setResult(RESULT_OK)
                 finish()
+                //here check in activity stack if there are not activity instead of finsih launch mainActivity and remove from stack current one.
             }
         }
         if(requestCode == FB_AUTH){
