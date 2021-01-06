@@ -17,6 +17,7 @@ import com.degradators.degradators.ui.addArticles.AddArticleActivity
 import com.degradators.degradators.ui.login.LoginActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.main.SectionsPagerAdapter
+import com.degradators.degradators.ui.privacy.PrivacyPolicyActivity
 import com.degradators.degradators.ui.userMenu.MyCommentsActivity
 import com.degradators.degradators.ui.userMenu.MyListActivity
 import com.degradators.degradators.ui.userMenu.MyPostsActivity
@@ -207,6 +208,12 @@ class MainActivity : BaseActivity<MainViewModel>(),
                 sectionsPagerAdapter.notifyDataSetChanged()
                 drawer_layout.closeDrawers()
                 viewModel.logout()
+                return true
+            }
+            R.id.privacy_policy -> {
+                drawer_layout.closeDrawers()
+                val intent = Intent(this, PrivacyPolicyActivity::class.java)
+                startActivity(intent)
                 return true
             }
 

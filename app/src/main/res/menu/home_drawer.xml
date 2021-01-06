@@ -24,8 +24,8 @@
         <item android:title="Communicate">
             <menu>
                 <item
-                    android:id="@+id/nav_changePassword"
-                    android:title="Change Password" />
+                    android:id="@+id/privacy_policy"
+                    android:title="Privacy Policy" />
                 <item
                     android:id="@+id/nav_Logout"
                     android:title="Log out" />
