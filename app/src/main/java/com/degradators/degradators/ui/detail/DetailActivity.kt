@@ -8,10 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -44,6 +41,7 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
 import kotlinx.android.synthetic.main.exo_playback_control_view.view.*
@@ -67,11 +65,12 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
     private var isVideoViewAdded = false
     private var isPlayed = false
     var isVolumeOff = true
+    lateinit var binding: ActivityDetailBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivityDetailBinding =
+         binding  =
             DataBindingUtil.setContentView(this, R.layout.activity_detail)
         binding.run {
             this.articleDetailsViewModel = viewModel
@@ -101,12 +100,14 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
         }
 //5
         builder.setPositiveButton("Report") { dialog, which ->
+            Snackbar.make(binding.root,"Thank you for report",Snackbar.LENGTH_LONG).show()
             dialog.dismiss()
         }
 
         builder.setNegativeButton("Close") { dialog, which ->
             dialog.dismiss()
         }
+        builder.show()
 //6
     }
 
@@ -144,9 +145,9 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
             showReportDialog(it.context)
         }
 
-        hideArticle.setOnClickListener {
-            showReportDialog(it.context)
-        }
+//        hideArticle.setOnClickListener {
+//            showReportDialog(it.context)
+//        }
 
     }
 
@@ -159,7 +160,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
                     viewModel.putComment(it.first) {
                         viewModel.getComment(articleDetails.id)
                     }
-                    val countsComments = Integer.valueOf(messageText.text.toString()) + 1
+                    val countsComments = Integer.valueOf(binding.messageText.text.toString()) + 1
                     intentBindDetails.putExtra(COMMENTS, countsComments)
                     setComment(countsComments)
                 } else {

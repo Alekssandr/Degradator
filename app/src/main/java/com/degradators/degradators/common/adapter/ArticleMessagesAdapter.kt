@@ -28,6 +28,7 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.article_item_image_text.view.*
@@ -164,7 +165,7 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
         removeArticleBy(position, item)
 
         item.itemView.report.setOnClickListener {
-            showReportDialog(item.itemView.context)
+            showReportDialog(item.itemView)
 
         }
 
@@ -177,11 +178,11 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
 
     private var selectedRadioItem = -1
 
-    private fun showReportDialog(context: Context){
+    private fun showReportDialog(view: View){
         val reports = arrayOf("Breaks my country rules", "Harassment", "Threatening violence", "Sharing personal information",
             "Hate", "Involuntary pornography", "Copyright violation", "Self-harm or suicide", "Spam", "Misinformation", "Sexualization of minors")
 //2
-        val builder = AlertDialog.Builder(context)
+        val builder = AlertDialog.Builder(view.context)
         builder.setTitle("Submit a Report")
 //3
         builder.setSingleChoiceItems(reports, selectedRadioItem
@@ -196,12 +197,15 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
             articleMessageList.removeAt(position)
             notifyItemChanged(position)
             notifyItemRangeRemoved(position, articleMessageList.size)
+            Snackbar.make(view.rootView,"Thank you for your report", Snackbar.LENGTH_LONG).show()
             dialog.dismiss()
         }
 
         builder.setNegativeButton("Close") { dialog, which ->
             dialog.dismiss()
         }
+
+        builder.show()
 //6
     }
 

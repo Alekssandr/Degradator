@@ -142,24 +142,26 @@
                             app:layout_constraintStart_toEndOf="@+id/messageText"
                             app:layout_constraintTop_toTopOf="@+id/messageText" />
 
-                        <ImageButton
-                            android:id="@+id/hideArticle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/hide_article"
-                            app:layout_constraintBottom_toBottomOf="@+id/report"
-                            app:layout_constraintEnd_toStartOf="@+id/detailsUserPhoto"
-                            app:layout_constraintStart_toEndOf="@+id/message"
-                            app:layout_constraintTop_toTopOf="@+id/report" />
+<!--                        <ImageButton-->
+<!--                            android:id="@+id/hideArticle"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="@drawable/hide_article"-->
+<!--                            app:layout_constraintBottom_toBottomOf="@+id/report"-->
+<!--                            app:layout_constraintEnd_toStartOf="@+id/detailsUserPhoto"-->
+<!--                            app:layout_constraintStart_toEndOf="@+id/message"-->
+<!--                            app:layout_constraintTop_toTopOf="@+id/report" />-->
 
                         <ImageButton
                             android:id="@+id/report"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="32dp"
                             android:layout_marginEnd="24dp"
                             android:background="@drawable/ic_report"
                             app:layout_constraintBottom_toBottomOf="@+id/message"
                             app:layout_constraintEnd_toStartOf="@+id/hideArticle"
+                            app:layout_constraintStart_toEndOf="@+id/message"
                             app:layout_constraintTop_toTopOf="@+id/message" />
 
                         <com.google.android.material.imageview.ShapeableImageView

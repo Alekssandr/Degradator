@@ -81,27 +81,27 @@
         app:layout_constraintStart_toStartOf="@+id/main"
         app:layout_constraintTop_toBottomOf="@+id/main" />
 
+<!--    <ImageButton-->
+<!--        android:id="@+id/hideComment"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginEnd="40dp"-->
+<!--        android:background="@drawable/hide_article"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/answer"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/answer"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/answer" />-->
+
+
     <ImageButton
-        android:id="@+id/hideArticle"
-        android:layout_width="wrap_content"
+        android:id="@+id/reportComment"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:background="@drawable/hide_article"
+        android:layout_marginEnd="32dp"
+        android:background="@drawable/ic_report"
         app:layout_constraintBottom_toBottomOf="@+id/answer"
         app:layout_constraintEnd_toStartOf="@+id/answer"
-        app:layout_constraintStart_toEndOf="@+id/message"
-        app:layout_constraintTop_toTopOf="@+id/answer" />
-
-    <ImageButton
-        android:id="@+id/report"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:background="@drawable/ic_report"
-        app:layout_constraintBottom_toBottomOf="@+id/hideArticle"
-        app:layout_constraintEnd_toStartOf="@+id/hideArticle"
-        app:layout_constraintTop_toTopOf="@+id/hideArticle" />
-
+        app:layout_constraintTop_toTopOf="@+id/answer"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/answer"
