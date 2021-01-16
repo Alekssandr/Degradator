@@ -63,7 +63,7 @@ class MyListActivity : BaseActivity<MyListViewModel>() {
         recycler_articles.apply {
             layoutManagerRW = LinearLayoutManager(context)
             layoutManager = layoutManagerRW
-            bindArticleMessagesAdapter = ArticleMessagesAdapter {
+            bindArticleMessagesAdapter = ArticleMessagesAdapter(viewModel) {
                 startActivityForResult(Intent(this@MyListActivity, DetailActivity::class.java).apply {
                     putExtra(DETAILS_EXTRA, it.first)
                     putExtra(DETAILS_POSITION, it.second)

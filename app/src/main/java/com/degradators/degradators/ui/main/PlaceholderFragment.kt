@@ -104,7 +104,7 @@ class PlaceholderFragment : DaggerFragment() {
         recycler_articles.apply {
             layoutManagerRW = LinearLayoutManager(context)
             layoutManager = layoutManagerRW
-            bindArticleMessagesAdapter = ArticleMessagesAdapter {
+            bindArticleMessagesAdapter = ArticleMessagesAdapter(homeViewModel) {
                 startActivityForResult(Intent(activity, DetailActivity::class.java).apply {
                     putExtra(DETAILS_EXTRA, it.first)
                     putExtra(DETAILS_POSITION, it.second)

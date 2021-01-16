@@ -5,6 +5,7 @@ import androidx.lifecycle.*
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.RemoveArticlesUseCase
 import com.degradators.degradators.usecase.SystemSettingsUseCase
 import com.degradators.degradators.usecase.articles.ArticlesUseCase
@@ -26,7 +27,7 @@ class HomeViewModel @Inject constructor(
     private val userInfoUseCase: UserInfoUseCase,
     private val settingsPreferences: SettingsPreferences,
     private val schedulers: RxSchedulers
-) : ViewModel(), LifecycleObserver {
+) : BaseViewModel() {
 
     private val _index = MutableLiveData<Int>()
 
@@ -140,5 +141,6 @@ class HomeViewModel @Inject constructor(
                     Log.e("Test111", "error: ${it.message} ?: ")
                 })
     }
+
 
 }

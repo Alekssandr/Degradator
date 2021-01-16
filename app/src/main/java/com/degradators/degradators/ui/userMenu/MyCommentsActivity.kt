@@ -59,7 +59,7 @@ class MyCommentsActivity : BaseActivity<MySubmissionsViewModel>() {
         recycler_articles.apply {
             layoutManagerRW = LinearLayoutManager(context)
             layoutManager = layoutManagerRW
-            bindArticleMessagesAdapter = ArticleMessagesAdapter {
+            bindArticleMessagesAdapter = ArticleMessagesAdapter(viewModel) {
                 startActivityForResult(Intent(this@MyCommentsActivity, DetailActivity::class.java).apply {
                     putExtra(DETAILS_EXTRA, it.first)
                     putExtra(DETAILS_POSITION, it.second)

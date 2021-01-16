@@ -59,7 +59,7 @@ class MyPostsActivity : BaseActivity<MySubmissionsViewModel>() {
         recycler_articles.apply {
             layoutManagerRW = LinearLayoutManager(context)
             layoutManager = layoutManagerRW
-            bindArticleMessagesAdapter = ArticleMessagesAdapter {
+            bindArticleMessagesAdapter = ArticleMessagesAdapter(viewModel) {
                 startActivityForResult(Intent(this@MyPostsActivity, DetailActivity::class.java).apply {
                     putExtra(DETAILS_EXTRA, it.first)
                     putExtra(DETAILS_POSITION, it.second)

@@ -1,16 +1,20 @@
 package com.degradators.degradators.common.adapter
 
 import android.content.Context
+import android.content.DialogInterface
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.home.HomeViewModel
+import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
 import com.degradators.degradators.ui.utils.roundedCorner
@@ -38,7 +42,7 @@ const val DETAILS_POSITION = "details_position"
 const val DETAILS_LIKE = "details_like"
 const val COMMENTS = "comments"
 
-class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>) -> Unit) :
+class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val listenerOpenDetail: (Pair<ArticleMessage, Int>) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     lateinit var listenerRemoveItem: (String) -> Unit
@@ -95,9 +99,6 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = (holder as ImageViewHolder)
-        holder.itemView.setOnFocusChangeListener { focusedView, hasFocus ->
-            val a = hasFocus
-        }
 
         Log.d("test1111", "size: " + articleMessageList.size.toString() + " pos: " + position)
         item.bind(articleMessageList[position])
@@ -107,28 +108,8 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
         val date = Date(articleMessageList[position].time)
         holder.itemView.dateOfPost.text = date.getTimeAgo(context = holder.itemView.context)
 
+
         item.itemView.message.setOnClickListener {
-
-//            val text = "Look at my awesome picture"
-//            val pictureUri = Uri.parse("file://my_picture")
-//            val shareIntent = Intent()
-//            shareIntent.action = Intent.ACTION_SEND
-//            shareIntent.putExtra(Intent.EXTRA_TEXT, text)
-//            shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri)
-//            shareIntent.type = "image/*"
-//            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//            startActivity(Intent.createChooser(shareIntent, "Share images..."))
-
-//            val sendIntent: Intent = Intent().apply {
-//                action = Intent.ACTION_SEND
-//                putExtra(Intent.EXTRA_TEXT, articleMessageList[position].summary.comment)
-//                putExtra(Intent.EXTRA_STREAM, articleMessageList[position].userPhoto)
-//                type = "image/*"
-//            }
-//
-//            val shareIntent = Intent.createChooser(sendIntent, "Share images...")
-////            startActivity(item.itemView.context, shareIntent, null)
-//            startActivity(Intent.createChooser(shareIntent, "Share images..."))
 
             val article = articleMessageList[position]
             val articleDetails =
@@ -181,6 +162,47 @@ class ArticleMessagesAdapter(val listenerOpenDetail: (Pair<ArticleMessage, Int>)
             }
         }
         removeArticleBy(position, item)
+
+        item.itemView.report.setOnClickListener {
+            showReportDialog(item.itemView.context)
+
+        }
+
+        item.itemView.hideArticle.setOnClickListener {
+            articleMessageList.removeAt(position)
+            notifyItemChanged(position)
+            notifyItemRangeRemoved(position, articleMessageList.size)
+        }
+    }
+
+    private var selectedRadioItem = -1
+
+    private fun showReportDialog(context: Context){
+        val reports = arrayOf("Breaks my country rules", "Harassment", "Threatening violence", "Sharing personal information",
+            "Hate", "Involuntary pornography", "Copyright violation", "Self-harm or suicide", "Spam", "Misinformation", "Sexualization of minors")
+//2
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Submit a Report")
+//3
+        builder.setSingleChoiceItems(reports, selectedRadioItem
+        ) { _, which ->
+            //4
+            selectedRadioItem = which
+        }
+//5
+        val position = if(currentPosition-1<0) 0 else currentPosition -1
+        builder.setPositiveButton("Report") { dialog, which ->
+            homeViewModel.hideArticles()
+            articleMessageList.removeAt(position)
+            notifyItemChanged(position)
+            notifyItemRangeRemoved(position, articleMessageList.size)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Close") { dialog, which ->
+            dialog.dismiss()
+        }
+//6
     }
 
     fun stopPlayer(view: View?, position: Int) {

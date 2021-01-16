@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -84,6 +85,31 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
         fillData()
     }
 
+    private var selectedRadioItem = -1
+
+    private fun showReportDialog(context: Context){
+        val reports = arrayOf("Breaks my country rules", "Harassment", "Threatening violence", "Sharing personal information",
+            "Hate", "Involuntary pornography", "Copyright violation", "Self-harm or suicide", "Spam", "Misinformation", "Sexualization of minors")
+//2
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle("Submit a Report")
+//3
+        builder.setSingleChoiceItems(reports, selectedRadioItem
+        ) { _, which ->
+            //4
+            selectedRadioItem = which
+        }
+//5
+        builder.setPositiveButton("Report") { dialog, which ->
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Close") { dialog, which ->
+            dialog.dismiss()
+        }
+//6
+    }
+
 
     private fun fillData() {
         val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
@@ -113,13 +139,22 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
                 viewModel.getComment(articleDetails.id)
             }
         }
+
+        report.setOnClickListener {
+            showReportDialog(it.context)
+        }
+
+        hideArticle.setOnClickListener {
+            showReportDialog(it.context)
+        }
+
     }
 
     private fun initRecycler(binding: ActivityDetailBinding) {
         val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
         binding.commentsBlock.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            this.adapter = CommentsAdapter {
+            this.adapter = CommentsAdapter(viewModel) {
                 if (it.second == 0) {
                     viewModel.putComment(it.first) {
                         viewModel.getComment(articleDetails.id)

@@ -1,11 +1,14 @@
 package com.degradators.degradators
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
@@ -26,7 +29,9 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_home.*
+import net.khirr.android.privacypolicy.PrivacyPolicyDialog
 import javax.inject.Inject
+
 
 const val MESSAGEIDS = "messageIds"
 
@@ -77,13 +82,64 @@ class MainActivity : BaseActivity<MainViewModel>(),
             startActivityForResult(intent, ADD_ARTICLE_ACTIVITY)
         }
 
-        if(settingsPreferences.isFirstOpen){
-            startActivityForResult(
-                Intent(this@MainActivity, LoginActivity::class.java),
-                SIGN_IN
-            )
+//        if(settingsPreferences.isFirstOpen){
+//            startActivityForResult(
+//                Intent(this@MainActivity, LoginActivity::class.java),
+//                SIGN_IN
+//            )
+//
+//        }
 
-        }
+        openPrivacyPolicy()
+    }
+
+    private fun openPrivacyPolicy() {
+        //  Params: context, termsOfService url, privacyPolicyUrl
+        val dialog = PrivacyPolicyDialog(
+            this,
+            "https://pakdim.com/policy",
+            "https://pakdim.com/policy"
+        )
+
+        dialog.onClickListener =
+            object : PrivacyPolicyDialog.OnClickListener {
+                override fun onAccept(isFirstTime: Boolean) {
+                    Log.e("MainActivity", "Policies accepted")
+                    startActivity(intent)
+                }
+
+                override fun onCancel() {
+                    Log.e("MainActivity", "Policies not accepted")
+                    finish()
+                }
+            }
+
+        dialog.addPoliceLine("If you create a Pakdim account, we may require you to provide a username and password. Your username is public, and it doesn’t have to be related to your real name. You may also provide other account information, like an email address, bio, or profile picture. We also store your user account preferences and settings.")
+        dialog.addPoliceLine("We collect the content you submit. This includes your posts, comments and videos. Your content may include text, images and videos.")
+        dialog.addPoliceLine("This application sends error reports, installation and send it to a server of the Firebase company to analyze and process it.")
+        dialog.addPoliceLine("This application requires internet access and must collect the following information: Installed applications and history of installed applications, ip address, unique installation id, token to send notifications, version of the application, time zone and information about the language of the device.")
+        dialog.addPoliceLine("All details about the use of data are available in our Privacy Policies, as well as all Terms of Service links below.")
+
+        //  Customizing (Optional)
+
+        //  Customizing (Optional)
+        dialog.titleTextColor = Color.parseColor("#222222")
+        dialog.acceptButtonColor = ContextCompat.getColor(this, R.color.colorAccent)
+
+        //  Title
+
+        //  Title
+        dialog.title = "Terms of Service"
+
+        //  {terms}Terms of Service{/terms} is replaced by a link to your terms
+        //  {privacy}Privacy Policy{/privacy} is replaced by a link to your privacy policy
+
+        //  {terms}Terms of Service{/terms} is replaced by a link to your terms
+        //  {privacy}Privacy Policy{/privacy} is replaced by a link to your privacy policy
+        dialog.termsOfServiceSubtitle =
+            "If you click on {accept}, you acknowledge that it makes the content present and all the content of our {terms}Terms of Service{/terms} and implies that you have read our {privacy}Privacy Policy{privacy}."
+
+        dialog.show()
     }
 
     private fun addNavigationHeader() {

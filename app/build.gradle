@@ -13,8 +13,8 @@ android {
         applicationId "com.degradators.degradators"
         minSdkVersion androidMinSdkVersion
         targetSdkVersion androidTargetSdkVersion
-        versionCode 8
-        versionName "1.25"
+        versionCode 9
+        versionName "1.26"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField 'String', "API_URL", degradatorUrl
     }

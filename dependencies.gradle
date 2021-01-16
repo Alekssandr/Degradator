@@ -34,7 +34,7 @@ ext {
     livedataextVersion ='1.2.1'
     exoPlayerVersion = '2.11.4'
 
-
+    privacyPolicyVersion = '1.0.1'
     googleAuth = '18.0.0'
     playServicesAuth  = '18.0.0'
     facebookSignIn = '6.5.1'
@@ -63,7 +63,8 @@ ext {
             navigationUI:               "androidx.navigation:navigation-ui-ktx:${navigation}",
             facebookSignIn:             "com.facebook.android:facebook-login:$facebookSignIn",
             circleimageview:            "de.hdodenhof:circleimageview:$circleimageview",
-            exoPlayer :                 "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}"
+            exoPlayer :                 "com.google.android.exoplayer:exoplayer:${exoPlayerVersion}",
+            privacyPolicy :                 "com.github.khirr:Android-Privacy-Policy:${privacyPolicyVersion}"
     ]
 
     daggerDependencies = [
