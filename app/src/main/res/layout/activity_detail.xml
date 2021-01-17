@@ -50,13 +50,25 @@
                             android:id="@+id/detailsImageTextTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
                             android:padding="8dp"
                             android:text="TextView"
                             android:textColor="@android:color/black"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/show_popup"
                             app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                        <ImageButton
+                            android:id="@+id/show_popup"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/tree_dots_bg"
+                            app:layout_constraintBottom_toTopOf="@+id/dateOfPost"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
@@ -142,27 +154,6 @@
                             app:layout_constraintStart_toEndOf="@+id/messageText"
                             app:layout_constraintTop_toTopOf="@+id/messageText" />
 
-<!--                        <ImageButton-->
-<!--                            android:id="@+id/hideArticle"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:background="@drawable/hide_article"-->
-<!--                            app:layout_constraintBottom_toBottomOf="@+id/report"-->
-<!--                            app:layout_constraintEnd_toStartOf="@+id/detailsUserPhoto"-->
-<!--                            app:layout_constraintStart_toEndOf="@+id/message"-->
-<!--                            app:layout_constraintTop_toTopOf="@+id/report" />-->
-
-                        <ImageButton
-                            android:id="@+id/report"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="32dp"
-                            android:layout_marginEnd="24dp"
-                            android:background="@drawable/ic_report"
-                            app:layout_constraintBottom_toBottomOf="@+id/message"
-                            app:layout_constraintEnd_toStartOf="@+id/hideArticle"
-                            app:layout_constraintStart_toEndOf="@+id/message"
-                            app:layout_constraintTop_toTopOf="@+id/message" />
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:id="@+id/detailsUserPhoto"

@@ -81,28 +81,6 @@
         app:layout_constraintStart_toStartOf="@+id/main"
         app:layout_constraintTop_toBottomOf="@+id/main" />
 
-<!--    <ImageButton-->
-<!--        android:id="@+id/hideComment"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="40dp"-->
-<!--        android:background="@drawable/hide_article"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/answer"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/answer"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/answer" />-->
-
-
-    <ImageButton
-        android:id="@+id/reportComment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/ic_report"
-        app:layout_constraintBottom_toBottomOf="@+id/answer"
-        app:layout_constraintEnd_toStartOf="@+id/answer"
-        app:layout_constraintTop_toTopOf="@+id/answer"
-        app:layout_constraintVertical_bias="1.0" />
-
     <TextView
         android:id="@+id/answer"
         android:layout_width="wrap_content"

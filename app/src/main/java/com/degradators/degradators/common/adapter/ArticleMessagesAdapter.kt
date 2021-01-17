@@ -1,10 +1,10 @@
 package com.degradators.degradators.common.adapter
 
 import android.content.Context
-import android.content.DialogInterface
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
 import com.degradators.degradators.model.article.ArticleMessage
-import com.degradators.degradators.ui.home.HomeViewModel
 import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
@@ -43,8 +42,11 @@ const val DETAILS_POSITION = "details_position"
 const val DETAILS_LIKE = "details_like"
 const val COMMENTS = "comments"
 
-class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val listenerOpenDetail: (Pair<ArticleMessage, Int>) -> Unit) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ArticleMessagesAdapter(
+    private val homeViewModel: BaseViewModel,
+    val listenerOpenDetail: (Pair<ArticleMessage, Int>) -> Unit
+) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(), PopupMenu.OnMenuItemClickListener {
 
     lateinit var listenerRemoveItem: (String) -> Unit
     lateinit var listenerUpdateCurrentItem: (Int) -> Unit
@@ -62,8 +64,10 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
     private var isPlayed = false
     private var lastUrl = ""
     private var currentPosition = 0
-    var lastView : View? = null
+    var lastView: View? = null
+    var popupView: View? = null
     var isVolumeOff = true
+    var newPosition = 0
 
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -134,7 +138,7 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
                 val currentUrl =
                     articleMessageList[position].content.first { it.type == "video" }.url
                 if (currentUrl != lastUrl) {
-                    lastView?.let{
+                    lastView?.let {
                         it.image_bg.loadImage(lastUrl, R.drawable.ic_launcher_background)
                     }
                     videoSurfaceView.player?.stop(true)
@@ -164,40 +168,48 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
         }
         removeArticleBy(position, item)
 
-        item.itemView.report.setOnClickListener {
-            showReportDialog(item.itemView)
-
+        item.itemView.show_popup.setOnClickListener {
+            popupView = it
+            showPopupMenu(it)
+            newPosition = position
         }
 
-        item.itemView.hideArticle.setOnClickListener {
-            articleMessageList.removeAt(position)
-            notifyItemChanged(position)
-            notifyItemRangeRemoved(position, articleMessageList.size)
-        }
     }
 
     private var selectedRadioItem = -1
 
-    private fun showReportDialog(view: View){
-        val reports = arrayOf("Breaks my country rules", "Harassment", "Threatening violence", "Sharing personal information",
-            "Hate", "Involuntary pornography", "Copyright violation", "Self-harm or suicide", "Spam", "Misinformation", "Sexualization of minors")
+    private fun showReportDialog(view: View) {
+        val reports = arrayOf(
+            "Breaks my country rules",
+            "Harassment",
+            "Threatening violence",
+            "Sharing personal information",
+            "Hate",
+            "Involuntary pornography",
+            "Copyright violation",
+            "Self-harm or suicide",
+            "Spam",
+            "Misinformation",
+            "Sexualization of minors"
+        )
 //2
         val builder = AlertDialog.Builder(view.context)
         builder.setTitle("Submit a Report")
 //3
-        builder.setSingleChoiceItems(reports, selectedRadioItem
+        builder.setSingleChoiceItems(
+            reports, selectedRadioItem
         ) { _, which ->
             //4
             selectedRadioItem = which
         }
 //5
-        val position = if(currentPosition-1<0) 0 else currentPosition -1
+//        val position = if (currentPosition - 1 < 0) 0 else currentPosition - 1
         builder.setPositiveButton("Report") { dialog, which ->
             homeViewModel.hideArticles()
-            articleMessageList.removeAt(position)
-            notifyItemChanged(position)
-            notifyItemRangeRemoved(position, articleMessageList.size)
-            Snackbar.make(view.rootView,"Thank you for your report", Snackbar.LENGTH_LONG).show()
+            articleMessageList.removeAt(newPosition)
+            notifyItemChanged(newPosition)
+            notifyItemRangeRemoved(newPosition, articleMessageList.size)
+            Snackbar.make(view.rootView, "Thank you for your report", Snackbar.LENGTH_LONG).show()
             dialog.dismiss()
         }
 
@@ -244,6 +256,7 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
     fun isPlaying(): Boolean {
         return videoPlayer!!.playbackState == Player.STATE_READY && videoPlayer!!.playWhenReady
     }
+
     fun isPaused(): Boolean {
         return videoPlayer!!.playbackState == Player.STATE_READY && !videoPlayer!!.playWhenReady
     }
@@ -414,7 +427,7 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
         progressBar = view.video_progressbar
         imageForeground = view.image_foreground_start
         imageBG = view.image_bg
-        frameLayout= view.video_frame
+        frameLayout = view.video_frame
         // set the position of the list-item that is to be played
         if (!::videoSurfaceView.isInitialized) {
             return
@@ -507,7 +520,7 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
                     setImage(image, it.url)
                     image.layoutParams = params
                     image.adjustViewBounds = true
-                                itemView.container.setHasTransientState(true)
+                    itemView.container.setHasTransientState(true)
                     itemView.container.addView(image)
                 }
             }
@@ -517,5 +530,26 @@ class ArticleMessagesAdapter(private val homeViewModel: BaseViewModel, val liste
         private fun setImage(image: ImageView, url: String) {
             image.loadImage(url, R.drawable.ic_launcher_background)
         }
+
+
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(view.context, view)
+        popupMenu.inflate(R.menu.popup_addition)
+        popupMenu.setOnMenuItemClickListener(this)
+        popupMenu.show()
+    }
+
+    override fun onMenuItemClick(p0: MenuItem?): Boolean {
+        when (p0?.itemId) {
+            R.id.report -> showReportDialog(popupView!!)
+            R.id.hide_article -> {
+                articleMessageList.removeAt(newPosition)
+                notifyItemChanged(newPosition)
+                notifyItemRangeRemoved(newPosition, articleMessageList.size)
+            }
+        }
+        return true
     }
 }

@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -49,7 +51,7 @@ import kotlinx.android.synthetic.main.video_layout.view.*
 import java.util.*
 
 
-class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
+class DetailActivity : BaseActivity<ArticleDetailsViewModel>(), PopupMenu.OnMenuItemClickListener {
 
     override val viewModel: ArticleDetailsViewModel by viewModels { factory }
 
@@ -141,8 +143,8 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
             }
         }
 
-        report.setOnClickListener {
-            showReportDialog(it.context)
+        show_popup.setOnClickListener {
+            showPopupMenu(it)
         }
 
 //        hideArticle.setOnClickListener {
@@ -433,5 +435,20 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>() {
         setResult(Activity.RESULT_OK, intentBindDetails)
         onBackPressed()
         return super.onSupportNavigateUp()
+    }
+
+    private fun showPopupMenu(view: View) {
+        val popupMenu = PopupMenu(view.context, view)
+        popupMenu.inflate(R.menu.popup_addition)
+        popupMenu.menu.findItem(R.id.hide_article).isVisible = false
+        popupMenu.setOnMenuItemClickListener(this)
+        popupMenu.show()
+    }
+
+    override fun onMenuItemClick(p0: MenuItem?): Boolean {
+        when (p0?.itemId) {
+            R.id.report -> showReportDialog(this)
+        }
+        return true
     }
 }

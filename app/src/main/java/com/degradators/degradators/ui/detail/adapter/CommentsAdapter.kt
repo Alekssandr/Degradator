@@ -46,50 +46,8 @@ class CommentsAdapter(private val viewModel: BaseViewModel, val listener: (Pair<
         addCommentClicked(holder, position)
 
         setLikeOrDislike(holder)
-
-        holder.itemView.reportComment.setOnClickListener {
-            showReportDialog(position, it)
-
-        }
-//
-//        holder.itemView.hideComment.setOnClickListener {
-//            commentList.removeAt(position)
-//            notifyItemChanged(position)
-//            notifyItemRangeRemoved(position, commentList.size)
-//        }
     }
 
-    private var selectedRadioItem = -1
-
-    private fun showReportDialog(position: Int, view: View){
-        val reports = arrayOf("Breaks my country rules", "Harassment", "Threatening violence", "Sharing personal information",
-            "Hate", "Involuntary pornography", "Copyright violation", "Self-harm or suicide", "Spam", "Misinformation", "Sexualization of minors")
-//2
-        val builder = AlertDialog.Builder(view.context)
-        builder.setTitle("Submit a Report")
-//3
-        builder.setSingleChoiceItems(reports, selectedRadioItem
-        ) { _, which ->
-            //4
-            selectedRadioItem = which
-        }
-//5
-        val positionNew = if(position-1<0) 0 else position -1
-        builder.setPositiveButton("Report") { dialog, which ->
-//            viewModel.hideArticles()
-//            commentList.removeAt(position)
-//            notifyItemChanged(position)
-//            notifyItemRangeRemoved(position, commentList.size)
-            Snackbar.make(view.rootView,"Thank you for your report", Snackbar.LENGTH_LONG).show()
-            dialog.dismiss()
-        }
-
-        builder.setNegativeButton("Close") { dialog, which ->
-            dialog.dismiss()
-        }
-        builder.show()
-//6
-    }
 
     private fun addCommentClicked(
         holder: CommentItemViewHolder,
