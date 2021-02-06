@@ -44,6 +44,16 @@
             app:layout_constraintStart_toEndOf="@+id/userPhoto"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageButton
+            android:id="@+id/show_popup_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/tree_dots_bg"
+            app:layout_constraintBottom_toBottomOf="@+id/userName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/userName" />
+
         <TextView
             android:id="@+id/comment"
             android:layout_width="0dp"

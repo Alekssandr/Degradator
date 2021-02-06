@@ -8,8 +8,10 @@ import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.Block
 import com.degradators.degradators.model.NewComment
 import com.degradators.degradators.model.comment.CommentList
+import com.degradators.degradators.ui.main.ArticlesViewModel
 import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.articles.LikeUseCase
+import com.degradators.degradators.usecase.articles.ReportUseCase
 import com.degradators.degradators.usecase.comment.AddCommentUseCase
 import com.degradators.degradators.usecase.comment.CommentUseCase
 import io.reactivex.disposables.CompositeDisposable
@@ -22,8 +24,9 @@ class ArticleDetailsViewModel @Inject constructor(
     private val likeUseCase: LikeUseCase,
     private val commentUseCase: CommentUseCase,
     private val addCommentUseCase: AddCommentUseCase,
-    private val schedulers: RxSchedulers
-) : BaseViewModel() {
+    private val schedulers: RxSchedulers,
+    private val reportUseCase: ReportUseCase
+) : ArticlesViewModel(reportUseCase, settingsPreferences) {
 
     private val disposables = CompositeDisposable()
     val commentList: MutableLiveData<List<CommentList>> = MutableLiveData()

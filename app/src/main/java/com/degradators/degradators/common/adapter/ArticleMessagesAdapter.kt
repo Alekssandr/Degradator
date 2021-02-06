@@ -12,7 +12,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.degradators.degradators.R
+import com.degradators.degradators.Reports
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.main.ArticlesViewModel
 import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
@@ -43,7 +45,7 @@ const val DETAILS_LIKE = "details_like"
 const val COMMENTS = "comments"
 
 class ArticleMessagesAdapter(
-    private val homeViewModel: BaseViewModel,
+    private val homeViewModel: ArticlesViewModel,
     val listenerOpenDetail: (Pair<ArticleMessage, Int>) -> Unit
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), PopupMenu.OnMenuItemClickListener {
@@ -173,31 +175,18 @@ class ArticleMessagesAdapter(
             showPopupMenu(it)
             newPosition = position
         }
-
     }
 
     private var selectedRadioItem = -1
 
     private fun showReportDialog(view: View) {
-        val reports = arrayOf(
-            "Breaks my country rules",
-            "Harassment",
-            "Threatening violence",
-            "Sharing personal information",
-            "Hate",
-            "Involuntary pornography",
-            "Copyright violation",
-            "Self-harm or suicide",
-            "Spam",
-            "Misinformation",
-            "Sexualization of minors"
-        )
+        val reports =   Reports.values()
 //2
         val builder = AlertDialog.Builder(view.context)
         builder.setTitle("Submit a Report")
 //3
         builder.setSingleChoiceItems(
-            reports, selectedRadioItem
+            reports.map { view.context.getString(it.nameResId) }.toTypedArray(), selectedRadioItem
         ) { _, which ->
             //4
             selectedRadioItem = which
@@ -205,7 +194,7 @@ class ArticleMessagesAdapter(
 //5
 //        val position = if (currentPosition - 1 < 0) 0 else currentPosition - 1
         builder.setPositiveButton("Report") { dialog, which ->
-            homeViewModel.hideArticles()
+            homeViewModel.hideArticles(articleMessageList[currentPosition].id, reports[selectedRadioItem].name)
             articleMessageList.removeAt(newPosition)
             notifyItemChanged(newPosition)
             notifyItemRangeRemoved(newPosition, articleMessageList.size)

@@ -5,8 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.main.ArticlesViewModel
 import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.articles.GetSubmissionsArticleUseCase
+import com.degradators.degradators.usecase.articles.ReportUseCase
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -15,8 +17,9 @@ import javax.inject.Inject
 class MySubmissionsViewModel @Inject constructor(
     private val getSubmissionsArticleUseCase: GetSubmissionsArticleUseCase,
     private val settingsPreferences: SettingsPreferences,
-    private val schedulers: RxSchedulers
-) : BaseViewModel() {
+    private val schedulers: RxSchedulers,
+    private val reportUseCase: ReportUseCase
+) : ArticlesViewModel(reportUseCase, settingsPreferences) {
     private val disposables = CompositeDisposable()
 
     val articleMessage: MutableLiveData<List<ArticleMessage>> = MutableLiveData()

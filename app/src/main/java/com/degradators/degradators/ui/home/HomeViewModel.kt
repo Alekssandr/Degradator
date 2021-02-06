@@ -5,11 +5,13 @@ import androidx.lifecycle.*
 import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.main.ArticlesViewModel
 import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.RemoveArticlesUseCase
 import com.degradators.degradators.usecase.SystemSettingsUseCase
 import com.degradators.degradators.usecase.articles.ArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
+import com.degradators.degradators.usecase.articles.ReportUseCase
 import com.degradators.degradators.usecase.user.UserInfoUseCase
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -26,8 +28,9 @@ class HomeViewModel @Inject constructor(
     private val removeArticlesUseCase: RemoveArticlesUseCase,
     private val userInfoUseCase: UserInfoUseCase,
     private val settingsPreferences: SettingsPreferences,
+    private val reportUseCase: ReportUseCase,
     private val schedulers: RxSchedulers
-) : BaseViewModel() {
+) : ArticlesViewModel(reportUseCase, settingsPreferences) {
 
     private val _index = MutableLiveData<Int>()
 

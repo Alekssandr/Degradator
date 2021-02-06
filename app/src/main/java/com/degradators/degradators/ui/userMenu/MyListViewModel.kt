@@ -6,10 +6,11 @@ import com.degradators.degradators.common.preferencies.SettingsPreferences
 import com.degradators.degradators.di.common.rx.RxSchedulers
 import com.degradators.degradators.model.PostIds
 import com.degradators.degradators.model.article.ArticleMessage
+import com.degradators.degradators.ui.main.ArticlesViewModel
 import com.degradators.degradators.ui.main.BaseViewModel
 import com.degradators.degradators.usecase.articles.LikeListArticlesUseCase
 import com.degradators.degradators.usecase.articles.LikeUseCase
-import com.degradators.degradators.usecase.user.UserInfoUseCase
+import com.degradators.degradators.usecase.articles.ReportUseCase
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -20,8 +21,9 @@ class MyListViewModel @Inject constructor(
     private val likeListArticlesUseCase: LikeListArticlesUseCase,
     private val likeUseCase: LikeUseCase,
     private val settingsPreferences: SettingsPreferences,
-    private val schedulers: RxSchedulers
-) : BaseViewModel() {
+    private val schedulers: RxSchedulers,
+    private val reportUseCase: ReportUseCase
+) : ArticlesViewModel(reportUseCase, settingsPreferences) {
     private val disposables = CompositeDisposable()
 
     val articleMessage: MutableLiveData<List<ArticleMessage>> = MutableLiveData()

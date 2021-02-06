@@ -32,6 +32,10 @@ class ArticlesDataRepository(
                 }.let { Articles(it) }
         }
 
+    override fun report(token: String, articleId: String, reason: String): Completable {
+        return api.report(token, articleId, reason)
+    }
+
     override fun getArticlesByList(articleId: PostIds): Single<Articles> =
         api.getArticlesByList(articleId)
             .map { articlesEntity ->

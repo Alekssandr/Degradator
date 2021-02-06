@@ -36,13 +36,13 @@
                 android:id="@+id/imageTextTitle"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="8dp"
                 android:padding="8dp"
                 android:text="TextView"
                 android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/show_popup"
+                app:layout_constraintEnd_toStartOf="@+id/removeArticle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,6 +56,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+
+            <ImageButton
+                android:id="@+id/removeArticle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:clickable="true"
+                android:visibility="gone"
+                android:background="@drawable/ic_delete_outline_black_24dp"
+                app:layout_constraintBottom_toTopOf="@+id/dateOfPost"
+                app:layout_constraintEnd_toStartOf="@+id/show_popup"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
             <TextView
                 android:id="@+id/dateOfPost"
                 android:layout_width="0dp"
@@ -68,16 +82,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageTextTitle" />
 
-            <ImageButton
-                android:id="@+id/removeArticle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:clickable="true"
-                android:background="@drawable/ic_delete_outline_black_36dp"
-                app:layout_constraintBottom_toTopOf="@+id/container"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
                 android:id="@+id/container"

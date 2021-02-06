@@ -73,4 +73,11 @@ interface ArticlesAPI {
         @Query("skip") skip: Long
     ): Single<ArticlesEntity>
 
+    @GET("/api/s/message/{messageId}/report/{reason}")
+    fun report(
+        @Header("X-Auth-Token") token: String,
+        @Path("messageId") messageId: String,
+        @Path("messageId") reason: String
+    ): Completable
+
 }

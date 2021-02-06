@@ -14,10 +14,11 @@ import com.degradators.degradators.common.adapter.*
 import com.degradators.degradators.databinding.FragmentMyListBinding
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.DetailActivity
+import com.degradators.degradators.ui.main.ArticlesActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import kotlinx.android.synthetic.main.fragment_home.*
 
-class MyListActivity : BaseActivity<MyListViewModel>() {
+class MyListActivity : ArticlesActivity<MyListViewModel>() {
 
     override val viewModel: MyListViewModel by viewModels { factory }
     private lateinit var bindArticleMessagesAdapter: ArticleMessagesAdapter

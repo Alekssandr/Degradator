@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.degradators.degradators.R
+import com.degradators.degradators.Reports
 import com.degradators.degradators.common.adapter.COMMENTS
 import com.degradators.degradators.common.adapter.DETAILS_EXTRA
 import com.degradators.degradators.common.adapter.DETAILS_LIKE
@@ -30,6 +31,7 @@ import com.degradators.degradators.model.comment.CommentList
 import com.degradators.degradators.model.comment.Expanded
 import com.degradators.degradators.ui.detail.adapter.CommentsAdapter
 import com.degradators.degradators.ui.detail.viewModel.ArticleDetailsViewModel
+import com.degradators.degradators.ui.main.ArticlesActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import com.degradators.degradators.ui.utils.getTimeAgo
 import com.degradators.degradators.ui.utils.loadImage
@@ -51,7 +53,7 @@ import kotlinx.android.synthetic.main.video_layout.view.*
 import java.util.*
 
 
-class DetailActivity : BaseActivity<ArticleDetailsViewModel>(), PopupMenu.OnMenuItemClickListener {
+class DetailActivity : ArticlesActivity<ArticleDetailsViewModel>(), PopupMenu.OnMenuItemClickListener {
 
     override val viewModel: ArticleDetailsViewModel by viewModels { factory }
 
@@ -68,6 +70,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>(), PopupMenu.OnMenu
     private var isPlayed = false
     var isVolumeOff = true
     lateinit var binding: ActivityDetailBinding
+    lateinit var articleDetails: ArticleMessage
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,19 +92,19 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>(), PopupMenu.OnMenu
     private var selectedRadioItem = -1
 
     private fun showReportDialog(context: Context){
-        val reports = arrayOf("Breaks my country rules", "Harassment", "Threatening violence", "Sharing personal information",
-            "Hate", "Involuntary pornography", "Copyright violation", "Self-harm or suicide", "Spam", "Misinformation", "Sexualization of minors")
-//2
+        val reports =   Reports.values()
+
         val builder = AlertDialog.Builder(context)
         builder.setTitle("Submit a Report")
 //3
-        builder.setSingleChoiceItems(reports, selectedRadioItem
+        builder.setSingleChoiceItems(reports.map { context.getString(it.nameResId) }.toTypedArray(), selectedRadioItem
         ) { _, which ->
             //4
             selectedRadioItem = which
         }
 //5
         builder.setPositiveButton("Report") { dialog, which ->
+            viewModel.hideArticles(articleDetails.id, reports[selectedRadioItem].name)
             Snackbar.make(binding.root,"Thank you for report",Snackbar.LENGTH_LONG).show()
             dialog.dismiss()
         }
@@ -115,7 +118,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>(), PopupMenu.OnMenu
 
 
     private fun fillData() {
-        val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
+        articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
         showArticle(articleDetails)
 
         btnAddComment.setOnClickListener {
@@ -154,7 +157,7 @@ class DetailActivity : BaseActivity<ArticleDetailsViewModel>(), PopupMenu.OnMenu
     }
 
     private fun initRecycler(binding: ActivityDetailBinding) {
-        val articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
+        articleDetails = intent.extras?.get(DETAILS_EXTRA) as ArticleMessage
         binding.commentsBlock.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             this.adapter = CommentsAdapter(viewModel) {

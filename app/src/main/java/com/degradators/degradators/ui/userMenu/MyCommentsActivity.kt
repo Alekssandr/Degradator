@@ -13,10 +13,11 @@ import com.degradators.degradators.common.adapter.*
 import com.degradators.degradators.databinding.ActivityMyCommentsBinding
 import com.degradators.degradators.model.article.ArticleMessage
 import com.degradators.degradators.ui.detail.DetailActivity
+import com.degradators.degradators.ui.main.ArticlesActivity
 import com.degradators.degradators.ui.main.BaseActivity
 import kotlinx.android.synthetic.main.fragment_home.*
 
-class MyCommentsActivity : BaseActivity<MySubmissionsViewModel>() {
+class MyCommentsActivity : ArticlesActivity<MySubmissionsViewModel>() {
 
     override val viewModel: MySubmissionsViewModel by viewModels { factory }
     private lateinit var bindArticleMessagesAdapter: ArticleMessagesAdapter
